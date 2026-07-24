@@ -1,0 +1,52 @@
+@use "../../partials/mixins.scss" as mx;
+@use "../../partials/variables.scss" as vars;
+
+.colorModeToggle {
+	position: relative;
+
+	&__checkbox {
+		opacity: 0;
+		position: absolute;
+	}
+
+	&__checkbox-label {
+		align-items: center;
+		background-color: var(--toggle-sky);
+		border-radius: 50px;
+		cursor: pointer;
+		display: flex;
+		height: 26px;
+		justify-content: space-between;
+		outline: 1px solid var(--text-color);
+		padding: 5px;
+		position: relative;
+		width: 50px;
+	}
+
+	&__ball {
+		background-color: var(--toggle-ball);
+		border-radius: 50%;
+		height: 22px;
+		left: 2px;
+		position: absolute;
+		top: 2px;
+		transition: transform 0.2s linear;
+		width: 22px;
+	}
+
+	&__sun-icon {
+		position: fixed;
+		transform: translateX(0%);
+		width: 1.1rem;
+	}
+
+	&__moon-icon {
+		position: fixed;
+		transform: translateX(265%);
+		width: 0.6rem;
+	}
+
+	&__checkbox:checked + &__checkbox-label &__ball {
+		transform: translateX(24px);
+	}
+}

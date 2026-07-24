@@ -1,0 +1,153 @@
+@use "../../partials/_mixins" as mx;
+@use "../../partials/_variables" as vars;
+
+.nav {
+	align-items: center;
+	background: var(--navAndFooterBG);
+	box-shadow: var(--nav-boxShadow);
+	display: flex;
+	height: 5rem;
+	justify-content: center;
+	margin-top: 0;
+	position: fixed;
+	transition: all 600ms ease;
+	top: 0;
+	width: 100%;
+	z-index: 4;
+
+	@media (min-width: vars.$tablet) {
+		align-items: center;
+		display: flex;
+		justify-content: center;
+		left: 0;
+		padding-block: 1rem;
+		position: fixed;
+		right: 0;
+	}
+
+	&.hide {
+		top: -5rem;
+	}
+
+	&__inner {
+		align-items: center;
+		display: flex;
+		justify-content: center;
+		max-width: 1920px;
+		padding-inline: 2.5rem;
+		width: 100%;
+
+		@media (min-width: vars.$tablet) {
+			justify-content: baseline;
+		}
+	}
+
+	&__logo {
+		align-items: center;
+		display: flex;
+		height: 4rem;
+		justify-content: center;
+		margin-inline-start: 1rem;
+		margin-top: 0.25rem;
+		width: 8rem;
+
+		@media (min-width: 350px) {
+			width: 10rem;
+		}
+
+		&--icon {
+			fill: var(--text-color);
+			stroke: var(--text-color);
+		}
+	}
+
+	&__links {
+		display: none;
+
+		@media (min-width: vars.$large-tablet) {
+			align-items: center;
+			display: flex;
+			margin-inline-start: auto;
+		}
+	}
+
+	&__link {
+		border-radius: var(--borderRadius);
+		text-transform: uppercase;
+		@include mx.navLink;
+
+		@media (min-width: vars.$large-tablet) {
+			align-items: center;
+			border: none;
+			display: flex;
+			height: 4rem;
+			width: 10rem;
+		}
+
+		&--work {
+			width: 100%;
+		}
+
+		&--instagram {
+			align-items: center;
+			display: flex;
+			fill: var(--text-color);
+			justify-content: center;
+			max-width: 4rem;
+		}
+
+		&--colorMode {
+			@media (min-width: vars.$tablet) {
+				max-width: 6rem;
+			}
+
+			@media (min-width: vars.$large-tablet) {
+				border: none;
+				max-width: 8rem;
+				min-width: 8rem;
+			}
+		}
+	}
+
+	&__logout {
+		display: none;
+
+		@media (min-width: vars.$large-tablet) {
+			display: block;
+			@include mx.buttonRounded;
+		}
+	}
+
+	&__toggle-button {
+		cursor: pointer;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		height: 2.25rem;
+		justify-content: center;
+		max-width: 100%;
+		position: absolute;
+		right: 2rem;
+		top: 1.3rem;
+
+		@media (min-width: vars.$small-phone) {
+			height: 2.5rem;
+		}
+
+		@media (min-width: vars.$large-tablet) {
+			display: none;
+		}
+	}
+
+	&__toggle-icon {
+		border: 1.25px solid var(--text-color);
+		border-radius: 2px;
+		min-width: 100%;
+		width: 1.5rem;
+
+		@media (min-width: vars.$small-phone) {
+			border: 1.5px solid var(--text-color);
+			width: 2rem;
+		}
+	}
+}

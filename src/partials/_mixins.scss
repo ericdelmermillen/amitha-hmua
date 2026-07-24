@@ -1,0 +1,218 @@
+@use "./variables.scss" as vars;
+
+@mixin page {
+	align-items: center;
+	background: var(--background-color);
+	box-shadow: var(--box-shadow);
+	color: var(--text-color);
+	display: flex;
+	flex-direction: column;
+	margin-inline: auto;
+	max-width: 1920px;
+	min-height: calc(100vh - 10rem + 1px);
+	padding-block: 4rem;
+	padding-top: 0rem;
+	width: 100%;
+
+	@media (min-width: vars.$tablet) {
+		margin-top: 4rem;
+	}
+
+	@media (min-width: 768px) {
+		margin-top: 0;
+	}
+}
+
+@mixin inner {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	margin-inline: auto;
+	padding-block: 4rem;
+	padding-top: 0rem;
+
+	@media (min-width: vars.$tablet) {
+		padding-top: 2rem;
+		margin-top: 4rem;
+	}
+
+	@media (min-width: 768px) {
+		margin-top: 0;
+	}
+}
+
+@mixin button {
+	align-items: center;
+	background: var(--button-background);
+	border: none;
+	border-radius: var(--borderRadius);
+	color: var(--button-color);
+	cursor: pointer;
+	display: inline-flex;
+	font-size: 1rem;
+	font-weight: 500;
+	justify-content: center;
+	padding: 0.5rem 1rem;
+	transition: background-color 0.3s ease;
+
+	&:hover,
+	&:focus {
+		background: var(--button-color);
+		color: var(--button-background);
+		outline: 2px solid var(--button-background);
+		transition: all 0.3s ease;
+	}
+
+	&:active {
+		transform: scale(0.98);
+		transition: all 0.3s ease;
+	}
+}
+
+@mixin buttonRounded {
+	@include button;
+	border-radius: 50px;
+}
+
+@mixin input {
+	border: 1px solid var(--text-color);
+	border-radius: var(--borderRadius);
+	background: var(--background-color);
+	color: var(--text-color) !important;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1.125rem;
+	padding-block: 0.5rem;
+	padding-inline: 0.5rem;
+	width: 100%;
+
+	&::placeholder {
+		color: var(--text-color);
+		opacity: 0.5;
+	}
+
+	&:-webkit-autofill {
+		-webkit-box-shadow: none !important;
+		background-color: none !important;
+		box-shadow: none !important;
+		color: inherit;
+		transition: background-color 5000s ease-in-out 0s;
+	}
+
+	&:-webkit-autofill::first-line {
+		color: var(--text-color) !important;
+	}
+
+	&:active,
+	&:focus {
+		border: 1px solid var(--text-color);
+		color: inherit;
+		outline: 1px solid var(--text-color);
+	}
+}
+
+@mixin error {
+	color: var(--error-color);
+	bottom: 0.25rem;
+	display: block;
+	font-size: 0.8rem;
+	margin-inline-start: 0.5rem;
+	position: absolute;
+}
+
+@mixin shootImg {
+	aspect-ratio: 1 / 1;
+	max-width: 100%;
+	object-fit: cover;
+	object-position: center;
+	width: 100%;
+}
+
+@mixin shootDetailsImg {
+	@include shootImg;
+	aspect-ratio: 4 / 5;
+}
+
+@mixin selectChooser {
+	&__inner {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+
+		@media (min-width: vars.$tablet) {
+			flex-direction: row;
+		}
+	}
+
+	&__select {
+		background: var(--background-color);
+		border: 1px solid var(--text-color);
+		border-radius: var(--borderRadius);
+		color: var(--text-color);
+		height: 3rem;
+		font-size: 1rem;
+		padding: 0.25rem;
+		text-align: center;
+		width: 100%;
+
+		&.userDisabled {
+			pointer-events: none;
+		}
+
+		&:focus,
+		&:active {
+			outline: none;
+		}
+	}
+
+	&__button-container {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+
+		@media (min-width: vars.$tablet) {
+			flex-direction: row;
+			gap: 0.5rem;
+		}
+	}
+
+	&__button {
+		align-items: center;
+		border: 1px solid var(--text-color);
+		border-radius: 50%;
+		display: flex;
+		height: 2.25rem;
+		justify-content: center;
+		padding: 0.25rem;
+		width: 2.25rem;
+
+		&--add {
+			height: 35px;
+			width: 35px;
+		}
+
+		&--add-stroke {
+			stroke: var(--text-color);
+		}
+	}
+
+	&__button {
+		&--remove-icon {
+			stroke: var(--text-color);
+		}
+	}
+}
+
+@mixin navLink {
+	color: var(--text-color);
+	cursor: pointer;
+	display: flex;
+	font-size: 1rem;
+	font-weight: 600;
+	justify-content: center;
+	letter-spacing: 3px;
+
+	@media (min-width: 400px) {
+		font-size: 1.25rem;
+	}
+}

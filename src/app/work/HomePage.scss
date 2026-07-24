@@ -1,0 +1,20 @@
+@use "../../partials/_mixins" as mx;
+@use "../../partials/_variables" as vars;
+
+.homePage {
+	padding-top: 2rem;
+	@include mx.page;
+
+	@media (min-width: vars.$tablet) {
+		padding-top: 0;
+	}
+
+	&__inner {
+		padding-top: 2rem;
+		@include mx.inner;
+
+		@media (min-width: var(--tablet)) {
+			margin-top: 4rem;
+		}
+	}
+}

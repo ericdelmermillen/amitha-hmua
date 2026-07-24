@@ -1,0 +1,12 @@
+@use "../../partials/_mixins" as mx;
+@use "../../partials/_variables" as vars;
+
+.loginPage {
+	& {
+		opacity: 1;
+	}
+
+	&__heading {
+		color: orange;
+	}
+}

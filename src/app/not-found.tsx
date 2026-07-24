@@ -1,16 +1,18 @@
+import "./NotFoundPage.scss"
 
-
-const GeneralNotFound = () => {
+const NotFoundPage = () => {
+  
   return (
     <>
-      <div className="generalNotFound">
-        <h1 className="generalNotFound__heading">
-          Not Found
+      <div className="notFoundPage">
+        <h1 className="notFoundPage__heading">
+          Error 404
         </h1>
+        <h2 className="notFoundPage__sub-heading">
+          Nothing beautiful to see here...
+        </h2>
       </div>
-      
     </>
-  );
-};
+  )};
 
-export default GeneralNotFound;
+export default NotFoundPage;

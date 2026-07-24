@@ -1,0 +1,14 @@
+@use "../../partials/_variables" as vars;
+@use "../../partials/_mixins" as mx;
+
+.navLink {
+	& {
+		// color: var(--nav-link-color);
+		position: relative;
+	}
+
+	// &.active {
+	// 	@include mx.navLinkActive;
+	// 	// color: var(--accent-color);
+	// }
+}

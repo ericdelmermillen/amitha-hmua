@@ -1,0 +1,12 @@
+@use "../../partials/_mixins" as mx;
+@use "../../partials/_variables" as vars;
+
+.contactPage {
+	& {
+		@include mx.page;
+	}
+
+	&__heading {
+		color: green;
+	}
+}

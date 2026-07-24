@@ -1,0 +1,122 @@
+@use "../../../partials/_mixins" as mx;
+@use "../../../partials/_variables" as vars;
+
+.editBioPage {
+	& {
+		@include mx.page;
+	}
+
+	&__inner {
+		border: 1px solid var(--text-color);
+		margin-top: 2rem;
+		min-height: min(90vh, 500px);
+		padding-block: 2rem;
+		padding-inline: 1rem;
+		width: 90%;
+
+		@media (min-width: vars.$desktop) {
+			max-width: 1000px;
+		}
+	}
+
+	&__heading {
+		font-size: 2.25rem;
+		font-weight: 600;
+		margin-bottom: 2rem;
+		text-align: center;
+
+		@media (min-width: vars.$tablet) {
+			font-size: 2.5rem;
+		}
+	}
+
+	&__form {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+
+		@media (min-width: vars.$large-tablet) {
+			flex-direction: row;
+			margin-inline: 1rem;
+		}
+	}
+
+	&__photoUpload {
+		display: grid;
+		font-size: 1.5rem;
+		justify-content: center;
+		padding-block: 1rem;
+	}
+
+	&__photoInput {
+		max-height: 100%;
+		max-width: 100%;
+
+		@media (min-width: 400px) {
+			border: 1px solid var(--text-color);
+			padding: 2rem;
+		}
+
+		@media (min-width: vars.$large-tablet) {
+			margin-top: 25%;
+		}
+	}
+
+	&__hero-section {
+		align-items: center;
+		border-radius: var(--borderRadius);
+		display: flex;
+		flex-direction: column;
+		padding-inline: 2rem;
+		width: 100%;
+
+		@media (min-width: vars.$large-tablet) {
+			border: 1px solid var(--text-color);
+			padding-inline: 2rem;
+			width: 50%;
+		}
+	}
+
+	&__bio-caption {
+		@include mx.input;
+		& {
+			margin-block: 2rem;
+			max-width: 20rem;
+			text-align: center;
+		}
+	}
+
+	&__text-section {
+		width: 100%;
+
+		@media (min-width: vars.$large-tablet) {
+			width: 50%;
+		}
+	}
+
+	&__bio-text {
+		@include mx.input;
+		& {
+			height: 35rem;
+			line-height: 1.5;
+			padding: 1rem;
+			resize: none;
+		}
+
+		@media (min-width: 500px) {
+			height: 30rem;
+		}
+	}
+
+	&__button-container {
+		display: flex;
+		justify-content: center;
+		gap: 2rem;
+		margin-bottom: 2rem;
+		margin-top: 4rem;
+	}
+
+	&__button {
+		@include mx.button;
+	}
+}
