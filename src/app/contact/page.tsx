@@ -14,7 +14,6 @@ const ContactPage = () => {
         </h1>
         {/* <ContactForm /> */}
       </div>
-      
     </>
   );
 };
