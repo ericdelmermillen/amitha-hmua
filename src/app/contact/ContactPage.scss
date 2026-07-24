@@ -6,7 +6,7 @@
 		@include mx.page;
 	}
 
-	&__heading {
-		color: green;
+	&__inner {
+		@include mx.inner;
 	}
 }

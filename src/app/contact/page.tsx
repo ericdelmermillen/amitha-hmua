@@ -1,18 +1,13 @@
+import ContactForm from "@/components/ContactForm/ContactForm";
 import "./ContactPage.scss";
 
 const ContactPage = () => {
   return (
     <>
       <div className="contactPage">
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <h1 className="contactPage__heading">
-          Contact Page
-        </h1>
-        {/* <ContactForm /> */}
+        <div className="contactPage__inner">
+          <ContactForm />
+        </div>
       </div>
     </>
   );

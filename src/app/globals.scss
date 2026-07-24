@@ -18,6 +18,9 @@
 	--font-size-5xl: 4rem;
 	--font-size-6xl: 5rem;
 
+	--borderRadius: 8px;
+	--border-radius: 8px;
+
 	// letter spacing
 	--letter-spacing-xs: 0.2px;
 	--letter-spacing-sm: 0.4px;
@@ -65,6 +68,8 @@
 	// colors
 	--error-color: red;
 	--neutral-white: #f8f9fa;
+	--modalOverlayBg: rgba(0, 0, 0, 0.5);
+	--modal-overlay-bg: rgba(0, 0, 0, 0.5);
 
 	// UI
 	--input-height: 3rem;

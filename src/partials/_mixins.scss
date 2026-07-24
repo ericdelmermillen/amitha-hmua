@@ -29,6 +29,7 @@
 	flex-direction: column;
 	justify-content: center;
 	margin-inline: auto;
+	min-height: calc(100vh - calc(vars.$nav-height + vars.$footer-height) + 20px);
 	padding-block: 4rem;
 	padding-top: 0rem;
 

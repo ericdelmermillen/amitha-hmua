@@ -1,0 +1,172 @@
+@use "../../partials/mixins.scss" as mx;
+@use "../../partials/variables.scss" as vars;
+
+.contactForm {
+	& {
+		align-items: center;
+		background-color: var(--modal-overlay-bg);
+		display: flex;
+		justify-content: center;
+		height: 100%;
+		left: 50%;
+		position: absolute;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		width: 100%;
+	}
+
+	&__modal {
+		background-color: var(--background-color);
+		border-radius: var(--borderRadius);
+		box-shadow: var(--box-shadow);
+		display: flex;
+		flex-direction: column;
+		min-height: 28rem;
+		max-height: 33rem;
+		max-width: 40rem;
+		overflow-y: auto;
+		padding-block: 1rem;
+		padding-inline: 2rem;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 90%;
+
+		@media (min-width: vars.$tablet) {
+			padding-block: 2rem;
+			width: 80%;
+		}
+	}
+
+	&__form {
+		display: flex;
+		flex-direction: column;
+		overflow-y: auto;
+	}
+
+	&__title {
+		color: var(--text-color);
+		font-size: 1.75rem;
+		margin-block: 0.5rem;
+		text-align: center;
+
+		@media (min-width: vars.$tablet) {
+			margin-block: 1rem;
+		}
+	}
+
+	&__instructions {
+		color: var(--text-color);
+		font-size: 1.25rem;
+		font-weight: normal;
+		margin-bottom: 0.5rem;
+
+		@media (min-width: vars.$tablet) {
+			margin-bottom: 1rem;
+		}
+	}
+
+	&__label {
+		display: none;
+	}
+
+	&__name-container {
+		@media (min-width: vars.$tablet) {
+			display: grid;
+			gap: 1rem;
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	input {
+		@include mx.input;
+	}
+
+	&__firstName {
+		height: 3.85rem;
+		position: relative;
+	}
+
+	&__firstName-error {
+		display: none;
+
+		&.error {
+			@include mx.error;
+		}
+	}
+
+	&__lastName {
+		height: 4rem;
+		position: relative;
+	}
+
+	&__lastName-error {
+		display: none;
+
+		&.error {
+			@include mx.error;
+		}
+	}
+
+	&__email {
+		height: 3.85rem;
+		position: relative;
+	}
+
+	&__email-error {
+		display: none;
+
+		&.error {
+			@include mx.error;
+		}
+	}
+
+	&__subject {
+		position: relative;
+		height: 3.85rem;
+	}
+
+	&__subject-error {
+		display: none;
+
+		&.error {
+			@include mx.error;
+		}
+	}
+
+	&__message {
+		height: 8rem;
+		position: relative;
+	}
+
+	&__message-input {
+		@include mx.input;
+		& {
+			height: 6rem;
+			resize: none;
+		}
+	}
+
+	&__message-error {
+		display: none;
+
+		&.error {
+			@include mx.error;
+		}
+	}
+
+	&__button-container {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1rem;
+		margin-block: auto;
+	}
+
+	&__button {
+		@include mx.button;
+
+		&--cancel {
+			width: 100%;
+		}
+	}
+}

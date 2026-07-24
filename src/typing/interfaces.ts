@@ -6,11 +6,12 @@ export interface AppContextProviderProps {
 };
 
 export interface AppContextValue {
+  appIsLoading: boolean;
+  setAppIsLoading: Dispatch<SetStateAction<boolean>>;
+    handleNavigateHome: (tagObj?: Tag) => void;
 // state, state setting and ref
   // isLoggedIn: boolean; 
   // setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
-  appIsLoading: boolean;
-  setAppIsLoading: Dispatch<SetStateAction<boolean>>;
 //   scrollYPos: number;
 //   setScrollYPos: Dispatch<SetStateAction<number>>;
 //   prevScrollYPosRef: RefObject<number | null>;
@@ -53,3 +54,8 @@ export interface IconProps {
 export interface ColorModetoggleProps {
   inputId?: string;
 }
+
+export interface Tag {
+    tagName: string;
+  }
+

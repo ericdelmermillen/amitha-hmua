@@ -9,7 +9,7 @@ import {
   useEffect, 
   createContext
  } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
   addClassToDiv, 
   removeClassFromDiv, 
@@ -17,6 +17,8 @@ import {
   isModifiedClick
  } from "@/utils/utils";
 import { AppContextProviderProps, AppContextValue } from "@/typing/interfaces";
+import { Tag } from "@/typing/interfaces";
+
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
@@ -28,6 +30,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [ scrollYPos, setScrollYPos ] = useState(0);
 
 
+  const [ selectedTag, setSelectedTag ] = useState(null);
+  const [ isOrderEditable, setIsOrderEditable ] = useState(false);
 
 
   const [ showMobileNav, setShowMobileNav ] = useState(false);
@@ -36,6 +40,28 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const getPrevScrollYPosValue = () => prevScrollYPosRef.current ?? 0;
 
   const pathname = usePathname();
+
+  const router = useRouter();
+
+  // { tag_name}
+
+
+
+  const handleNavigateHome = (tagObj?: Tag) => {   
+    if (!tagObj) {
+      router.push("/work");
+      setSelectedTag(null);
+    } else if (tagObj) {
+      router.push(`/work?tag=${tagObj.tagName}`);
+    };
+    setIsOrderEditable(false);
+  };
+
+
+
+
+
+
   
   const handleToggleMobileNav = () => setShowMobileNav(prev => !prev);
 
@@ -167,7 +193,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     handleNavLinkClick,
     handleSetShowMobileNavFalse,
     handleMobileNavLinkClick,
-    handleIsOnCurrentPage
+    handleIsOnCurrentPage,
+    handleNavigateHome
   };
 
   return (
