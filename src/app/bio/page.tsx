@@ -4,11 +4,16 @@ const BioPage = () => {
 
 return (
     <>
-      <div className="bio">
+      <div className="bioPage">
         <div 
-          className={"bio__inner"}
+          className={"bioPage__inner"}
         >
-          {/* *** */}
+
+          <div className="bioPage__hero-container">
+
+                      {/* *** */}
+          <br></br>
+          <br></br>
           <br></br>
           <br></br>
           <br></br>
@@ -18,35 +23,32 @@ return (
             Bio Page
           </h1>
 
-          {/* *** */}
-          <div className="bio__hero-container">
-
-            <div className="bio__heroImg-container">
+            <div className="bioPage__heroImg-container">
 
               <div 
-                className={`bio__heroImg--placeholder}`
+                className={`bioPage__heroImg--placeholder}`
               }
               ></div>
               {/* <img
-                className={`bio__heroImg`}
+                className={`bioPage__heroImg`}
                 src={bioImg}
                 alt={`Hero Image of ${bioName}`}
                 onClick={handleSetLightBox}
                 onLoad={() => setIsComponentLoaded(true)}
               /> */}
             </div>
-            <h3 className={`bio__heroCaption`}
+            <h3 className={`bioPage__heroCaption`}
             >
               {/* {bioName} */}
-              <span className="bio__heroCaption--placeholder"></span>
+              <span className="bioPage__heroCaption--placeholder"></span>
             </h3>
 
 
         {/* {isLoggedIn 
           ? 
-            <div className="bio__button-container">
+            <div className="bioPage__button-container">
               <button
-                className='bio__edit-button'
+                className='bioPage__edit-button'
                 onClick={handleEditBioClick}
                 >
                 Edit Bio
@@ -56,27 +58,27 @@ return (
           : null
         } */}
           </div>
-          <div className="bio__divider"></div>
-          <div className="bio__text-container">
-            <div className={`bio__text-placeholders `}>
-              <div className="bio__text-placeholder">
-                <div className="bio__placeholder-textLine"></div>
-                <div className="bio__placeholder-textLine"></div>
-                <div className="bio__placeholder-textLine"></div>
-                <div className="bio__placeholder-textLine"></div>
-                <div className="bio__placeholder-textLine bio__placeholder-textLine--50"></div>
+          <div className="bioPage__divider"></div>
+          <div className="bioPage__text-container">
+            <div className={`bioPage__text-placeholders `}>
+              <div className="bioPage__text-placeholder">
+                <div className="bioPage__placeholder-textLine"></div>
+                <div className="bioPage__placeholder-textLine"></div>
+                <div className="bioPage__placeholder-textLine"></div>
+                <div className="bioPage__placeholder-textLine"></div>
+                <div className="bioPage__placeholder-textLine bio__placeholder-textLine--50"></div>
               </div>
-              <div className="bio__text-placeholder">
-                <div className="bio__placeholder-textLine"></div>
-                <div className="bio__placeholder-textLine"></div>
-                <div className="bio__placeholder-textLine"></div>
-                <div className="bio__placeholder-textLine bio__placeholder-textLine--75"></div>
+              <div className="bioPage__text-placeholder">
+                <div className="bioPage__placeholder-textLine"></div>
+                <div className="bioPage__placeholder-textLine"></div>
+                <div className="bioPage__placeholder-textLine"></div>
+                <div className="bioPage__placeholder-textLine bio__placeholder-textLine--75"></div>
               </div>
-              <div className="bio__text-placeholder">
-                <div className="bio__placeholder-textLine"></div>
-                <div className="bio__placeholder-textLine"></div>
-                <div className="bio__placeholder-textLine"></div>
-                <div className="bio__placeholder-textLine bio__placeholder-textLine--25"></div>
+              <div className="bioPage__text-placeholder">
+                <div className="bioPage__placeholder-textLine"></div>
+                <div className="bioPage__placeholder-textLine"></div>
+                <div className="bioPage__placeholder-textLine"></div>
+                <div className="bioPage__placeholder-textLine bio__placeholder-textLine--25"></div>
               </div>
 
             </div>
@@ -88,7 +90,7 @@ return (
                   .map((paragraph, idx) => 
 
                 (<p 
-                  className={`bio__text ${componentIsLoaded 
+                  className={`bioPage__text ${componentIsLoaded 
                     ? "show" 
                     : ""}`}
                   key={idx}

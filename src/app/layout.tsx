@@ -3,6 +3,7 @@ import { AppContextProvider } from "@/contexts/AppContext";
 import { ColorThemeProvider } from "@/contexts/ColorThemeContext";
 import Nav from "@/components/Nav/Nav";
 import "./globals.scss";
+import Footer from "@/components/Footer/Footer";
 
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
@@ -50,6 +51,7 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
           
           </ColorThemeProvider>
         </AppContextProvider>
+        <Footer />
       </body>
     </html>
   );

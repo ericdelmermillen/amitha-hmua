@@ -1,0 +1,21 @@
+@use "../../partials/mixins.scss" as mx;
+@use "../../partials/variables.scss" as vars;
+
+.footer {
+	box-shadow: var(--footer-boxShadow);
+	height: 5rem;
+
+	&__inner {
+		align-items: center;
+		background: var(--navAndFooterBG);
+		color: var(--text-color);
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+
+	&__text {
+		font-size: 1.25rem;
+		margin-block: auto;
+	}
+}

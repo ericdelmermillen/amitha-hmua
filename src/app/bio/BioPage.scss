@@ -2,9 +2,11 @@
 @use "../../partials/_variables" as vars;
 
 .bioPage {
-	padding-inline: 2rem !important;
-	padding-top: 2rem !important;
 	@include mx.page;
+	& {
+		padding-inline: 2rem;
+		padding-top: 2rem;
+	}
 
 	&__inner {
 		display: grid;
@@ -30,8 +32,10 @@
 		width: 100%;
 
 		@media (min-width: vars.$tablet) {
-			padding-bottom: 0;
 			@include mx.shootImg;
+			& {
+				padding-bottom: 0;
+			}
 		}
 
 		@media (min-width: vars.$large-tablet) {
@@ -181,7 +185,9 @@
 	}
 
 	&__edit-button {
-		margin-inline: auto;
 		@include mx.button;
+		& {
+			margin-inline: auto;
+		}
 	}
 }
