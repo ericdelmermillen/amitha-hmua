@@ -59,3 +59,11 @@ export interface Tag {
     tagName: string;
   }
 
+export interface ContactFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+  

@@ -3,14 +3,13 @@
 import { type ChangeEvent, type SubmitEvent, useState } from "react";
 import { useAppContext } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
-import { isValidEmail } from "@/utils/utils";
+import { isValidEmail, isValidFirstName, isValidLastName, isValidMessage, isValidSubject, staggerToastsByN } from "@/utils/utils";
+import { sendContactFormMessage } from "@/actions/contactActions";
 import { toast } from "react-toastify";
-
-// change validation UI to not show invalid until after first time submit attempted
-
 import "./ContactForm.scss";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+// change validation UI to not show invalid until after first time submit attempted
+// make send confirmation message to inquirer email
 
 const ContactForm = () => {
   const { 
@@ -19,146 +18,114 @@ const ContactForm = () => {
   } = useAppContext();
   
   const [ firstName, setFirstName ] = useState("");
-  const [ firstNameIsInvalid, setFirstNameIsInvalid ] = useState(false);
-  const [ shouldCheckFirstName, setShouldCheckFirstName ] = useState(false);
-  
+  const [ firstNameIsValid, setFirstNameIsValid ] = useState(true);
+
   const [ lastName, setLastName ] = useState("");
-  const [ lastNameIsInvalid, setLastNameIsInvalid ] = useState(false);
-  
+  const [ lastNameIsValid, setLastNameIsValid ] = useState(true);
+
   const [ email, setEmail ] = useState("");
-  const [ emailIsInvalid, setEmailIsInvalid ] = useState(false);
-  
+  const [ emailIsValid, setEmailIsValid ] = useState(true);
+
   const [ subject, setSubject ] = useState("");
-  const [ subjectIsInvalid, setSubjectIsInvalid ] = useState(false);
+  const [ subjectIsValid, setSubjectIsValid ] = useState(true);
+  
   
   const [ message, setMessage ] = useState("");
-  const [ messageIsInvalid, setMessageIsInvalid ] = useState(false);
+  const [ messageIsValid, setMessageIsValid ] = useState(true);
+
 
   const router = useRouter();
 
+  // input value & validty checking
   const handleFirstNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFirstName(e.target.value); 
-
-    if(shouldCheckFirstName) {
-      setFirstNameIsInvalid(firstName.length >= 2);
-    }
-  };
-
-  const handleShouldCheckFirstName = () => {
-    setFirstNameIsInvalid(firstName.length < 2)
-    setShouldCheckFirstName(true);
+    const firstNameValue = e.target.value;
+    setFirstName(firstNameValue);
+    setFirstNameIsValid(isValidFirstName(firstNameValue));
   };
   
   const handleLastNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setLastName(e.target.value);
-  };
-
-  const handleShouldCheckLastName = () => {
-    setLastNameIsInvalid(lastName.length < 2);
+    const lastNameValue = e.target.value;
+    setLastName(lastNameValue);
+    setLastNameIsValid(isValidLastName(lastNameValue));
   };
   
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handleShouldCheckEmail = () => {
-    setEmailIsInvalid(!isValidEmail(email));
+    const emailValue = e.target.value;
+    setEmail(emailValue);
+    setEmailIsValid(isValidEmail(emailValue));
   };
   
   const handleSubjectChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSubject(e.target.value);
-  };
-
-  const handleShouldCheckSubject = () => {
-    setSubjectIsInvalid(subject.length <= 10);
+    const subjectValue = e.target.value;
+    setSubject(subjectValue);
+    setSubjectIsValid(isValidSubject(subjectValue));
   };
   
+  
+  
   const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(e.target.value);
-  };
-
-  const handleShouldCheckMessage = () => {
-    setMessageIsInvalid(message.length <= 25);
+    const messageValue = e.target.value;
+    setMessage(messageValue);
+    setMessageIsValid(isValidMessage(messageValue));
   };
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submitting")
 
-    if(firstName.length < 2) {
-      toast.error("Invalid First Name");
-      return setFirstNameIsInvalid(true);
-    } else {
-      setFirstNameIsInvalid(false);
+    let errors = 0;
+
+    if (!isValidFirstName(firstName)) {
+      staggerToastsByN("Invalid First Name", "error", errors);
+      setFirstNameIsValid(false);
+      errors++;
+    } 
+
+    if (!isValidLastName(lastName)) {
+      staggerToastsByN("Invalid Last Name", "error", errors);
+      setLastNameIsValid(false);
+      errors++;
     }
 
-    if(lastName.length < 2) {
-      toast.error("Invalid Last Name");
-      return setLastNameIsInvalid(true);
-    } else {
-      setLastNameIsInvalid(false);
+    if (!isValidEmail(email)) {
+      setEmailIsValid(false);
+      staggerToastsByN("Invalid Email", "error", errors);
+      errors++;
+    } 
+
+    if (!isValidSubject(subject)) {
+      staggerToastsByN("Invalid Subject", "error", errors);
+      setSubjectIsValid(false);
+      errors++;
+    }
+      
+    if (!isValidMessage(message)) {
+      staggerToastsByN("Invalid Message", "error", errors);
+      setMessageIsValid(false);
+      errors++;
     }
 
-    if(isValidEmail(email)) {
-      setEmailIsInvalid(false);
-    } else {
-      toast.error("Invalid Email");
-      return setEmailIsInvalid(true);
+    if (errors > 0) {
+      return;
     }
-
-    if(subject.length <= 10) {
-      toast.error("Invalid Subject");
-      return setSubjectIsInvalid(true);
-    } else {
-      setSubjectIsInvalid(false);
-    }
-
-    if(message.length < 25) {
-      toast.error("Invalid Message");
-      return setMessageIsInvalid(true);
-    } else {
-      setMessageIsInvalid(false);
-    }
-    
-    const formData = {
-      firstName,
-      lastName,
-      email,
-      subject,
-      message
-    };
   
     try {
       setAppIsLoading(true)
-      const response = await fetch(`${BASE_URL}/contact`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
-  
-      if(!response.ok) {
-        throw new Error("Failed to send message");
-      }
       
-      const responseData = await response.json(); 
-  
-      toast.success(`${responseData.message} Redirecting...`);
+      const response = await sendContactFormMessage({firstName, lastName, email, subject, message});
+      toast.success(response.message)
       handleNavigateHome();
-      
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-        console.error("Error sending message:", error.message);
-      } else {
-        toast.error("An unknown error occurred");
-        console.error("Error sending message:", error);
-      }
-    } finally {
-      setAppIsLoading(false);
+      } catch (error) {
+    if (error instanceof Error) {
+      toast.error(error.message);
+      console.error("Error sending message:", error.message);
+    } else {
+      toast.error("An unknown error occurred");
+      console.error("Error sending message:", error);
     }
-  };
+  } finally {
+    setAppIsLoading(false);
+  }
+};
 
   const handleCancel = () => {
     // clear form, maybe serve toast, timeout then navigate to /work
@@ -177,47 +144,46 @@ const ContactForm = () => {
             className="contactForm__form"
             onSubmit={handleSubmit}
           >
-            <div className="contactForm__name-container">
-              <div className="contactForm__firstName">
+            <div className="contactForm__nameContainer">
+              <div className="contactForm__field">
                 <label 
-                  htmlFor="firstName"
+                  htmlFor="contactFormFirstName"
                   className="contactForm__label"
                 >
                   First Name
                 </label>
+
                 <input 
+                  id="contactFormFirstName"
                   type="text" 
-                  className="contactForm__firstName-input" 
-                  id="firstName"
+                  className="contactForm__input contactForm__input--firstName"
                   value={firstName}
                   placeholder="First Name"
                   onChange={handleFirstNameChange}
-                  onBlur={handleShouldCheckFirstName}
                 />
                 <p 
-                  className={`contactForm__firstName-error ${firstNameIsInvalid ? "error" : ""}`}
+                  className={`contactForm__errorMessage ${!firstNameIsValid ? "visible" : ""}`}
                 >
                   First Name is invalid
                 </p>
               </div>
-              <div className="contactForm__lastName">
+              <div className="contactForm__field">
                 <label 
-                  htmlFor="lastName"
+                  htmlFor="contactFormLastName"
                   className="contactForm__label"
                 >
                   Last Name
                 </label>
                 <input 
+                  id="contactFormLastName"
                   type="text" 
-                  className="contactForm__firstName-input" 
-                  id="lastName"
+                  className="contactForm__input contactForm__input--lastName"
                   value={lastName}
                   placeholder="Last Name"
                   onChange={handleLastNameChange}
-                  onBlur={handleShouldCheckLastName}
                 />
                 <p 
-                  className={`contactForm__lastName-error ${lastNameIsInvalid ? "error" : ""}`}
+                  className={`contactForm__errorMessage ${!lastNameIsValid ? "visible" : ""}`}
                 >
                   Last Name is invalid
                 </p>
@@ -225,73 +191,69 @@ const ContactForm = () => {
 
             </div>
 
-            <div className="contactForm__email">
+            <div className="contactForm__field">
               <label 
-                htmlFor="email"
+                htmlFor="contactFormEmail"
                 className="contactForm__label"
               >
                 Email Address
               </label>
               <input 
+                id="contactFormEmail"
                 type="text" 
-                className="contactForm__email-input" 
-                id="email"
+                className="contactForm__input contactForm__input--email"
                 value={email}
                 placeholder="Email Address"
                 onChange={handleEmailChange}
-                onBlur={handleShouldCheckEmail}
               />
-              <p 
-                className={`contactForm__email-error ${emailIsInvalid ? "error" : ""}`}
-              >
+              <p className={`contactForm__errorMessage ${!emailIsValid ? "visible" : ""}`}>
                 Invalid Email
               </p>
             </div>
 
-            <div className="contactForm__subject">
+            <div className="contactForm__field">
               <label 
-                htmlFor="subject"
+                htmlFor="contactFormSubject"
                 className="contactForm__label"
               >
                 Subject
               </label>
               <input 
+                id="contactFormSubject"
                 type="text" 
-                className="contactForm__subject-input" 
-                id="subject"
+                className="contactForm__input contactForm__input--subject"
                 value={subject}
                 placeholder="Subject"
                 onChange={handleSubjectChange}
-                onBlur={handleShouldCheckSubject}
               />
               <p 
-                className={`contactForm__subject-error ${subjectIsInvalid ? "error" : ""}`}
+                className={`contactForm__errorMessage ${!subjectIsValid ? "visible" : ""}`}
               >
-                Subject must be at least 10 characters long
+                Subject too short
               </p>
             </div>
 
-            <div className="contactForm__message">
+            <div className="contactForm__field contactForm__field--message">
               <label 
-                htmlFor="message"
+                htmlFor="contactFormMessage"
                 className="contactForm__label"
               >
                 Message
               </label>
               <textarea 
-                className="contactForm__message-input" 
-                id="message"
+                className="contactForm__input contactForm__input--message"
+                id="contactFormMessage"
                 value={message}
                 placeholder="Message"
                 onChange={handleMessageChange}
-                onBlur={handleShouldCheckMessage}
               ></textarea>
               <p 
-                className={`contactForm__message-error ${messageIsInvalid 
-                  ? "error" 
-                  : ""}`}
-                >
-                  Message must be at least 25 characters long
+                className={`contactForm__errorMessage ${!messageIsValid 
+                  ? "visible" 
+                  : ""}`
+                }
+              >
+                Message too short
               </p>
             </div>
             <div className="contactForm__button-container">

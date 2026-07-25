@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { AppContextProvider } from "@/contexts/AppContext";
 import { ColorThemeProvider } from "@/contexts/ColorThemeContext";
+import { ToastProvider } from "@/providers/ToastProvider";
+import Footer from "@/components/Footer/Footer";
 import Nav from "@/components/Nav/Nav";
 import "./globals.scss";
-import Footer from "@/components/Footer/Footer";
 
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
@@ -46,12 +47,13 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
         <AppContextProvider>
           <ColorThemeProvider>
 
-          <Nav />
-          {children}
-          
+            <Nav />
+            {children}
+            
+            <Footer />
+            <ToastProvider />
           </ColorThemeProvider>
         </AppContextProvider>
-        <Footer />
       </body>
     </html>
   );
