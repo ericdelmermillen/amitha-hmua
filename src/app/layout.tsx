@@ -63,5 +63,8 @@ export default RootLayout;
 
 export const metadata: Metadata = {
   title: "Amitha HMUA Portfolio",
-  description: "Portfolio Website of Amitha Millen-Suwanta Hair & Makeup Artist"
+  description: "Portfolio Website of Amitha Millen-Suwanta Hair & Makeup Artist",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
