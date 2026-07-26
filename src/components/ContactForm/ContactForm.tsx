@@ -31,7 +31,7 @@ const ContactForm = () => {
   const [ message, setMessage ] = useState("");
   const [ messageIsValid, setMessageIsValid ] = useState(true);
 
-  const [ intialFormCheck, setIntialFormCheck ] = useState(false);
+  const [ initialFormCheck, setInitialFormCheck ] = useState(false);
   const [ isSubmitting, setIsSubmitting ] = useState(false);
 
   // input value & validty checking
@@ -69,21 +69,21 @@ const ContactForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    if (!intialFormCheck) {
-      setIntialFormCheck(true);
+    if (!initialFormCheck) {
+      setInitialFormCheck(true);
     }
 
     let errors = 0;
 
     if (!isValidFirstName(firstName)) {
-      staggerToastsByN("Invalid First Name", "error", errors);
       setFirstNameIsValid(false);
+      staggerToastsByN("Invalid First Name", "error", errors);
       errors++;
-    } 
+    }
 
     if (!isValidLastName(lastName)) {
-      staggerToastsByN("Invalid Last Name", "error", errors);
       setLastNameIsValid(false);
+      staggerToastsByN("Invalid Last Name", "error", errors);
       errors++;
     }
 
@@ -91,51 +91,55 @@ const ContactForm = () => {
       setEmailIsValid(false);
       staggerToastsByN("Invalid Email", "error", errors);
       errors++;
-    } 
+    }
 
     if (!isValidSubject(subject)) {
-      staggerToastsByN("Invalid Subject", "error", errors);
       setSubjectIsValid(false);
+      staggerToastsByN("Invalid Subject", "error", errors);
       errors++;
     }
-      
+
     if (!isValidMessage(message)) {
-      staggerToastsByN("Invalid Message", "error", errors);
       setMessageIsValid(false);
+      staggerToastsByN("Invalid Message", "error", errors);
       errors++;
     }
 
     if (errors > 0) {
+      setIsSubmitting(false);
       return;
     }
-  
+
     try {
-      setAppIsLoading(true)
-      
+      setAppIsLoading(true);
+
       const response = await sendContactFormMessage({
-        firstName, 
-        lastName, 
-        email, 
-        subject, 
-        message
+        firstName,
+        lastName,
+        email,
+        subject,
+        message,
       });
 
-      staggerToastsByN("Thanks! Your message to Amitha has been sent!", "success", 1)
-      staggerToastsByN("Redirecting...", "info", 2)
-      handleClearFormAndGoHome()
-      } catch (error) {
-    if (error instanceof Error) {
-      toast.error(error.message);
-      console.error("Error sending message:", error.message);
+      staggerToastsByN(response.message, "success", 1);
+      staggerToastsByN("Redirecting...", "info", 2);
+      handleClearFormAndGoHome();
+
+    } catch (error) {
       setIsSubmitting(false);
-    } else {
-      toast.error("An unknown error occurred");
-      console.error("Error sending message:", error);
+
+      if (error instanceof Error) {
+        toast.error(error.message);
+        console.error("Error sending message:", error.message);
+      } else {
+        toast.error("An unknown error occurred");
+        console.error("Error sending message:", error);
+      }
+
+    } finally {
+      setAppIsLoading(false);
     }
-  } finally {
-    setAppIsLoading(false);
-  }
-};
+  };
 
   const handleCancel = () => {
     toast.info("Cancelling...");
@@ -158,7 +162,10 @@ const ContactForm = () => {
       setMessage("");
       setMessageIsValid(true);
       setIsSubmitting(false);
-      handleNavigateHome();
+      
+      setTimeout(() => {
+        handleNavigateHome();
+      }, MIN_LOADING_INTERVAL * 2);
     }, MIN_LOADING_INTERVAL * 2);
   };
 
@@ -190,7 +197,7 @@ const ContactForm = () => {
                   placeholder="First Name"
                   onChange={handleFirstNameChange}
                 />
-                <p className={`contactForm__errorMessage ${!firstNameIsValid && intialFormCheck
+                <p className={`contactForm__errorMessage ${!firstNameIsValid && initialFormCheck
                     ? "visible" 
                     : ""}`
                   }
@@ -213,7 +220,7 @@ const ContactForm = () => {
                   placeholder="Last Name"
                   onChange={handleLastNameChange}
                 />
-                <p className={`contactForm__errorMessage ${!lastNameIsValid && intialFormCheck 
+                <p className={`contactForm__errorMessage ${!lastNameIsValid && initialFormCheck 
                     ? "visible" 
                     : ""}`
                   }
@@ -239,7 +246,7 @@ const ContactForm = () => {
                 placeholder="Email Address"
                 onChange={handleEmailChange}
               />
-              <p className={`contactForm__errorMessage ${!emailIsValid && intialFormCheck 
+              <p className={`contactForm__errorMessage ${!emailIsValid && initialFormCheck 
                   ? "visible" 
                   : ""}`
                 }
@@ -263,7 +270,7 @@ const ContactForm = () => {
                 placeholder="Subject"
                 onChange={handleSubjectChange}
               />
-              <p className={`contactForm__errorMessage ${!subjectIsValid && intialFormCheck 
+              <p className={`contactForm__errorMessage ${!subjectIsValid && initialFormCheck 
                   ? "visible" 
                   : ""}`
                 }
@@ -287,7 +294,7 @@ const ContactForm = () => {
                 onChange={handleMessageChange}
               ></textarea>
               <p 
-                className={`contactForm__errorMessage ${!messageIsValid && intialFormCheck
+                className={`contactForm__errorMessage ${!messageIsValid && initialFormCheck
                   ? "visible" 
                   : ""}`
                 }

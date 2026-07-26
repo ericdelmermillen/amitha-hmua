@@ -148,18 +148,6 @@ const notificationEmailTemplate = (
                     ${fromName}.
                   </p>
 
-
-                  <!-- DIVIDER -->
-                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                    <tr>
-                      <td style="
-                        height: 1px;
-                        background-color: ${BORDER_COLOR};
-                      ">
-                      </td>
-                    </tr>
-                  </table>
-
                 </td>
               </tr>
 

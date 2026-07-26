@@ -3,6 +3,7 @@
 import { ContactFormData } from "@/typing/interfaces";
 import { notificationEmailTemplate } from "@/templates/notificationEmailTemplate";
 import { transporter } from "@/lib/transporter";
+import { isValidEmail, isValidFirstName, isValidLastName, isValidMessage, isValidSubject } from "@/utils/utils";
 
 const EMAIL = process.env.EMAIL;
 
@@ -13,6 +14,16 @@ const sendContactFormMessage = async ({
   subject,
   message,
 }: ContactFormData) => {
+
+  if (
+    !isValidFirstName(firstName) ||
+    !isValidLastName(lastName) ||
+    !isValidEmail(email) ||
+    !isValidSubject(subject) ||
+    !isValidMessage(message)
+  ) {
+    throw new Error("Invalid form submission.");
+  }
 
   const submittedMessageBody = `
     From: ${firstName} ${lastName}
@@ -45,12 +56,13 @@ const sendContactFormMessage = async ({
     "Thanks again"
   );
 
+  try {
   await Promise.all([
     // Notification email to Amitha
     transporter.sendMail({
       from: EMAIL,
       replyTo: email,
-      to: "amithamillensuwanta@gmail.com",
+      to: EMAIL,
       subject: `Contact Form Submission: ${subject}`,
       text: "New Contact Form Submission",
       html: submittedMessage,
@@ -66,9 +78,18 @@ const sendContactFormMessage = async ({
     }),
   ]);
 
-  return {
-    message: "Thanks! Your message to Amitha has been sent!",
-  };
+    return { message: "Thanks! Your message to Amitha has been sent!" };
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    } else {
+      console.error(error);
+    }
+
+    throw new Error(
+      "Unable to send your message right now. Please try again later."
+    );
+  }
 };
 
 export {
