@@ -27,8 +27,9 @@ const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [ appIsLoading, setAppIsLoading ] = useState(false);
-  const [ scrollYPos, setScrollYPos ] = useState(0);
 
+
+  const [ scrollYPos, setScrollYPos ] = useState(0);
 
   const [ selectedTag, setSelectedTag ] = useState(null);
   const [ isOrderEditable, setIsOrderEditable ] = useState(false);

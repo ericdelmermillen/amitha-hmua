@@ -61,7 +61,7 @@
 
 		&--placeholder {
 			background: var(--placeholder-color);
-			border-radius: var(--borderRadius);
+			border-radius: var(--border-radius);
 			min-height: 100%;
 			min-width: 100%;
 			opacity: 1;
@@ -74,7 +74,7 @@
 	}
 
 	&__heroCaption {
-		border-radius: var(--borderRadius);
+		border-radius: var(--border-radius);
 		background: var(--background-color);
 		color: var(--text-color);
 		font-size: 1.75rem;
@@ -134,7 +134,7 @@
 
 	&__placeholder-textLine {
 		background: var(--placeholder-color);
-		border-radius: var(--borderRadius);
+		border-radius: var(--border-radius);
 		height: 2rem;
 		width: 95%;
 
@@ -164,7 +164,7 @@
 
 	&__divider {
 		background-color: var(--text-color);
-		border-radius: var(--borderRadius);
+		border-radius: var(--border-radius);
 		display: block;
 		height: 0.25rem;
 		margin-bottom: 3rem;

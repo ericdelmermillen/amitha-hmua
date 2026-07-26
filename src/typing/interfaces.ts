@@ -67,3 +67,8 @@ export interface ContactFormData {
   message: string;
 }
   
+export interface IsLoadingProps {
+  id: string;
+  modifierClass: string;
+  initiallyShowing: boolean;
+}

@@ -17,8 +17,6 @@
 	--font-size-4xl: 3rem;
 	--font-size-5xl: 4rem;
 	--font-size-6xl: 5rem;
-
-	--borderRadius: 8px;
 	--border-radius: 8px;
 
 	// letter spacing
@@ -68,7 +66,6 @@
 	// colors
 	--error-color: red;
 	--neutral-white: #f8f9fa;
-	--modalOverlayBg: rgba(0, 0, 0, 0.5);
 	--modal-overlay-bg: rgba(0, 0, 0, 0.5);
 
 	// UI
@@ -98,7 +95,7 @@ html {
 
 	&[data-color-mode="light"] {
 		--text-color: #333333;
-		--navAndFooterBG: #f3f3f3;
+		--nav-and-footer-bg: #f3f3f3;
 		--background-color: #f3f3f3;
 		--button-color: var(--background-color);
 		--button-background: #888676;
@@ -115,7 +112,7 @@ html {
 
 	&[data-color-mode="dark"] {
 		--text-color: #f3f3f3;
-		--navAndFooterBG: #181717;
+		--nav-and-footer-bg: #181717;
 		--background-color: #4b4a4a;
 		--button-color: var(--text-color);
 		--button-background: #888676;
