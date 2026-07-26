@@ -120,6 +120,10 @@
 	&__button {
 		@include mx.button;
 
+		&.disabled {
+			@include mx.disabledButton;
+		}
+
 		&--cancel {
 			width: 100%;
 		}

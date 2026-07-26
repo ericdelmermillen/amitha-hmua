@@ -2,14 +2,12 @@
 
 import { type ChangeEvent, type SubmitEvent, useState } from "react";
 import { useAppContext } from "@/hooks/hooks";
-import { useRouter } from "next/navigation";
 import { isValidEmail, isValidFirstName, isValidLastName, isValidMessage, isValidSubject, staggerToastsByN } from "@/utils/utils";
 import { sendContactFormMessage } from "@/actions/contactActions";
 import { toast } from "react-toastify";
 import "./ContactForm.scss";
 
-// change validation UI to not show invalid until after first time submit attempted
-// make send confirmation message to inquirer email
+const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
 const ContactForm = () => {
   const { 
@@ -33,8 +31,8 @@ const ContactForm = () => {
   const [ message, setMessage ] = useState("");
   const [ messageIsValid, setMessageIsValid ] = useState(true);
 
-
-  const router = useRouter();
+  const [ intialFormCheck, setIntialFormCheck ] = useState(false);
+  const [ isSubmitting, setIsSubmitting ] = useState(false);
 
   // input value & validty checking
   const handleFirstNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -61,8 +59,6 @@ const ContactForm = () => {
     setSubjectIsValid(isValidSubject(subjectValue));
   };
   
-  
-  
   const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const messageValue = e.target.value;
     setMessage(messageValue);
@@ -71,6 +67,11 @@ const ContactForm = () => {
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
+    if (!intialFormCheck) {
+      setIntialFormCheck(true);
+    }
 
     let errors = 0;
 
@@ -111,13 +112,22 @@ const ContactForm = () => {
     try {
       setAppIsLoading(true)
       
-      const response = await sendContactFormMessage({firstName, lastName, email, subject, message});
-      toast.success(response.message)
-      handleNavigateHome();
+      const response = await sendContactFormMessage({
+        firstName, 
+        lastName, 
+        email, 
+        subject, 
+        message
+      });
+
+      staggerToastsByN("Thanks! Your message to Amitha has been sent!", "success", 1)
+      staggerToastsByN("Redirecting...", "info", 2)
+      handleClearFormAndGoHome()
       } catch (error) {
     if (error instanceof Error) {
       toast.error(error.message);
       console.error("Error sending message:", error.message);
+      setIsSubmitting(false);
     } else {
       toast.error("An unknown error occurred");
       console.error("Error sending message:", error);
@@ -128,10 +138,29 @@ const ContactForm = () => {
 };
 
   const handleCancel = () => {
-    // clear form, maybe serve toast, timeout then navigate to /work
-    console.log("Cancelling...")
-    router.push("/work");
-  }
+    toast.info("Cancelling...");
+
+    setTimeout(() => {
+      handleClearFormAndGoHome();
+    }, MIN_LOADING_INTERVAL * 2);
+  };
+
+  const handleClearFormAndGoHome = () => {
+    setTimeout(() => {
+      setFirstName("");
+      setFirstNameIsValid(true);
+      setLastName("");
+      setLastNameIsValid(true);
+      setEmail("");
+      setEmailIsValid(true);
+      setSubject("");
+      setSubjectIsValid(true);
+      setMessage("");
+      setMessageIsValid(true);
+      setIsSubmitting(false);
+      handleNavigateHome();
+    }, MIN_LOADING_INTERVAL * 2);
+  };
 
   return (
     <>
@@ -161,8 +190,10 @@ const ContactForm = () => {
                   placeholder="First Name"
                   onChange={handleFirstNameChange}
                 />
-                <p 
-                  className={`contactForm__errorMessage ${!firstNameIsValid ? "visible" : ""}`}
+                <p className={`contactForm__errorMessage ${!firstNameIsValid && intialFormCheck
+                    ? "visible" 
+                    : ""}`
+                  }
                 >
                   First Name is invalid
                 </p>
@@ -182,8 +213,10 @@ const ContactForm = () => {
                   placeholder="Last Name"
                   onChange={handleLastNameChange}
                 />
-                <p 
-                  className={`contactForm__errorMessage ${!lastNameIsValid ? "visible" : ""}`}
+                <p className={`contactForm__errorMessage ${!lastNameIsValid && intialFormCheck 
+                    ? "visible" 
+                    : ""}`
+                  }
                 >
                   Last Name is invalid
                 </p>
@@ -206,7 +239,11 @@ const ContactForm = () => {
                 placeholder="Email Address"
                 onChange={handleEmailChange}
               />
-              <p className={`contactForm__errorMessage ${!emailIsValid ? "visible" : ""}`}>
+              <p className={`contactForm__errorMessage ${!emailIsValid && intialFormCheck 
+                  ? "visible" 
+                  : ""}`
+                }
+              >
                 Invalid Email
               </p>
             </div>
@@ -226,8 +263,10 @@ const ContactForm = () => {
                 placeholder="Subject"
                 onChange={handleSubjectChange}
               />
-              <p 
-                className={`contactForm__errorMessage ${!subjectIsValid ? "visible" : ""}`}
+              <p className={`contactForm__errorMessage ${!subjectIsValid && intialFormCheck 
+                  ? "visible" 
+                  : ""}`
+                }
               >
                 Subject too short
               </p>
@@ -248,7 +287,7 @@ const ContactForm = () => {
                 onChange={handleMessageChange}
               ></textarea>
               <p 
-                className={`contactForm__errorMessage ${!messageIsValid 
+                className={`contactForm__errorMessage ${!messageIsValid && intialFormCheck
                   ? "visible" 
                   : ""}`
                 }
@@ -266,7 +305,11 @@ const ContactForm = () => {
               </button>
               <button 
                 type="submit" 
-                className="contactForm__button contactForm__button--send"
+                className={`contactForm__button contactForm__button--send ${isSubmitting 
+                  ? "disabled" 
+                  : ""}`
+                }
+                disabled={isSubmitting}
               >
                 Send
               </button>
@@ -276,7 +319,7 @@ const ContactForm = () => {
         </div>
       </div>
     </>
-  )
+  );
 };
 
 export default ContactForm;

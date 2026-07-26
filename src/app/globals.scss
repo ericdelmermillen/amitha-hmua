@@ -211,7 +211,7 @@ img {
 	}
 
 	&__toast {
-		// @include mx.cardBoxShadow;
+		@include mx.cardBoxShadow;
 
 		& {
 			border-radius: var(--border-radius-toast);

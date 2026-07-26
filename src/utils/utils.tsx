@@ -64,6 +64,16 @@ const staggerToastsByN = (message: string, toastType: ToastType, staggerOffset: 
   }, MIN_LOADING_INTERVAL * staggerOffset);
 };
 
+const splitOnNewLine = (string: string) => {
+  return typeof string === "string"
+      ? string
+          .split(/\r?\n|\\n/)
+          .map(line => line.trim())
+          .filter(Boolean)
+      : [];
+};
+
+
 export {
   scrollToTop,
   addClassToDiv,
@@ -74,5 +84,6 @@ export {
   isValidEmail,
   isValidSubject,
   isValidMessage,
-  staggerToastsByN
+  staggerToastsByN,
+  splitOnNewLine
 }

@@ -1,0 +1,46 @@
+// Colors
+const PRIMARY_COLOR = "#2c3e50";
+const TEXT_COLOR = "#333333";
+const TEXT_LIGHT_COLOR = "#6c757d";
+const TEXT_MUTED_COLOR = "#adb5bd";
+const BACKGROUND_COLOR = "#ffffff";
+const BACKGROUND_LIGHT_COLOR = "#f8f9fa";
+const BORDER_COLOR = "#e9ecef";
+
+// Spacing
+const SPACING_SMALL = "16px";
+const SPACING_MEDIUM = "24px";
+const SPACING_LARGE = "40px";
+
+// Typography
+const FONT = "Arial"
+const FONT_SIZE_BODY = "16px";
+const FONT_SIZE_SMALL = "14px";
+const FONT_SIZE_TINY = "12px";
+const FONT_SIZE_HEADING = "24px";
+const FONT_WEIGHT = "600"
+const LINE_HEIGHT = "1.5";
+
+// Other
+const BORDER_RADIUS = "8px";
+
+export {
+  PRIMARY_COLOR,
+  TEXT_COLOR,
+  TEXT_LIGHT_COLOR,
+  TEXT_MUTED_COLOR,
+  BACKGROUND_COLOR,
+  BACKGROUND_LIGHT_COLOR,
+  BORDER_COLOR,
+  SPACING_SMALL,
+  SPACING_MEDIUM,
+  SPACING_LARGE,
+  FONT,
+  FONT_SIZE_BODY,
+  FONT_SIZE_SMALL,
+  FONT_SIZE_TINY,
+  FONT_SIZE_HEADING,
+  FONT_WEIGHT,
+  LINE_HEIGHT,
+  BORDER_RADIUS
+}
