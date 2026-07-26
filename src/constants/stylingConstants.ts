@@ -1,9 +1,9 @@
 // Colors
-const PRIMARY_COLOR = "#2c3e50";
+const PRIMARY_COLOR = "#181717";
 const TEXT_COLOR = "#333333";
 const TEXT_LIGHT_COLOR = "#6c757d";
 const TEXT_MUTED_COLOR = "#adb5bd";
-const BACKGROUND_COLOR = "#ffffff";
+const BACKGROUND_COLOR = "#f3f3f3";
 const BACKGROUND_LIGHT_COLOR = "#f8f9fa";
 const BORDER_COLOR = "#e9ecef";
 

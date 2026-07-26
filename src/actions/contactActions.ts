@@ -1,9 +1,8 @@
 "use server";
 
 import { ContactFormData } from "@/typing/interfaces";
-import { splitOnNewLine } from "@/utils/utils";
 import { notificationEmailTemplate } from "@/templates/notificationEmailTemplate";
-import nodemailer from "nodemailer";
+import { transporter } from "@/lib/transporter";
 
 const EMAIL = process.env.EMAIL;
 
@@ -15,42 +14,29 @@ const sendContactFormMessage = async ({
   message,
 }: ContactFormData) => {
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: EMAIL,
-      pass: process.env.PASSWORD,
-    },
-  });
-
-
-  const formattedMessage = splitOnNewLine(message)
-    .map((paragraph) => `<p>${paragraph}</p>`)
-    .join("");
-
   const submittedMessageBody = `
-    <p><strong>From:</strong> ${firstName} ${lastName}</p>
+    From: ${firstName} ${lastName}
 
-    <p><strong>Email:</strong> ${email}</p>
+    Email: ${email}
 
-    <p><strong>Subject:</strong> ${subject}</p>
+    Subject: ${subject}
 
-    <p><strong>Message:</strong></p>
+    Message:
 
-    ${formattedMessage}
+    ${message}
   `;
 
   const confirmationMessageBody = `
-    <p>
-      Thanks for reaching out to Amitha. Your message has been received and
-      she will get back to you as soon as possible.
-    </p>
+      Thanks for reaching out to Amitha. 
+
+      Your message has been received and she will get back to you as soon as possible.
   `;
 
   const submittedMessage = notificationEmailTemplate(
     "New Contact Form Submission",
     submittedMessageBody,
-    "Regards"
+    `Please follow up with the inquiry from ${firstName}`,
+    "Admin"
   );
 
   const confirmationMessage = notificationEmailTemplate(
@@ -84,7 +70,6 @@ const sendContactFormMessage = async ({
     message: "Thanks! Your message to Amitha has been sent!",
   };
 };
-
 
 export {
   sendContactFormMessage

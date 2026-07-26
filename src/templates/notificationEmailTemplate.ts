@@ -15,6 +15,7 @@ import {
   TEXT_MUTED_COLOR 
 } from "@/constants/stylingConstants";
 import { COPYRIGHT } from "@/textCopy/emailCopy";
+import { splitOnNewLine } from "@/utils/utils";
 
 
 // can use logo png in email header when I have the logo either in the public dir of the real site or if I upload it to s3 and use the url
@@ -47,7 +48,8 @@ const COMPANY_NAME = process.env.COMPANY_NAME;
 const notificationEmailTemplate = (
   greeting: string,
   bodyContent: string,
-  closingSalutation = "Regards"
+  closingSalutation = "Regards", 
+  fromName: string = "Amitha"
 ) => `
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml">
@@ -115,8 +117,20 @@ const notificationEmailTemplate = (
                   ">
                     ${greeting}
                   </p>
-
-                  ${bodyContent}
+                  ${splitOnNewLine(bodyContent)
+                    .map(
+                      (p) => `
+                        <p style="
+                          margin: 0 0 ${SPACING_SMALL} 0;
+                          color: ${TEXT_COLOR};
+                          font-size: ${FONT_SIZE_BODY};
+                          line-height: 1.7;
+                        ">
+                          ${p}
+                        </p>
+                      `
+                    )
+                    .join("")}
 
                   <p style="
                     margin: 0 0 ${SPACING_SMALL} 0;
@@ -131,7 +145,7 @@ const notificationEmailTemplate = (
                     color: ${TEXT_COLOR};
                     font-size: ${FONT_SIZE_BODY};
                   ">
-                    Amitha
+                    ${fromName}.
                   </p>
 
 
