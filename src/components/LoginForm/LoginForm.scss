@@ -1,0 +1,131 @@
+@use "../../partials/mixins.scss" as mx;
+@use "../../partials/variables.scss" as vars;
+
+.loginForm {
+	align-items: center;
+	background-color: var(--modal-overlay-bg);
+	display: flex;
+	justify-content: center;
+	height: 100%;
+	left: 50%;
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+
+	&__modal {
+		background-color: var(--background-color);
+		border-radius: var(--border-radius);
+		// ?
+		box-shadow: 0 0 10px var(--box-shadow);
+		display: flex;
+		flex-direction: column;
+		min-height: 28rem;
+		max-height: 34rem;
+		max-width: 40rem;
+		overflow-y: auto;
+		padding-block: 1rem;
+		padding-inline: 2rem;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 90%;
+
+		@media (min-width: vars.$tablet) {
+			padding-block: 2rem;
+			width: 80%;
+		}
+	}
+
+	&__title {
+		color: var(--text-color);
+		font-size: 1.75rem;
+		margin-bottom: 1.5rem;
+		margin-top: 20%;
+		text-align: center;
+	}
+
+	&__group {
+		margin-bottom: 0.5rem;
+	}
+
+	&__label {
+		display: none;
+		margin-bottom: 5px;
+	}
+
+	&__form {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+		height: 100%;
+	}
+
+	&__input {
+		@include mx.input;
+
+		&:focus {
+			outline: none;
+		}
+	}
+
+	.passwordInput {
+		position: relative;
+
+		&__icon {
+			display: none;
+
+			&.show {
+				align-items: center;
+				display: flex;
+				height: 100%;
+				justify-content: center;
+				position: absolute;
+				right: 0;
+				top: 0;
+				width: 3rem;
+			}
+
+			&--show,
+			&--hide {
+				fill: var(--text-color);
+			}
+		}
+	}
+
+	&__error {
+		color: var(--error-color);
+		margin-top: 0.25rem;
+		margin-inline-start: 0.5rem;
+		visibility: hidden;
+	}
+
+	&__error.email-error {
+		visibility: visible;
+	}
+
+	&__error.password-error {
+		visibility: visible;
+	}
+
+	&__button-container {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+
+	&__button {
+		@include mx.button;
+
+		&--login {
+			&.disabled {
+				@include mx.disabledButton;
+			}
+		}
+
+		&--cancel {
+			width: 100%;
+		}
+	}
+}

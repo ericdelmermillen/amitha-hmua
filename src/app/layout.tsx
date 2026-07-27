@@ -47,11 +47,7 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
       <body>
         <AppContextProvider>
           <ColorThemeProvider>
-            <IsLoading
-              // id={"appIsLoading"}
-              // initiallyShowing={true}
-            />
-
+            <IsLoading/>
             <Nav />
             {children}
             

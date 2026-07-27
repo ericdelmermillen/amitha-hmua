@@ -114,7 +114,7 @@ const ContactForm = () => {
     }
 
     try {
-      setAppIsLoading(true)
+      setAppIsLoading(true);
 
       const response = await sendContactFormMessage({
         firstName,

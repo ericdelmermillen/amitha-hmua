@@ -8,7 +8,9 @@ export interface AppContextProviderProps {
 export interface AppContextValue {
   appIsLoading: boolean;
   setAppIsLoading: Dispatch<SetStateAction<boolean>>;
-    handleNavigateHome: (tagObj?: Tag) => void;
+  isLoggedIn: boolean;
+  setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
+  handleNavigateHome: (tagObj?: Tag) => void;
 // state, state setting and ref
   // isLoggedIn: boolean; 
   // setIsLoggedIn: Dispatch<SetStateAction<boolean>>;

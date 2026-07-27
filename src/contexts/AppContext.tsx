@@ -18,8 +18,9 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [ isOrderEditable, setIsOrderEditable ] = useState(false);
 
   const [ appIsLoading, setAppIsLoading ] = useState(true)
-
+  
   // 
+  const [ isLoggedIn, setIsLoggedIn ] = useState(true)
   const [ showMobileNav, setShowMobileNav ] = useState(false);
 
   const prevScrollYPosRef = useRef<number | null>(null);
@@ -139,6 +140,8 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const contextValues = {
     appIsLoading, 
     setAppIsLoading,
+    isLoggedIn, 
+    setIsLoggedIn,
     scrollYPos, 
     setScrollYPos,
     getPrevScrollYPosValue,
