@@ -5,6 +5,7 @@ import { ToastProvider } from "@/providers/ToastProvider";
 import Footer from "@/components/Footer/Footer";
 import Nav from "@/components/Nav/Nav";
 import "./globals.scss";
+import IsLoading from "@/components/IsLoading/IsLoading";
 
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
@@ -46,6 +47,10 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
       <body>
         <AppContextProvider>
           <ColorThemeProvider>
+            <IsLoading
+              // id={"appIsLoading"}
+              // initiallyShowing={true}
+            />
 
             <Nav />
             {children}

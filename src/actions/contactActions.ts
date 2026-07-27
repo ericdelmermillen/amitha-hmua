@@ -3,7 +3,13 @@
 import { ContactFormData } from "@/typing/interfaces";
 import { notificationEmailTemplate } from "@/templates/notificationEmailTemplate";
 import { transporter } from "@/lib/transporter";
-import { isValidEmail, isValidFirstName, isValidLastName, isValidMessage, isValidSubject } from "@/utils/utils";
+import { 
+  isValidEmail, 
+  isValidFirstName, 
+  isValidLastName, 
+  isValidMessage, 
+  isValidSubject 
+} from "@/utils/utils";
 
 const EMAIL = process.env.EMAIL;
 

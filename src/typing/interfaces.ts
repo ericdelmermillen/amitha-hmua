@@ -21,14 +21,6 @@ export interface AppContextValue {
 //   setShowDropdownNavOptions: Dispatch<SetStateAction<boolean>>;
 //   navLinkClick: (optionName: string) => void;
 //   // functions
-  handleSetShowIsLoadingTrue: (
-  isLoadingStateSetter: Dispatch<React.SetStateAction<boolean>>,
-  divId: string
-) => void;
-  handleSetShowIsLoadingFalse: (
-  isLoadingStateSetter: Dispatch<React.SetStateAction<boolean>>,
-  divId: string
-) => void;
 //   loginUser: (email: string, password: string) => Promise<boolean>;
 //   showNav: () => void;
 //   getPrevScrollYPosValue: () => number;
@@ -69,6 +61,5 @@ export interface ContactFormData {
   
 export interface IsLoadingProps {
   id: string;
-  modifierClass: string;
   initiallyShowing: boolean;
 }

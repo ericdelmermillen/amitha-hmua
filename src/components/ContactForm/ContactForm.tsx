@@ -2,7 +2,14 @@
 
 import { type ChangeEvent, type SubmitEvent, useState } from "react";
 import { useAppContext } from "@/hooks/hooks";
-import { isValidEmail, isValidFirstName, isValidLastName, isValidMessage, isValidSubject, staggerToastsByN } from "@/utils/utils";
+import { 
+  isValidEmail, 
+  isValidFirstName, 
+  isValidLastName, 
+  isValidMessage, 
+  isValidSubject, 
+  staggerToastsByN 
+} from "@/utils/utils";
 import { sendContactFormMessage } from "@/actions/contactActions";
 import { toast } from "react-toastify";
 import "./ContactForm.scss";
@@ -10,10 +17,7 @@ import "./ContactForm.scss";
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
 const ContactForm = () => {
-  const { 
-    setAppIsLoading,
-    handleNavigateHome
-  } = useAppContext();
+  const { handleNavigateHome, setAppIsLoading } = useAppContext();
   
   const [ firstName, setFirstName ] = useState("");
   const [ firstNameIsValid, setFirstNameIsValid ] = useState(true);
@@ -27,14 +31,13 @@ const ContactForm = () => {
   const [ subject, setSubject ] = useState("");
   const [ subjectIsValid, setSubjectIsValid ] = useState(true);
   
-  
   const [ message, setMessage ] = useState("");
   const [ messageIsValid, setMessageIsValid ] = useState(true);
 
   const [ initialFormCheck, setInitialFormCheck ] = useState(false);
   const [ isSubmitting, setIsSubmitting ] = useState(false);
 
-  // input value & validty checking
+
   const handleFirstNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     const firstNameValue = e.target.value;
     setFirstName(firstNameValue);
@@ -111,7 +114,7 @@ const ContactForm = () => {
     }
 
     try {
-      setAppIsLoading(true);
+      setAppIsLoading(true)
 
       const response = await sendContactFormMessage({
         firstName,
@@ -127,6 +130,7 @@ const ContactForm = () => {
 
     } catch (error) {
       setIsSubmitting(false);
+      setAppIsLoading(false)
 
       if (error instanceof Error) {
         toast.error(error.message);
@@ -135,16 +139,15 @@ const ContactForm = () => {
         toast.error("An unknown error occurred");
         console.error("Error sending message:", error);
       }
-
-    } finally {
-      setAppIsLoading(false);
     }
   };
 
   const handleCancel = () => {
     toast.info("Cancelling...");
-
+    setAppIsLoading(true);
+    
     setTimeout(() => {
+      setAppIsLoading(false);
       handleClearFormAndGoHome();
     }, MIN_LOADING_INTERVAL * 2);
   };
@@ -165,6 +168,7 @@ const ContactForm = () => {
       
       setTimeout(() => {
         handleNavigateHome();
+        setAppIsLoading(false);
       }, MIN_LOADING_INTERVAL * 2);
     }, MIN_LOADING_INTERVAL * 2);
   };
@@ -182,10 +186,7 @@ const ContactForm = () => {
           >
             <div className="contactForm__nameContainer">
               <div className="contactForm__field">
-                <label 
-                  htmlFor="contactFormFirstName"
-                  className="contactForm__label"
-                >
+                <label htmlFor="contactFormFirstName" className="contactForm__label">
                   First Name
                 </label>
 
@@ -206,10 +207,7 @@ const ContactForm = () => {
                 </p>
               </div>
               <div className="contactForm__field">
-                <label 
-                  htmlFor="contactFormLastName"
-                  className="contactForm__label"
-                >
+                <label htmlFor="contactFormLastName" className="contactForm__label">
                   Last Name
                 </label>
                 <input 
@@ -232,10 +230,7 @@ const ContactForm = () => {
             </div>
 
             <div className="contactForm__field">
-              <label 
-                htmlFor="contactFormEmail"
-                className="contactForm__label"
-              >
+              <label htmlFor="contactFormEmail" className="contactForm__label">
                 Email Address
               </label>
               <input 
@@ -256,10 +251,7 @@ const ContactForm = () => {
             </div>
 
             <div className="contactForm__field">
-              <label 
-                htmlFor="contactFormSubject"
-                className="contactForm__label"
-              >
+              <label htmlFor="contactFormSubject" className="contactForm__label">
                 Subject
               </label>
               <input 

@@ -12,7 +12,6 @@ const scrollToTop = () => {
   removeClassFromDiv("nav", "hide");
 };
 
-
 const addClassToDiv = (divID: string, className: string) => {
   document.getElementById(divID)?.classList.add(className);
 };
@@ -31,7 +30,6 @@ const isModifiedClick = (
     e?.altKey
   );
 };
-
 
 const isValidFirstName = (name: string) => {
   return name.trim().length >= 2;
@@ -72,7 +70,6 @@ const splitOnNewLine = (string: string) => {
           .filter(Boolean)
       : [];
 };
-
 
 export {
   scrollToTop,
