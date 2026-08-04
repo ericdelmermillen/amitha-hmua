@@ -1,26 +1,22 @@
 "use client";
 
-import { useAppContext } from "@/hooks/hooks";
-import { toast } from "react-toastify";
 import { SideNavProps } from "@/typing/interfaces";
-import ColorModeToggle from "../ColorModeToggle/ColorModeToggle";
-// import NavSelect from "../NavSelect/NavSelect.jsx";
-import { navPages } from "@/constants/navPages";
-import "./SideNav.scss";
-import ClientLink from "../ClientLink/ClientLink";
-
 import { usePathname } from "next/navigation";
+import { useAppContext } from "@/hooks/hooks";
+import { navPages } from "@/constants/navPages";
+import ClientButton from "../ClientButton/ClientButton";
+import ColorModeToggle from "../ColorModeToggle/ColorModeToggle";
+import ClientLink from "../ClientLink/ClientLink";
 import NavSelect from "../NavSelect/NavSelect";
+import "./SideNav.scss";
 
 
 // useEffect to close the sideNav when the user comes back from instagram
 
-const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 const NAV_CLICK_DELAY = Number(process.env.NEXT_PUBLIC_NAV_CLICK_DELAY);
 
 const SideNav = ({ handleLogOut }: SideNavProps) => {
   const { 
-    isLoggedIn, 
     showSideNav, 
     setShowSideNav,
     handleNavLinkClick,
@@ -43,14 +39,6 @@ const SideNav = ({ handleLogOut }: SideNavProps) => {
     setTimeout(() => {
       setShowSideNav(false);
     }, NAV_CLICK_DELAY);
-  };
-
-
-  const handleSideNavLogout = () => {
-    setTimeout(() => {
-      // handleLogOut();
-    }, 500);
-    setShowSideNav(false);
   };
 
   return (
@@ -94,54 +82,27 @@ const SideNav = ({ handleLogOut }: SideNavProps) => {
                 </li>
                 ) 
               : (
-                <li
-                  key={page.href}
-                  className="sideNav__link sideNav__link--instagram"
-                >
-                  <a
-                    href={page.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`nav__link nav__link${page.modifierClass}`}
+                  <li 
+                    className="sideNav__link sideNav__link--instagram"
+                    key={page.href}
                   >
-                    {page.icon && <page.icon className="nav__link--instagram" />}
-                  </a>
-                </li>
+                    <a 
+                      href={page.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {page.pageName}
+                    </a>
+                  </li>
                 )
-            )}
-
-
-
-              {/* <li 
-                className="sideNav__link"
-                onClick={handleNavLinkBio}
-              >
-                BIO
-              </li>
-              <li 
-                className="sideNav__link"
-                onClick={handleNavLinkContact}
-              >
-                CONTACT
-              </li>
-              <a href="https://www.instagram.com/amitha_hmua/" target="_blank">
-                <li 
-                  className="sideNav__link"
-                  onClick={() => setShowSideNav(false)}
-                  >
-                    INSTAGRAM
-                </li>
-              </a> */}
-              {isLoggedIn &&
-                <li className="sideNav__link">
-                  <h4 
-                    className="sideNav__logout"
-                    onClick={handleSideNavLogout}
-                  >
-                    Logout
-                  </h4>
-                </li>
-              }
+              )}
+              <div className="sideNav__logOut">
+                <ClientButton 
+                  text="Logout"
+                  variant="rounded"
+                  buttonType="logOut"
+                />
+              </div>
               <li className="sideNav__colorModeToggler">
                 <ColorModeToggle inputId={"sideNavColorModeToggle"} />
               </li>

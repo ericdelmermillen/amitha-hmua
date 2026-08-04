@@ -113,12 +113,11 @@
 		}
 	}
 
-	&__logout {
+	&__logOut {
 		display: none;
 
 		@media (min-width: vars.$large-tablet) {
 			display: block;
-			@include mx.buttonRounded;
 		}
 	}
 

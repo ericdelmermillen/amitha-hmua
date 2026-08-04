@@ -48,6 +48,8 @@ export interface AppContextValue {
   showNavSelectOptions: boolean;
   setShowNavSelectOptions: Dispatch<SetStateAction<boolean>>;
   tags: Tag[];
+  handleEditBio: () => void;
+  handleLogoutUser: () => void;
   
   
 //   // functions
@@ -129,4 +131,11 @@ export interface BioResponse {
 	success: boolean;
 	data?: BioData;
 	message?: string;
+}
+
+export interface ClientButtonProps {
+  text: string; 
+  variant: string;
+  buttonType: string;
+  modifierClass?: string;
 }

@@ -1,18 +1,18 @@
 "use client";
 
 import { type MouseEvent } from "react";
-import { NavProps } from "@/typing/interfaces";
 import { useAppContext } from "@/hooks/hooks";
 import { usePathname } from "next/navigation";
 import { navPages } from "@/constants/navPages";
+import ClientButton from "../ClientButton/ClientButton";
 import ClientLink from "../ClientLink/ClientLink";
-import NavSelect from "@/components/NavSelect/NavSelect"
-import NavBarToggle from "@/components/NavBarToggle/NavBarToggle";
-import Logo from "@/assets/icons/Logo";
 import ColorModeToggle from "../ColorModeToggle/ColorModeToggle";
+import Logo from "@/assets/icons/Logo";
+import NavBarToggle from "@/components/NavBarToggle/NavBarToggle";
+import NavSelect from "@/components/NavSelect/NavSelect"
 import "./Nav.scss";
 
-const Nav = ({ children }: NavProps) => {
+const Nav = () => {
   const { 
     // setAppIsLoading, 
     scrollYPos, 
@@ -98,8 +98,13 @@ const Nav = ({ children }: NavProps) => {
             </li>
 
           </ul>
-          {children}
-      
+          <div className="nav__logOut">
+            <ClientButton 
+              text="Logout"
+              variant="rounded"
+              buttonType="logOut"
+              />
+          </div>
           <NavBarToggle />
         </div>
       </nav>

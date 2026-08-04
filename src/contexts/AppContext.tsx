@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { scrollToTop, isModifiedClick, normalizeCasing } from "@/utils/utils";
 import { AppContextProviderProps, AppContextValue } from "@/typing/interfaces";
 import { Tag } from "@/typing/interfaces";
+import { toast } from "react-toastify";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
@@ -132,7 +133,33 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setTimeout(() => {
       scrollToTop();
     }, MIN_LOADING_INTERVAL);
-  }
+  };
+
+
+    // const handleDeleteOrEditClick = (e, action, shoot_id = null) => {
+    //   e.preventDefault();
+    //   e.stopPropagation();
+    //   setShowDeleteOrEditModal(true);
+    //   setDeleteOrEditClickAction(action);
+      
+    //   if (shoot_id) {
+    //     setSelectedShoot(shoot_id);
+    //   };
+    // };
+
+
+    const handleEditBio = () => {
+      // needs to open the modal in the appropriate mode only
+      console.log("Edit Bio?")
+
+    }
+
+    const handleLogoutUser = () => {
+      // needs to open the modal in the appropriate mode only
+      console.log("Logout?")
+      setIsLoggedIn(false);
+      toast.success("Logging you out...")
+    }
 
   // useEffect for updating of scrollYPos
   useEffect(() => {
@@ -209,7 +236,9 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setShowTouchOffDiv,
     showNavSelectOptions, 
     setShowNavSelectOptions,
-    tags
+    tags,
+    handleEditBio,
+    handleLogoutUser
   };
 
   return (

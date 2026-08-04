@@ -97,13 +97,6 @@
 		transform: rotate(-45deg);
 	}
 
-	&__logout {
-		@include mx.buttonRounded;
-		& {
-			margin-inline: auto;
-		}
-	}
-
 	&__colorModeToggler {
 		align-items: center;
 		margin-inline: auto;

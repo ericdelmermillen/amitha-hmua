@@ -1,6 +1,7 @@
 import { BioResponse } from "@/typing/interfaces";
 import { getBio } from "@/actions/bioActions";
 import Image from "next/image";
+import ClientButton from "@/components/ClientButton/ClientButton";
 import "./BioPage.scss";
 
 const BioPage = async () => {
@@ -62,19 +63,14 @@ return (
             </h3>
 
 
-        {/* {isLoggedIn 
-          ? 
             <div className="bioPage__button-container">
-              <button
-                className='bioPage__edit-button'
-                onClick={handleEditBioClick}
-                >
-                Edit Bio
-              </button>
+              <ClientButton
+                text="Edit Bio"
+                variant="standard"
+                buttonType="editBio"
+              />
             </div>
 
-          : null
-        } */}
           </div>
           <div className="bioPage__divider"></div>
 
