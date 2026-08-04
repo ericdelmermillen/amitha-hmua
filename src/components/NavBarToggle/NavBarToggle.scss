@@ -1,0 +1,23 @@
+@use "../../partials/_variables" as vars;
+@use "../../partials/_mixins" as mx;
+
+.navBarToggle {
+	& {
+		@include mx.navBarToggleRight;
+	}
+
+	&__icon {
+		border: 1.45px solid var(--text-color);
+		// border: 1.45px solid blue;
+		// border: 1.45px solid var(red);
+		// color: var(--nav-link-color);
+		color: red;
+		border-radius: 2px;
+		min-width: 100%;
+		transform-origin: center;
+		transition:
+			transform 0.5s ease,
+			opacity 0.25s ease;
+		width: 2rem;
+	}
+}

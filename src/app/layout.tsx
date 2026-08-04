@@ -6,6 +6,9 @@ import Footer from "@/components/Footer/Footer";
 import Nav from "@/components/Nav/Nav";
 import "./globals.scss";
 import IsLoading from "@/components/IsLoading/IsLoading";
+import SideNav from "@/components/SideNav/SideNav";
+import TouchOffDiv from "@/components/TouchOffDiv/TouchOffDiv";
+
 
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
@@ -48,8 +51,14 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
         <AppContextProvider>
           <ColorThemeProvider>
             <IsLoading/>
+            <TouchOffDiv />
             <Nav />
             {children}
+            
+
+              <SideNav>
+                {/* may render color mode toggle here or possibly socials: SideNav can be self closing if it is not accepting children */}
+              </SideNav>
             
             <Footer />
             <ToastProvider />

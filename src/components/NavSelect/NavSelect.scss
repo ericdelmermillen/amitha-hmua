@@ -1,0 +1,138 @@
+@use "../../partials/mixins.scss" as mx;
+@use "../../partials/variables.scss" as vars;
+
+.navSelect {
+	& {
+		display: flex;
+		justify-content: center;
+		height: 3rem;
+		margin-inline-end: 0;
+		max-width: 100%;
+		min-width: 15.25rem;
+		padding: 0;
+		position: relative;
+		z-index: 1;
+
+		@media (min-width: vars.$small-phone) {
+			max-width: 17.25rem;
+			min-width: 17.25rem;
+		}
+
+		&.tall {
+			z-index: 2;
+		}
+	}
+
+	&__inner {
+		max-height: 3rem;
+		overflow-y: auto;
+		position: absolute;
+		scrollbar-width: none;
+		transition: max-height 0.25s ease;
+		width: 100%;
+		-ms-overflow-style: none; // hide in explorer
+	}
+
+	&.tall &__inner {
+		max-height: 40rem;
+
+		@media (min-width: vars.$large-tablet) {
+			max-height: 30rem;
+			transition: max-height 0.5s ease;
+		}
+	}
+
+	// &.short &__inner {
+	// 	overflow-y: hidden;
+	// }
+
+	&__select {
+		color: var(--text-color);
+		cursor: pointer;
+	}
+
+	&__selectValue {
+		@include mx.navLink;
+		& {
+			align-items: center;
+			background: var(--nav-and-footer-bg);
+			display: flex;
+			justify-content: center;
+			min-height: 3rem;
+			position: sticky;
+			top: 0;
+			z-index: 2;
+		}
+	}
+
+	&.tall &__selectValue {
+		background: var(--nav-and-footer-bg);
+	}
+
+	&__default-option {
+		&.hide {
+			display: none;
+		}
+
+		&.show {
+			display: block;
+			color: var(--text-color);
+			text-transform: uppercase;
+		}
+	}
+
+	&__option {
+		@include mx.navLink;
+		& {
+			align-items: center;
+			background: var(--background-color);
+			border-bottom: 2px solid var(--text-color);
+			display: flex;
+			height: 4rem;
+			justify-content: center;
+			outline: none;
+			position: relative;
+
+			@media (min-width: vars.$large-tablet) {
+				background: var(--nav-and-footer-bg);
+				border-bottom: none;
+				height: 3rem;
+			}
+		}
+	}
+
+	/* Hide scrollbar for WebKit browsers (Safari and Chrome) */
+	&__inner::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* Hide the scrollbar */
+	&::-webkit-scrollbar {
+		width: 0;
+	}
+
+	&__down {
+		align-items: center;
+		display: flex;
+		height: 3rem;
+		position: absolute;
+		right: 0;
+		top: 0;
+		justify-content: center;
+		width: 3rem;
+
+		&__stroke {
+			stroke: var(--text-color);
+		}
+	}
+
+	&__down-icon {
+		height: 14px;
+		width: 14px;
+	}
+
+	&__down-stroke {
+		stroke: var(--text-color);
+		stroke-width: 20px;
+	}
+}

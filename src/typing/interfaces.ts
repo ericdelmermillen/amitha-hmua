@@ -1,4 +1,12 @@
-import { type FC, type ReactNode, type SetStateAction, type Dispatch, type RefObject } from "react";
+import { 
+  type ReactNode, 
+  type RefObject,
+  type SetStateAction, 
+  type Dispatch, 
+  type MouseEvent,
+  type ComponentType, 
+  type SVGProps
+} from "react";
 import { ColorMode } from "./types";
 
 export interface AppContextProviderProps {
@@ -11,21 +19,41 @@ export interface AppContextValue {
   isLoggedIn: boolean;
   setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
   handleNavigateHome: (tagObj?: Tag) => void;
-// state, state setting and ref
+
+  showSideNav: boolean;
+  setShowSideNav: Dispatch<SetStateAction<boolean>>;
+  
+  handleToggleSideNav: () => void;
+  handleTouchOffDiv: () => void;
+
+  showTouchOffDiv: boolean;
+   setShowTouchOffDiv: Dispatch<SetStateAction<boolean>>;
+
+  handleSetShowSideNavFalse: () => void;
+  handleNavLinkClick: () => void;
+  handleIsOnSamePage: () => void;
+  handleSideNavLinkClick: (e: MouseEvent<HTMLAnchorElement>) => void;
+  // state, state setting and ref
+  handleIsOnCurrentPage: (e: MouseEvent<HTMLAnchorElement>) => void;
   // isLoggedIn: boolean; 
   // setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
-//   scrollYPos: number;
-//   setScrollYPos: Dispatch<SetStateAction<number>>;
-//   prevScrollYPosRef: RefObject<number | null>;
-//   windowWidth: number;
-//   setWindowWidth: Dispatch<SetStateAction<number>>;
-//   showDropdownNavOptions: boolean;
-//   setShowDropdownNavOptions: Dispatch<SetStateAction<boolean>>;
-//   navLinkClick: (optionName: string) => void;
+  scrollYPos: number;
+  setScrollYPos: Dispatch<SetStateAction<number>>;
+
+  selectValue: string | null;
+  setSelectValue: Dispatch<SetStateAction<string | null>>;
+
+  selectedTag: Tag | null;
+  setSelectedTag: Dispatch<SetStateAction<Tag | null>>;
+  showNavSelectOptions: boolean;
+  setShowNavSelectOptions: Dispatch<SetStateAction<boolean>>;
+  tags: Tag[];
+  
+  
 //   // functions
 //   loginUser: (email: string, password: string) => Promise<boolean>;
 //   showNav: () => void;
-//   getPrevScrollYPosValue: () => number;
+  getPrevScrollYPosValue: () => number;
 //   notFoundNavLinkClick: (to: string) => void;
   // hideNav: () => void;
 //   logoutUser: () => void;
@@ -43,6 +71,7 @@ export interface ColorThemeContextValue {
 
 export interface IconProps {
   className?: string;
+  classNameStroke?: string;
 }
 
 export interface ColorModetoggleProps {
@@ -50,8 +79,9 @@ export interface ColorModetoggleProps {
 }
 
 export interface Tag {
-    tagName: string;
-  }
+  id: number;
+  tagName: string;
+}
 
 export interface ContactFormData {
   firstName: string;
@@ -64,4 +94,39 @@ export interface ContactFormData {
 export interface IsLoadingProps {
   id: string;
   initiallyShowing: boolean;
+}
+
+export interface NavProps {
+  children?: ReactNode;
+  handleLogOut?: () => void
+};
+
+export interface SideNavProps {
+  children?: ReactNode;
+  handleLogOut?: () => void;
+};
+
+export interface NavPage {
+  pageName: string;
+  href: string;
+  modifierClass?: string;
+  icon: ComponentType<SVGProps<SVGSVGElement>> | null;
+}
+
+export interface NavSelectProps {
+  selectOptions: Tag[];
+  modifierClass?: string;
+}
+
+export interface BioData {
+	bioName: string;
+	bioText: string;
+	bioImgURL: string;
+	bioImageNotSet: boolean;
+}
+
+export interface BioResponse {
+	success: boolean;
+	data?: BioData;
+	message?: string;
 }

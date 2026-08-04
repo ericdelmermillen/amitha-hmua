@@ -230,3 +230,130 @@
 	opacity: 0.5;
 	pointer-events: none;
 }
+
+// ***
+@mixin sideNav {
+	background: var(--nav-footer-bg);
+	bottom: 0;
+	box-shadow: var(--nav-footer-box-shadow);
+	height: 100vh;
+	position: fixed;
+	// ***for slide in left from right
+	// ***for slide in right from left
+	// left: 0;
+	top: 0;
+	// transform: translateX(100%); /* start offscreen right */
+	// ***for slide in left from right
+	// ***for slide in right from left
+	// transform: translateX(-100%); /* start offscreen right */
+	transition: transform 0.33s ease-in-out; /* only transform for performance */
+	width: 80vw;
+	will-change: transform;
+	z-index: 3;
+
+	@media (min-width: vars.$side-nav-50vw-breakpoint) {
+		width: 50vw;
+	}
+
+	&.show {
+		transform: translateX(0); /* slide in */
+		transition: transform 0.33s ease-out;
+	}
+}
+
+@mixin sideNavRightToLeft {
+	@include sideNav;
+	right: 0;
+	transform: translateX(100%); /* start offscreen right */
+}
+
+@mixin sideNavLeftToRight {
+	@include sideNav;
+	left: 0;
+	transform: translateX(-100%); /* start offscreen right */
+}
+
+@mixin clickOffDiv {
+	height: 100%;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 3;
+}
+
+@mixin sideNavCloseButton {
+	cursor: pointer;
+	height: 1.85rem;
+	position: fixed;
+	top: calc((vars.$nav-height - vars.$side-nav-close-button-height) / 2);
+	width: 1.85rem;
+}
+
+@mixin sideNavInner {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding-bottom: 8rem;
+	position: relative;
+}
+
+@mixin sideNavLinks {
+	color: var(--nav-link-color);
+	display: flex;
+	flex-direction: column;
+	gap: 4rem;
+	margin-top: 8rem;
+}
+
+@mixin navBarToggle {
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	gap: 0.45rem;
+	height: vars.$nav-toggle-height;
+	justify-content: center;
+	position: absolute;
+	// top: calc((vars.$nav-height - vars.$nav-toggle-height) / 2);
+	// left: 0;
+	width: 2.25rem;
+
+	// @media (min-width: vars.$medium-tablet) {
+	@media (min-width: vars.$large-tablet) {
+		display: none;
+	}
+
+	&.open {
+		.navBarToggle__icon:nth-child(1) {
+			transform: translateY(0.55rem) rotate(225deg);
+		}
+
+		.navBarToggle__icon:nth-child(2) {
+			opacity: 0;
+		}
+
+		.navBarToggle__icon:nth-child(3) {
+			transform: translateY(-0.55rem) rotate(-225deg);
+		}
+	}
+}
+
+@mixin navBarToggleRight {
+	@include navBarToggle;
+	right: 2rem;
+}
+
+@mixin navContent {
+	align-items: center;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	margin-inline: auto;
+	max-width: vars.$ultra-wide;
+	padding-inline: 4rem;
+	width: 100%;
+
+	@media (min-width: vars.$desktop) {
+		padding-inline: 8rem;
+	}
+}

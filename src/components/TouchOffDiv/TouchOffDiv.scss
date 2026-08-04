@@ -1,0 +1,19 @@
+@use "../../partials/_variables" as vars;
+@use "../../partials/_mixins" as mx;
+
+.touchOffDiv {
+	& {
+		display: none;
+		height: 100dvh;
+		left: 0;
+		position: fixed;
+		top: 0;
+		width: 100vw;
+	}
+
+	&.show {
+		cursor: auto;
+		display: block;
+		z-index: 2;
+	}
+}

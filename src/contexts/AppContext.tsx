@@ -2,26 +2,31 @@
 
 import { type MouseEvent, useState,  useRef, useEffect, createContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { scrollToTop, isModifiedClick } from "@/utils/utils";
+import { scrollToTop, isModifiedClick, normalizeCasing } from "@/utils/utils";
 import { AppContextProviderProps, AppContextValue } from "@/typing/interfaces";
 import { Tag } from "@/typing/interfaces";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
+const NAV_CLICK_DELAY = Number(process.env.NEXT_PUBLIC_NAV_CLICK_DELAY);
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const [ scrollYPos, setScrollYPos ] = useState(0);
 
-  const [ selectedTag, setSelectedTag ] = useState(null);
   const [ isOrderEditable, setIsOrderEditable ] = useState(false);
-
+  
   const [ appIsLoading, setAppIsLoading ] = useState(true)
   
-  // 
   const [ isLoggedIn, setIsLoggedIn ] = useState(true)
-  const [ showMobileNav, setShowMobileNav ] = useState(false);
+  
+  const [ showSideNav, setShowSideNav ] = useState(false);
+  const [ showTouchOffDiv, setShowTouchOffDiv ] = useState(false);
+  
+  const [ selectValue, setSelectValue ] = useState<string | null>(null);
+  const [ showNavSelectOptions, setShowNavSelectOptions ] = useState(false);
+  const [ selectedTag, setSelectedTag ] = useState<Tag | null>(null);
 
   const prevScrollYPosRef = useRef<number | null>(null);
   const getPrevScrollYPosValue = () => prevScrollYPosRef.current ?? 0;
@@ -29,23 +34,47 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
   const pathname = usePathname();
   const router = useRouter();
 
-  // { tag_name}
 
+  const tags = [
+    {id: 1, tagName: "COMMERCIAL"},
+    {id: 2, tagName: "CREATIVE"},
+    {id: 3, tagName: "STYLING"},
+    {id: 4, tagName: "BEAUTY"},
+    {id: 5, tagName: "WIGS"},
+    {id: 6, tagName: "GROOMING"},
+    {id: 7, tagName: "THEATER"},
+    {id: 8, tagName: "CELEBRITIES"},
+    {id: 9, tagName: "BRIDAL"},
+    {id: 10, tagName: "FASHION"},
+    {id: 11, tagName: "COSPLAY"},
+    {id: 12, tagName: "DRAG"},
+  ]
+
+  const handleTouchOffDiv = () => {
+    setShowTouchOffDiv(false);
+    setShowSideNav(false);
+    setShowNavSelectOptions(false);
+  };
 
   const handleNavigateHome = (tagObj?: Tag) => {   
     if (!tagObj) {
       router.push("/work");
       setSelectedTag(null);
     } else if (tagObj) {
-      router.push(`/work?tag=${tagObj.tagName}`);
+      router.push(`/work?tag=${normalizeCasing(tagObj.tagName)}`);
     };
     setIsOrderEditable(false);
+
+    // won't need this; will be set to false when page content loads
+    setTimeout(() => {
+      setAppIsLoading(false);
+    }, MIN_LOADING_INTERVAL);
   };
   
-  const handleToggleMobileNav = () => setShowMobileNav(prev => !prev);
+  const handleToggleSideNav = () => setShowSideNav(prev => !prev);
 
-  const handleSetShowMobileNavFalse = () => {
-    setShowMobileNav((prev) => {
+  const handleSetShowSideNavFalse = () => {
+    setShowSideNav((prev) => {
       if (prev === false) {
         return prev;
       }
@@ -53,15 +82,17 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
       return false;
     });
   };
+  
 
-  const handleNavLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!isModifiedClick(e)) {
-      setAppIsLoading(true);
-      console.log("click")
-    };
-  };
+  const handleNavLinkClick = () => {
+    setAppIsLoading(true);
+    setSelectedTag(null);
+    setSelectValue(null);
+    setShowNavSelectOptions(false);
+    setShowTouchOffDiv(false);
+};
 
-  const handleMobileNavLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
+  const handleSideNavLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (isModifiedClick(e)) {
       return;
     };
@@ -69,10 +100,9 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     setAppIsLoading(true)
 
     setTimeout(() => {
-     requestAnimationFrame(() => handleSetShowMobileNavFalse());
+     requestAnimationFrame(() => handleSetShowSideNavFalse());
     }, MIN_LOADING_INTERVAL * 1.5);
   };
-
   
   const handleIsOnCurrentPage = (e: MouseEvent<HTMLAnchorElement>) => {
     if (isModifiedClick(e)) {
@@ -89,6 +119,20 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
       setAppIsLoading(false);
     }, APP_ISLOADING_DELAY);
   };
+
+  const handleIsOnSamePage = () => {
+    setShowTouchOffDiv(false);
+    setShowNavSelectOptions(false);
+
+    setTimeout(() => {
+      setShowSideNav(false);
+      setAppIsLoading(false);
+    }, NAV_CLICK_DELAY);
+
+    setTimeout(() => {
+      scrollToTop();
+    }, MIN_LOADING_INTERVAL);
+  }
 
   // useEffect for updating of scrollYPos
   useEffect(() => {
@@ -108,7 +152,9 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
             return currentScrollY;
           });
           
-          handleSetShowMobileNavFalse();
+          handleSetShowSideNavFalse();
+          setShowTouchOffDiv(false);
+          setShowNavSelectOptions(false);
           ticking = false;
         });
         ticking = true;
@@ -145,14 +191,25 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     scrollYPos, 
     setScrollYPos,
     getPrevScrollYPosValue,
-    showMobileNav, 
-    setShowMobileNav,
-    handleToggleMobileNav,
+    showSideNav, 
+    setShowSideNav,
+    handleToggleSideNav,
     handleNavLinkClick,
-    handleSetShowMobileNavFalse,
-    handleMobileNavLinkClick,
+    handleSetShowSideNavFalse,
+    handleSideNavLinkClick,
     handleIsOnCurrentPage,
-    handleNavigateHome
+    handleNavigateHome,
+    handleIsOnSamePage,
+    selectValue, 
+    setSelectValue,
+    selectedTag, 
+    setSelectedTag,
+    handleTouchOffDiv,
+    showTouchOffDiv, 
+    setShowTouchOffDiv,
+    showNavSelectOptions, 
+    setShowNavSelectOptions,
+    tags
   };
 
   return (

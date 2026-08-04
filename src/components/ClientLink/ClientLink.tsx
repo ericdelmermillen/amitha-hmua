@@ -22,7 +22,7 @@ const ClientLink = ({
   scroll = false,
 }: ClientLinkProps ) => {
 
-  const { handleSetShowIsLoadingTrue, setAppIsLoading } = useAppContext();
+  const { setAppIsLoading } = useAppContext();
 
   const handleLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (isModifiedClick(e)) {
@@ -30,7 +30,7 @@ const ClientLink = ({
       return;
     };
 
-    handleSetShowIsLoadingTrue(setAppIsLoading, "appIsLoading");
+    setAppIsLoading(true);
     onClick?.(e);
   };
 

@@ -21,7 +21,7 @@ const removeClassFromDiv = (divID: string, className: string) => {
 };
 
 const isModifiedClick = (
-  e: MouseEvent<HTMLAnchorElement>
+  e: MouseEvent<HTMLElement>
 ) => {
   return !!(
     e?.metaKey ||
@@ -79,6 +79,12 @@ const splitOnNewLine = (string: string) => {
       : [];
 };
 
+const normalizeCasing = (string: string | undefined): string => {
+  return typeof string === "string" && string.length > 0 
+    ? string[0].toUpperCase() + string.slice(1).toLowerCase()
+    : ""
+};
+
 export {
   scrollToTop,
   addClassToDiv,
@@ -91,5 +97,6 @@ export {
   isValidSubject,
   isValidMessage,
   staggerToastsByN,
-  splitOnNewLine
+  splitOnNewLine,
+  normalizeCasing
 }

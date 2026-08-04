@@ -1,3 +1,5 @@
+"use client";
+
 import type { AppContextValue } from "@/typing/interfaces";
 import { useContext } from "react";
 import { AppContext } from "@/contexts/AppContext";

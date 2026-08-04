@@ -1,87 +1,106 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { type MouseEvent } from "react";
+import { NavProps } from "@/typing/interfaces";
 import { useAppContext } from "@/hooks/hooks";
-import Instagram from "@/assets/icons/Instagram";
+import { usePathname } from "next/navigation";
+import { navPages } from "@/constants/navPages";
+import ClientLink from "../ClientLink/ClientLink";
+import NavSelect from "@/components/NavSelect/NavSelect"
+import NavBarToggle from "@/components/NavBarToggle/NavBarToggle";
 import Logo from "@/assets/icons/Logo";
-import NavLink from "../NavLink/NavLink";
-import "./Nav.scss";
 import ColorModeToggle from "../ColorModeToggle/ColorModeToggle";
+import "./Nav.scss";
 
+const Nav = ({ children }: NavProps) => {
+  const { 
+    // setAppIsLoading, 
+    scrollYPos, 
+    getPrevScrollYPosValue,
+    handleNavLinkClick, 
+    handleIsOnCurrentPage,
+    handleIsOnSamePage,
+    setSelectedTag,
+    setSelectValue,
+    setShowNavSelectOptions,
+    tags
+     } = useAppContext();
 
-type NavProps = {
-  children?: ReactNode;
-};
+  const pathname = usePathname();
+  const isOnHome = pathname === "/work";
 
-
-
-const Nav = ({  }: NavProps) => {
-    const { 
-    // isLoggedIn, 
-    // setShowSideNav,
-    // scrollYPos, 
-    // getPrevScrollYPosValue,
-    // tags, 
-    // handleNavigateHome,
-    // handleSetShowSideNav,
-    // handleNavLinkClick
-   } = useAppContext();
+  const handleIsOnHome = (e: MouseEvent<HTMLAnchorElement>) => {
+    setSelectedTag(null);
+    setSelectValue(null);
+    setShowNavSelectOptions(false);
+    handleIsOnCurrentPage(e);
+  };
 
   return (
     <>
-      <nav id="nav" className="nav">
-        <div className="nav__inner">
+      <nav 
+        id="nav"
+        className={`nav ${getPrevScrollYPosValue() < scrollYPos && scrollYPos > 50 
+          ? "hide" 
+          : ""}`
+      }>
+        <div className="nav__content">
 
-          <NavLink 
-            href={'/work'}
-            // onClick={handleHomeClick}
+          <ClientLink 
+            href="/work" 
+            scroll={false}
+            onClick={isOnHome ? handleIsOnHome : handleNavLinkClick}
           >
-            <div 
-              className="nav__logo"
-            > 
+            <div className="nav__logo">
               <Logo className={"nav__logo--icon"}/>
-            </div> 
-          </NavLink>
+            </div>
+          </ClientLink>
 
           <ul className="nav__links">
 
-          </ul>
-            <NavLink 
-              href={'/bio'}
-              // onClick={handleNavLinkClick}
-            >
-              <li className="nav__link nav__link--bio">
-                Bio
-              </li>
-            </NavLink>
+            <NavSelect 
+              selectOptions={tags}
+            />
 
-            <NavLink 
-              href={'/contact'}
-              // onClick={handleNavLinkClick}
-            >
-              <li className="nav__link">
-                Contact
-              </li>
-            </NavLink>
-            <a href="https://www.instagram.com/amitha_hmua/" target="_blank">
-              <li className="nav__link nav__link--instagram">
-                <Instagram className="nav__link--instagram" />
-              </li>
-            </a>
+            {navPages.map((page) => page.href.startsWith("/") 
+              
+              ? (
+                <li key={page.href} className={`nav__link nav__link${page.modifierClass}`}>
+                  <ClientLink 
+                    href={page.href}
+                    onClick={pathname !== page.href
+                      ? handleNavLinkClick
+                      : handleIsOnSamePage}
+                  >
+                    {page.pageName}
+                  </ClientLink>
+                </li>
+                ) 
+              : (
+                <li
+                  key={page.href}
+                  className="nav__link nav__link--instagram"
+                >
+                  <a
+                    href={page.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`nav__link nav__link${page.modifierClass}`}
+                  >
+                    {page.icon && <page.icon className="nav__link--instagram" />}
+                  </a>
+                </li>
+                )
+            )}
+            
             <li className="nav__link nav__link--colorMode">
               <ColorModeToggle inputId={"navColorModeToggle"}/>
             </li>
-          
-          <div 
-            className="nav__toggle-button" 
-            aria-label="Toggle Menu"
-            // onClick={handleSetShowSideNav}
-          >
-            <div className="nav__toggle-icon"></div>
-            <div className="nav__toggle-icon"></div>
-            <div className="nav__toggle-icon"></div>
-          </div>
 
+          </ul>
+          {children}
+      
+          <NavBarToggle />
         </div>
       </nav>
     </>

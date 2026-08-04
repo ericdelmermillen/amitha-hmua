@@ -9,13 +9,14 @@
 	}
 
 	&__inner {
+		// border: 2px solid red;
 		display: grid;
 		justify-content: center;
 		max-width: calc(100vw - 4rem);
 		min-width: calc(100vw - 4rem);
 		overflow-y: hidden;
 
-		@media (min-width: vars.$large-tablet) {
+		@media (min-width: vars.$medium-tablet) {
 			grid-template-columns: repeat(2, 1fr);
 			min-width: 100%;
 		}
@@ -24,6 +25,7 @@
 	&__heroImg-container {
 		left: 50%;
 		margin-bottom: 2rem;
+		margin-top: vars.$nav-height;
 		max-width: calc(100vw - 4rem);
 		min-width: calc(100vw - 4rem);
 		padding-bottom: 100%;
@@ -38,7 +40,7 @@
 			}
 		}
 
-		@media (min-width: vars.$large-tablet) {
+		@media (min-width: vars.$medium-tablet) {
 			max-width: 100%;
 			min-width: 100%;
 			padding-bottom: 0;
@@ -51,25 +53,30 @@
 		height: 100%;
 		object-fit: cover;
 		object-position: center center;
-		opacity: 0;
+		opacity: 1;
 		position: absolute;
 		width: 100%;
 
-		&.show {
-			opacity: 1;
-		}
-
-		&--placeholder {
+		&--missing {
+			align-items: center;
 			background: var(--placeholder-color);
 			border-radius: var(--border-radius);
+			display: flex;
+			justify-content: center;
 			min-height: 100%;
 			min-width: 100%;
 			opacity: 1;
 			position: absolute;
+		}
+	}
 
-			&.hide {
-				opacity: 0;
-			}
+	&__missingImg {
+		// make color a var
+		color: #f3f3f3;
+		font-size: var(--font-size-lg);
+
+		@media (min-width: vars.$tablet) {
+			font-size: var(--font-size-xl);
 		}
 	}
 
@@ -89,12 +96,6 @@
 			margin-top: 2rem;
 			margin-bottom: 1rem;
 		}
-
-		&.show {
-			background: var(--placeholder-color);
-			color: transparent;
-			width: 80%;
-		}
 	}
 
 	&__text-container {
@@ -107,47 +108,9 @@
 		position: relative;
 		max-width: 100%;
 
-		@media (min-width: vars.$large-tablet) {
+		@media (min-width: vars.$medium-tablet) {
+			margin-top: vars.$nav-height;
 			min-height: 0;
-		}
-	}
-
-	&__text-placeholders {
-		display: flex;
-		flex-direction: column;
-		gap: 3rem;
-		height: 90vh;
-		position: absolute;
-		width: calc(100% - 4rem);
-
-		&.hide {
-			opacity: 0;
-		}
-	}
-
-	&__text-placeholder {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		width: 100%;
-	}
-
-	&__placeholder-textLine {
-		background: var(--placeholder-color);
-		border-radius: var(--border-radius);
-		height: 2rem;
-		width: 95%;
-
-		&--25 {
-			width: 25%;
-		}
-
-		&--50 {
-			width: 50%;
-		}
-
-		&--75 {
-			width: 75%;
 		}
 	}
 
@@ -156,10 +119,7 @@
 		font-size: 1.75rem;
 		line-height: 1.5;
 		opacity: 0;
-
-		&.show {
-			opacity: 1;
-		}
+		opacity: 1;
 	}
 
 	&__divider {
@@ -172,7 +132,7 @@
 		margin-top: 3rem;
 		width: 90%;
 
-		@media (min-width: vars.$large-tablet) {
+		@media (min-width: vars.$medium-tablet) {
 			display: none;
 		}
 	}

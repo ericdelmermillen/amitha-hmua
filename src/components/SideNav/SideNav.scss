@@ -1,0 +1,127 @@
+@use "../../partials/mixins.scss" as mx;
+@use "../../partials/variables.scss" as vars;
+
+.sideNav {
+	background-color: var(--background-color);
+	// background-color: yellow;
+	bottom: 0;
+	box-shadow: var(--box-shadow);
+	height: 100vh;
+	left: 200vw;
+	position: fixed;
+	top: 0;
+	transition: all 0.5s ease-in-out;
+	width: 80vw;
+	z-index: 5;
+
+	@media (min-width: vars.$small-phone) {
+		width: 70vw;
+	}
+
+	@media (min-width: 575px) {
+		width: 50vw;
+	}
+
+	&.show {
+		left: 20vw;
+		transition: all 0.5s ease-out;
+
+		@media (min-width: vars.$small-phone) {
+			left: 30vw;
+		}
+
+		@media (min-width: 575px) {
+			left: 50vw;
+		}
+	}
+
+	&__inner {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		position: relative;
+	}
+
+	&__close-button {
+		cursor: pointer;
+		height: 1.75rem;
+		padding-top: 0.8rem;
+		position: fixed;
+		top: 2.25rem;
+		width: 1.5rem;
+
+		@media (min-width: vars.$small-phone) {
+			height: 2rem;
+			top: 2rem;
+			width: 2rem;
+		}
+	}
+
+	&__links {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		height: max(100%, 60vh);
+		margin-top: 8rem;
+		text-align: center;
+		width: 15rem;
+	}
+
+	&__link {
+		@include mx.navLink;
+		& {
+			align-items: center;
+			height: 3rem;
+		}
+	}
+
+	&__close-icon {
+		background-color: var(--text-color);
+		border-radius: 2px;
+		height: 3px;
+		position: absolute;
+		transform-origin: center;
+		width: 100%;
+
+		@media (min-width: vars.$small-phone) {
+			height: 3.75px;
+		}
+	}
+
+	&__close-icon:first-child {
+		transform: rotate(45deg);
+	}
+
+	&__close-icon:last-child {
+		transform: rotate(-45deg);
+	}
+
+	&__logout {
+		@include mx.buttonRounded;
+		& {
+			margin-inline: auto;
+		}
+	}
+
+	&__colorModeToggler {
+		align-items: center;
+		margin-inline: auto;
+		display: flex;
+		justify-content: center;
+		left: 50%;
+		margin-inline: auto;
+		margin-top: auto;
+	}
+}
+
+.navSelect {
+	&__selectValue.side-nav {
+		background: var(--background-color);
+	}
+
+	&.tall &__selectValue.side-nav {
+		background: green;
+		background: var(--background-color);
+	}
+}

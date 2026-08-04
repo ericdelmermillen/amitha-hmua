@@ -101,13 +101,15 @@ html {
 		--button-background: #888676;
 		--button-link: #888676;
 		--box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-		--nav-boxShadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+		--nav-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 		--footer-boxShadow: 0 -4px 8px rgba(0, 0, 0, 0.25);
 		--toggle-sky: #47478d;
 		--toggle-ball: #f3f3f3;
 		--error-color: #ff0000;
 		--hover-color: #747171;
 		--placeholder-color: #adafaf;
+
+		// ***
 	}
 
 	&[data-color-mode="dark"] {
@@ -118,7 +120,7 @@ html {
 		--button-background: #888676;
 		--button-link: #c2c0ac;
 		--box-shadow: 0 4px 8px rgba(37, 31, 31, 0.6);
-		--nav-boxShadow: 0 4px 8px rgba(37, 31, 31, 0.6);
+		--nav-box-shadow: 0 4px 8px rgba(37, 31, 31, 0.6);
 		--footer-boxShadow: 0 -4px 8px rgba(37, 31, 31, 0.6);
 		--toggle-sky: #5da8f8;
 		--toggle-ball: #f3f3f3;
