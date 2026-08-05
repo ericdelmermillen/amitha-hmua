@@ -85,13 +85,14 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     });
   };
   
-
   const handleNavLinkClick = () => {
+    setShowTouchOffDiv(false);
     setAppIsLoading(true);
     setSelectedTag(null);
     setSelectValue(null);
     setShowNavSelectOptions(false);
     setShowTouchOffDiv(false);
+    setShowSideNav(false);
 };
 
   const handleSideNavLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {

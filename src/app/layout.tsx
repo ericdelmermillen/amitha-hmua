@@ -58,10 +58,10 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
               <TouchOffDiv />
               <Nav />
               <SideNav />
-              <ToastProvider />
               <Modal />
               {children}
               <Footer />
+              <ToastProvider />
 
             </ModalContextProvider>
           </ColorThemeProvider>

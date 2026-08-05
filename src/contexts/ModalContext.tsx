@@ -21,7 +21,7 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
   // const { handleSetShowIsLoadingTrue, handleSetShowIsLoadingFalse } = useAppContext();
   
   const [ showModal, setShowModal ] = useState(false);
-  const [ modalType, setModalType ] = useState(null);
+  const [ modalType, setModalType ] = useState<string | null>(null);
   const [ modalTitle, setModalTitle ] = useState("");
   const [ modalText, setModalText ] = useState("");
   const [ modalInitialFormCheck , setModalInitialFormCheck ] = useState(false);
@@ -52,16 +52,11 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
       // needs to open the modal in the appropriate mode only
       console.log("Edit Bio?")
       setShowModal(true);
+      setModalType("editBio")
 
     }
 
 
-
-  // const handleClearForm = () => {
-  //   modalEmailRef.current?.blur();
-  //   modalNameRef.current?.blur();
-  //   modalPhoneRef.current?.blur();
-  // };
 
   const handleOpenModal = (
     modalType: string, 
@@ -123,7 +118,7 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
   const contextValues: ModalContextValue = {
     showModal, 
     setShowModal,
-    handleEditBio
+    handleEditBio,
     // modalType, 
     // setModalType,
     // modalTitle, 
@@ -139,7 +134,9 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
     // modalHref, 
     // setModalHref,
     // handleOpenModal,
-    // handleClearModal,
+    handleClearModal,
+    modalType, 
+    setModalType
     // modalNameRef,
     // modalEmailRef,
     // modalPhoneRef,

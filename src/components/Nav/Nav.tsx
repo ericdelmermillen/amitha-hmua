@@ -14,7 +14,6 @@ import "./Nav.scss";
 
 const Nav = () => {
   const { 
-    // setAppIsLoading, 
     scrollYPos, 
     getPrevScrollYPosValue,
     handleNavLinkClick, 
@@ -23,6 +22,7 @@ const Nav = () => {
     setSelectedTag,
     setSelectValue,
     setShowNavSelectOptions,
+    setShowSideNav,
     tags
      } = useAppContext();
 
@@ -34,6 +34,7 @@ const Nav = () => {
     setSelectValue(null);
     setShowNavSelectOptions(false);
     handleIsOnCurrentPage(e);
+    setShowSideNav(false);
   };
 
   return (

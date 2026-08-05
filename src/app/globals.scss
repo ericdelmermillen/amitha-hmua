@@ -55,6 +55,7 @@
 	// opacity
 	--faded-text-opacity-value-1: 0.75;
 	--faded-text-opacity-value-2: 0.9;
+	--modal-overlay-bg: rgba(0, 0, 0, 0.5);
 
 	// modal
 	--border-radius-card: 8px;
@@ -66,10 +67,12 @@
 	// colors
 	--error-color: red;
 	--neutral-white: #f8f9fa;
-	--modal-overlay-bg: rgba(0, 0, 0, 0.5);
 
 	// UI
 	--input-height: 3rem;
+
+	// timing
+	--nav-transition-interval: 600ms;
 }
 
 *,
@@ -137,7 +140,8 @@ body {
 		display: flex;
 		flex-direction: column;
 		font-family: arial;
-		// overflow-x: hidden;
+		min-height: calc(100vh + 1px);
+		overflow-x: hidden;
 	}
 }
 

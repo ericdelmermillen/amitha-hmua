@@ -22,18 +22,18 @@
 	&__overlay {
 		background: var(--modal-overlay-bg);
 		height: 100%;
-		opacity: 50%;
 		position: absolute;
 		width: 100%;
 	}
 
 	&__card {
-		background: var(--modal-card-bg);
+		background: var(--background-color);
 		border-radius: var(--border-radius-card);
 		display: flex;
+		flex-direction: column;
 		height: 100%;
 		left: 50%;
-		max-height: 90vh;
+		max-height: 50vh;
 		max-width: 45rem;
 		overflow: hidden;
 		padding-block: 2rem;
@@ -42,7 +42,7 @@
 		top: 50%;
 		transform: translate(-50%, -50%);
 		width: 85%;
-		z-index: 5;
+		z-index: 6;
 	}
 
 	&__content {
@@ -56,280 +56,22 @@
 
 	&__heading {
 		& {
-			// @include mx.cardTitleHeading;
-			& {
-				border: none;
-				font-family: var(--heading-font);
-				font-weight: 600;
-				letter-spacing: var(--letter-spacing-lg);
-				line-height: 1;
-			}
+			text-align: center;
+			margin-top: 2rem;
 
-			&--center {
-				text-align: center;
-			}
+			color: var(--text-color);
+			font-size: 2rem;
 		}
 	}
-
-	&__team {
-		align-items: center;
-		display: flex;
-		flex-shrink: 0;
-		gap: 0.5rem;
-		justify-content: center;
-		margin-top: 1rem;
-		width: 100%;
-
-		@media (min-width: vars.$small-phone) {
-			gap: 1rem;
-		}
-
-		@media (min-width: vars.$small-tablet) {
-			gap: 1.25rem;
-		}
-
-		@media (min-width: vars.$tablet) {
-			gap: 1.5rem;
-		}
-
-		&--non-carousel {
-			gap: 0.75rem;
-			margin-inline: auto;
-
-			@media (min-width: vars.$tablet) {
-				gap: 1.5rem;
-			}
-		}
-	}
-
-	&__carousel {
-		align-items: center;
-		display: flex;
-		justify-content: center;
-		width: 100%;
-	}
-
-	&__outer-track {
-		max-width: 11rem;
-		position: relative;
-		width: 100%;
-
-		@media (min-width: vars.$small-phone) {
-			max-width: 13.5rem;
-		}
-
-		@media (min-width: vars.$small-tablet) {
-			max-width: 18rem;
-		}
-
-		@media (min-width: vars.$tablet) {
-			max-width: 21rem;
-		}
-	}
-
-	&__inner-track {
-		margin: 0 auto;
-		overflow: hidden;
-		width: 100%;
-	}
-
-	&__slider {
-		display: flex;
-		gap: 0.5rem;
-		touch-action: pan-y;
-
-		@media (min-width: vars.$tablet) {
-			gap: 1.5rem;
-		}
-	}
-
-	&__prev,
-	&__next {
-		align-items: center;
-		background: none;
-		cursor: pointer;
-		display: flex;
-		height: 1.25rem;
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 1.25rem;
-		z-index: 10;
-
-		@media (min-width: vars.$small-phone) {
-			height: 1.5rem;
-			width: 1.5rem;
-		}
-
-		@media (min-width: vars.$small-tablet) {
-			height: 2rem;
-			width: 2rem;
-		}
-	}
-
-	&__prev {
-		left: -1.25rem;
-
-		@media (min-width: vars.$small-phone) {
-			left: -1.75rem;
-		}
-
-		@media (min-width: vars.$small-tablet) {
-			left: -2rem;
-		}
-	}
-
-	&__next {
-		right: -1.25rem;
-
-		@media (min-width: vars.$small-phone) {
-			right: -1.75rem;
-		}
-
-		@media (min-width: vars.$small-tablet) {
-			right: -2rem;
-		}
-	}
-
-	&__icon {
-		color: var(--text-color);
-		display: block;
-		font-size: var(--font-size-lg);
-		height: 0.75rem;
-		margin: 0 auto;
-		width: 0.75rem;
-
-		@media (min-width: vars.$small-phone) {
-			height: 1rem;
-			width: 1rem;
-		}
-	}
-
-	&__slide {
-		flex: 0 0 calc(33.3333% - (1rem / 3));
-		min-width: 0;
-
-		@media (min-width: vars.$tablet) {
-			flex: 0 0 calc(33.3333% - (3rem / 3));
-		}
-	}
-
-	&__imageBox {
-		// @include mx.imageBox;
-
-		& {
-			aspect-ratio: 1 / 1;
-			flex-shrink: 0;
-			height: auto;
-			width: 100%;
-		}
-
-		&--carousel {
-			margin-inline: auto;
-		}
-
-		&--non-carousel {
-			height: 3.75rem;
-			width: 3.75rem;
-
-			@media (min-width: vars.$small-phone) {
-				height: 4rem;
-				width: 4rem;
-			}
-
-			@media (min-width: vars.$small-tablet) {
-				height: 5.5rem;
-				width: 5.5rem;
-			}
-
-			@media (min-width: vars.$tablet) {
-				height: 6rem;
-				width: 6rem;
-			}
-		}
-	}
-
-	&__image {
-		background-repeat: no-repeat;
-		height: 100%;
-		object-fit: cover;
-		object-position: center top;
-		width: 100%;
-	}
-
-	&__text {
-		// box-shadow: inset 0 0 0.25rem rgba(0, 0, 0, 0.25);
-		// @include mx.textBoxInnerShadow;
-		display: flex;
-		flex: 1 1 auto;
-		flex-direction: column;
-		font-size: var(--font-size-sm);
-		letter-spacing: var(--letter-spacing-sm);
-		line-height: var(--line-height-md);
-		margin-inline: auto;
-		margin-top: 1.5rem;
-		max-width: 25rem;
-		min-height: 0;
-		overflow-wrap: anywhere;
-		overflow-x: hidden;
-		overflow-y: auto;
-		padding: 0.5rem;
-		text-align: start;
-		width: 100%;
-		white-space: normal;
-		word-break: break-word;
-
-		@media (min-width: vars.$tablet) {
-			font-size: var(--font-size-base);
-		}
-	}
-
-	&__paragraph {
-		margin-bottom: 1rem;
-		overflow-wrap: anywhere;
-		white-space: normal;
-		word-break: break-word;
-
-		&--numbered {
-			font-family: var(--heading-font);
-			font-weight: 600;
-			letter-spacing: var(--letter-spacing-lg);
-		}
-	}
-
-	&__inputs {
-		margin-top: 1rem;
-
-		@media (min-width: vars.$tablet) {
-			margin-top: 1.5rem;
-		}
-	}
-
-	// &__label {
-	// 	@include mx.hiddenLabel;
-	// }
-
-	&__input-group {
-		display: flex;
-		flex-direction: column;
-		margin-top: 1rem;
-
-		&:first-child {
-			margin-top: 0;
-		}
-	}
-
-	// &__input {
-	// 	@include mx.modalInput;
-	// }
 
 	&__button-container {
-		// @include mx.buttonContainer;
+		@include mx.buttonContainer;
 		& {
 			flex-direction: column;
 			flex-shrink: 0;
 			gap: 1rem;
 			margin-top: 2rem;
+			margin-top: auto;
 
 			@media (min-width: vars.$small-phone) {
 				flex-direction: row-reverse;
@@ -345,8 +87,10 @@
 		@include mx.button;
 		& {
 			min-width: 7rem;
+			width: 100%;
 
 			@media (min-width: vars.$small-tablet) {
+				max-width: 12rem;
 				min-width: 8rem;
 			}
 		}

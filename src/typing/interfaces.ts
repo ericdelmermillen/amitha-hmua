@@ -64,6 +64,9 @@ export interface ModalContextValue {
   handleEditBio: () => void;
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
+  handleClearModal: () => void;
+  modalType: string | null;
+  setModalType: Dispatch<SetStateAction<string | null>>;
 }
 
 
@@ -103,16 +106,6 @@ export interface IsLoadingProps {
   id: string;
   initiallyShowing: boolean;
 }
-
-export interface NavProps {
-  children?: ReactNode;
-  handleLogOut?: () => void
-};
-
-export interface SideNavProps {
-  children?: ReactNode;
-  handleLogOut?: () => void;
-};
 
 export interface NavPage {
   pageName: string;

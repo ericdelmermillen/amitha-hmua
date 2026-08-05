@@ -357,3 +357,28 @@
 		padding-inline: 8rem;
 	}
 }
+
+@mixin cardTitleHeading {
+	border-bottom: 2px solid var(--accent-color);
+	color: var(--text-color);
+	display: inline-block;
+	font-size: var(--font-size-base);
+	font-weight: 500;
+	letter-spacing: var(--letter-spacing-lg);
+	line-height: var(--line-height-xl);
+
+	@media (min-width: vars.$tablet) {
+		font-size: var(--font-size-lg);
+	}
+
+	@media (min-width: vars.$desktop) {
+		font-size: var(--font-size-xl);
+	}
+}
+
+@mixin buttonContainer {
+	align-items: center;
+	display: flex;
+	gap: 2rem;
+	justify-content: center;
+}

@@ -33,7 +33,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
       const nodes = document.querySelectorAll(".navSelect__inner");
       
       for (const node of nodes) {
-        if (node && !showNavSelectOptions) {
+        if (!showNavSelectOptions) {
           node.scrollTop = 0;
         }
       }
@@ -58,19 +58,15 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     setAppIsLoading(true);
     setSelectValue(option.tagName);
     setShowNavSelectOptions(false);
-    setShowSideNav(false);
     setShowTouchOffDiv(false);    
     setSelectedTag(option);
     handleNavigateHome(option);
-
-    // setTimeout(() => {
-    //   requestAnimationFrame(() => {
-    //     const innerNode = document.getElementById("navSelectInner");
-    //     if (innerNode) {
-    //       innerNode.scrollTop = 0;
-    //     }
-    //   })
-    // }, MIN_LOADING_INTERVAL);
+    
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        setShowSideNav(false);
+      })
+    }, MIN_LOADING_INTERVAL);
   };
 
   const handleTopOptionClick = () => {
@@ -116,16 +112,16 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
         tag => tag.tagName.toLowerCase() === locationTagName.toLowerCase()
       );
 
-      if (foundTag) {
-        setSelectedTag(foundTag);
-      } else {
-        router.push("/notfound");
-        setSelectValue(null);
+        if (foundTag) {
+          setSelectedTag(foundTag);
+        } else {
+          router.push("/notfound");
+          setSelectValue(null);
+        }
       }
-    }
     }, [searchParams, pathname, router, setSelectValue, setSelectedTag]);
     
-  
+
   return (
     <>
       <div 

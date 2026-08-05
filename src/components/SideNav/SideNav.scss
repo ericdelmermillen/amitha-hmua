@@ -2,29 +2,30 @@
 @use "../../partials/variables.scss" as vars;
 
 .sideNav {
-	background-color: var(--background-color);
-	// background-color: yellow;
-	bottom: 0;
-	box-shadow: var(--box-shadow);
-	height: 100vh;
-	left: 200vw;
-	position: fixed;
-	top: 0;
-	transition: all 0.5s ease-in-out;
-	width: 80vw;
-	z-index: 5;
+	& {
+		background-color: var(--background-color);
+		bottom: 0;
+		box-shadow: var(--box-shadow);
+		height: 100vh;
+		left: 200vw;
+		position: fixed;
+		top: 0;
+		transition: all var(--nav-transition-interval) ease-in-out;
+		width: 80vw;
+		z-index: 5;
 
-	@media (min-width: vars.$small-phone) {
-		width: 70vw;
-	}
+		@media (min-width: vars.$small-phone) {
+			width: 70vw;
+		}
 
-	@media (min-width: 575px) {
-		width: 50vw;
+		@media (min-width: 575px) {
+			width: 50vw;
+		}
 	}
 
 	&.show {
 		left: 20vw;
-		transition: all 0.5s ease-out;
+		transition: all var(--nav-transition-interval) ease-out;
 
 		@media (min-width: vars.$small-phone) {
 			left: 30vw;
@@ -114,7 +115,6 @@
 	}
 
 	&.tall &__selectValue.side-nav {
-		background: green;
 		background: var(--background-color);
 	}
 }
