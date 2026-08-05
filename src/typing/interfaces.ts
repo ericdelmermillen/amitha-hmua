@@ -9,7 +9,7 @@ import {
 } from "react";
 import { ColorMode } from "./types";
 
-export interface AppContextProviderProps {
+export interface ContextProviderProps {
   children: ReactNode;
 };
 
@@ -48,18 +48,24 @@ export interface AppContextValue {
   showNavSelectOptions: boolean;
   setShowNavSelectOptions: Dispatch<SetStateAction<boolean>>;
   tags: Tag[];
-  handleEditBio: () => void;
   handleLogoutUser: () => void;
   
   
-//   // functions
-//   loginUser: (email: string, password: string) => Promise<boolean>;
-//   showNav: () => void;
+  //   // functions
+  //   loginUser: (email: string, password: string) => Promise<boolean>;
+  //   showNav: () => void;
   getPrevScrollYPosValue: () => number;
-//   notFoundNavLinkClick: (to: string) => void;
+  //   notFoundNavLinkClick: (to: string) => void;
   // hideNav: () => void;
-//   logoutUser: () => void;
+  //   logoutUser: () => void;
 };
+
+export interface ModalContextValue {
+  handleEditBio: () => void;
+  showModal: boolean;
+  setShowModal: Dispatch<SetStateAction<boolean>>;
+}
+
 
 export interface ColorThemeContextProps {
   children: ReactNode;

@@ -1,18 +1,20 @@
 "use client";
 
 import { ClientButtonProps } from "@/typing/interfaces";
-import { useAppContext } from "@/hooks/hooks";
+import { useAppContext, useModalContext } from "@/hooks/hooks";
 import "./ClientButton.scss";
 
 const ClientButton = ({ text, variant, buttonType, modifierClass }: ClientButtonProps) => {
 
   const {
     isLoggedIn,
-    handleEditBio,
     handleLogoutUser
     // modalIsOpen
-
   } = useAppContext()
+    
+  const {
+    handleEditBio,
+  } = useModalContext()
   
   const safeModifierClass = typeof modifierClass === "string" ? modifierClass : "";
 

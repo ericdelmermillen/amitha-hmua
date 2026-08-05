@@ -3,7 +3,7 @@
 import { type MouseEvent, useState,  useRef, useEffect, createContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { scrollToTop, isModifiedClick, normalizeCasing } from "@/utils/utils";
-import { AppContextProviderProps, AppContextValue } from "@/typing/interfaces";
+import { ContextProviderProps, AppContextValue } from "@/typing/interfaces";
 import { Tag } from "@/typing/interfaces";
 import { toast } from "react-toastify";
 
@@ -13,7 +13,8 @@ const NAV_CLICK_DELAY = Number(process.env.NEXT_PUBLIC_NAV_CLICK_DELAY);
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
-const AppContextProvider = ({ children }: AppContextProviderProps) => {
+const AppContextProvider = ({ children }: ContextProviderProps) => {
+
   const [ scrollYPos, setScrollYPos ] = useState(0);
 
   const [ isOrderEditable, setIsOrderEditable ] = useState(false);
@@ -148,16 +149,11 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     // };
 
 
-    const handleEditBio = () => {
-      // needs to open the modal in the appropriate mode only
-      console.log("Edit Bio?")
-
-    }
 
     const handleLogoutUser = () => {
-      // needs to open the modal in the appropriate mode only
       console.log("Logout?")
       setIsLoggedIn(false);
+      setShowSideNav(false);
       toast.success("Logging you out...")
     }
 
@@ -237,7 +233,6 @@ const AppContextProvider = ({ children }: AppContextProviderProps) => {
     showNavSelectOptions, 
     setShowNavSelectOptions,
     tags,
-    handleEditBio,
     handleLogoutUser
   };
 

@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { AppContextProvider } from "@/contexts/AppContext";
 import { ColorThemeProvider } from "@/contexts/ColorThemeContext";
+import { ModalContextProvider } from "@/contexts/ModalContext";
 import { ToastProvider } from "@/providers/ToastProvider";
 import Footer from "@/components/Footer/Footer";
-import Nav from "@/components/Nav/Nav";
-import "./globals.scss";
 import IsLoading from "@/components/IsLoading/IsLoading";
+import Nav from "@/components/Nav/Nav";
 import SideNav from "@/components/SideNav/SideNav";
 import TouchOffDiv from "@/components/TouchOffDiv/TouchOffDiv";
+import "./globals.scss";
+import Modal from "@/components/Modal/Modal";
 
 
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
@@ -50,18 +52,18 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
       <body>
         <AppContextProvider>
           <ColorThemeProvider>
-            <IsLoading/>
-            <TouchOffDiv />
-            <Nav />
-            {children}
-            
+            <ModalContextProvider>
+          
+              <IsLoading/>
+              <TouchOffDiv />
+              <Nav />
+              <SideNav />
+              <ToastProvider />
+              <Modal />
+              {children}
+              <Footer />
 
-              <SideNav>
-                {/* may render color mode toggle here or possibly socials: SideNav can be self closing if it is not accepting children */}
-              </SideNav>
-            
-            <Footer />
-            <ToastProvider />
+            </ModalContextProvider>
           </ColorThemeProvider>
         </AppContextProvider>
       </body>
