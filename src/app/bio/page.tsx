@@ -3,6 +3,7 @@ import { getBio } from "@/actions/bioActions";
 import Image from "next/image";
 import ClientButton from "@/components/ClientButton/ClientButton";
 import "./BioPage.scss";
+import { toast } from "react-toastify";
 
 const BioPage = async () => {
   let response: BioResponse;
@@ -11,6 +12,7 @@ const BioPage = async () => {
     response = await getBio();
   } catch (error) {
     console.error("Failed to load bio:", error);
+    toast.error("An error occured. Please try again later.")
     throw error;
   }
 

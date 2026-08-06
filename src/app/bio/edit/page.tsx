@@ -17,7 +17,7 @@ const EditBioPage = () => {
 
   const [bioData, setBioData] = useState<BioData | null>(null);
 
-  const [inputPhotos, setInputPhotos] = useState<InputPhoto[]>([
+  const [ inputPhotos, setInputPhotos ] = useState<InputPhoto[]>([
     {
       photoNo: 1,
       photoPreview: null,
@@ -26,8 +26,8 @@ const EditBioPage = () => {
     }
   ]);
 
-  const [newBioName, setNewBioName] = useState("");
-  const [newBioText, setNewBioText] = useState("");
+  const [ newBioName, setNewBioName ] = useState("");
+  const [ newBioText, setNewBioText ] = useState("");
 
   useEffect(() => {
     const loadBio = async () => {

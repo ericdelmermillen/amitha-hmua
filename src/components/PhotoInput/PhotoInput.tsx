@@ -1,23 +1,22 @@
 "use client";
 
-import { DragEvent, MouseEvent, useRef, useState } from "react";
+import Image from "next/image";
+import { ChangeEvent, DragEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import { PhotoInputProps } from "@/typing/interfaces";
 import { checkIfIsFirefox } from "@/utils/utils";
 import PhotoPlaceholder from "@/assets/icons/PhotoPlaceholder";
 import "./PhotoInput.scss";
 
 const isFirefox = checkIfIsFirefox();
 
-interface PhotoInputProps {
-
-}
 
 const PhotoInput = ({ 
   shootPhoto, 
   setShootPhotos, 
   handleImageChange,
-  handleInputDragStart = null,
-  handleDropInputTarget = null
-}) => {
+  handleInputDragStart,
+  handleDropInputTarget
+}: PhotoInputProps) => {
 
   const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
@@ -32,8 +31,8 @@ const PhotoInput = ({
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if(file) {
       handleImageChange(e, shootPhoto.photoNo);
       setTimeout(() => {
@@ -42,20 +41,44 @@ const PhotoInput = ({
     };
   };
 
+  // const handleClearInput = (e: MouseEvent<HTMLElement>) => {
+  //   e.stopPropagation();
+  //   setShowImage(false);
+  
+  //   setShootPhotos(prevShootPhotos => {
+  //     return prevShootPhotos.map(shootPhoto => {
+  //       if (shootPhoto.photoNo === inputNo) {
+  //         return { ...shootPhoto, photoPreview: null, photoData: null };
+  //       }
+  //       return shootPhoto;
+  //     });
+  //   });
+  // };
+  
+
   const handleClearInput = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     setShowImage(false);
-  
+
     setShootPhotos(prevShootPhotos => {
       return prevShootPhotos.map(shootPhoto => {
         if (shootPhoto.photoNo === inputNo) {
-          return { ...shootPhoto, photoPreview: null, photoData: null };
+
+          if (shootPhoto.photoPreview && shootPhoto.photoPreview.startsWith("blob:")) {
+            URL.revokeObjectURL(shootPhoto.photoPreview);
+          }
+
+          return {
+            ...shootPhoto,
+            photoPreview: null,
+            photoData: null
+          };
         }
+
         return shootPhoto;
       });
     });
   };
-  
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -64,6 +87,14 @@ const PhotoInput = ({
   const handleImageLoad = () => {
     setShowImage(true);
   };
+
+  useEffect(() => {
+    return () => {
+      if (shootPhoto.photoPreview && shootPhoto.photoPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(shootPhoto.photoPreview);
+      }
+    };
+  }, [shootPhoto.photoPreview]);
   
   return (
     <>
@@ -90,14 +121,43 @@ const PhotoInput = ({
             : ""}`}
           draggable={true}
         >
-          <img
+          {/* <img
             className={`photoInput__image ${showImage 
               ? "inFront" 
               : ""}`}
             src={shootPhoto.photoPreview}
             onLoad={handleImageLoad} 
             draggable={true}
-          />
+          /> */}
+
+        {shootPhoto.photoPreview && shootPhoto.photoPreview.startsWith("blob:") 
+        
+        ? (
+            <img
+              className={`photoInput__image ${showImage 
+                ? "inFront" 
+                : ""}`}
+              src={shootPhoto.photoPreview}
+              onLoad={handleImageLoad}
+              draggable={true}
+              alt="Photo preview"
+            />
+          ) 
+        : shootPhoto.photoPreview ? 
+          (
+            <Image
+              className={`photoInput__image ${showImage 
+                ? "inFront" 
+                : ""}`}
+              src={shootPhoto.photoPreview}
+              alt="Photo preview"
+              fill
+              onLoad={handleImageLoad}
+              draggable={true}
+            />
+          ) 
+        : null}
+            
           <PhotoPlaceholder
             className={`photoInput__placeholder ${showImage 
               ? "behind" 

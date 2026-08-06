@@ -1,5 +1,6 @@
 import { 
   type ReactNode, 
+  type ChangeEvent,
   type RefObject,
   type SetStateAction, 
   type Dispatch, 
@@ -150,4 +151,21 @@ export interface BioUpdateData {
   bioName: string;
   bioText: string;
   photo: InputPhoto;
+}
+
+export interface PhotoInputProps {
+  shootPhoto: InputPhoto;
+  setShootPhotos: Dispatch<SetStateAction<InputPhoto[]>>;
+
+  handleImageChange: (
+    e: ChangeEvent<HTMLInputElement>,
+    inputNo: number
+  ) => void;
+
+  handleInputDragStart?: (inputNo: number) => void | undefined;
+
+  handleDropInputTarget?: (
+    inputNo: number,
+    displayOrder: number
+  ) => void | undefined;
 }
