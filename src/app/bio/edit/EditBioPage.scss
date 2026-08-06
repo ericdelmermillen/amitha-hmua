@@ -4,18 +4,21 @@
 .editBioPage {
 	& {
 		@include mx.page;
+		& {
+			padding-top: vars.$nav-height;
+		}
 	}
 
 	&__inner {
 		border: 1px solid var(--text-color);
 		margin-top: 2rem;
 		min-height: min(90vh, 500px);
-		padding-block: 2rem;
 		padding-inline: 1rem;
 		width: 90%;
+		padding-block: 3rem;
 
 		@media (min-width: vars.$desktop) {
-			max-width: 1000px;
+			max-width: vars.$large-tablet;
 		}
 	}
 
@@ -41,6 +44,21 @@
 		}
 	}
 
+	&__hero-section {
+		align-items: center;
+		border-radius: var(--border-radius);
+		display: flex;
+		flex-direction: column;
+		padding-inline: 2rem;
+		width: 100%;
+
+		@media (min-width: vars.$large-tablet) {
+			border: 1px solid var(--text-color);
+			padding-inline: 2rem;
+			width: 50%;
+		}
+	}
+
 	&__photoUpload {
 		display: grid;
 		font-size: 1.5rem;
@@ -59,21 +77,6 @@
 
 		@media (min-width: vars.$large-tablet) {
 			margin-top: 25%;
-		}
-	}
-
-	&__hero-section {
-		align-items: center;
-		border-radius: var(--border-radius);
-		display: flex;
-		flex-direction: column;
-		padding-inline: 2rem;
-		width: 100%;
-
-		@media (min-width: vars.$large-tablet) {
-			border: 1px solid var(--text-color);
-			padding-inline: 2rem;
-			width: 50%;
 		}
 	}
 

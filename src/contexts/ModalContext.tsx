@@ -50,7 +50,6 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
 
     const handleEditBio = () => {
       // needs to open the modal in the appropriate mode only
-      console.log("Edit Bio?")
       setShowModal(true);
       setModalType("editBio")
 

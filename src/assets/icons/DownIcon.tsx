@@ -1,6 +1,6 @@
 import { IconProps } from "@/typing/interfaces";
 
-const DownIcon = ({ className, classNameStroke }: IconProps) => {
+const DownIcon = ({ className, strokeClassName }: IconProps) => {
   return (
     <>
       <svg 
@@ -14,7 +14,7 @@ const DownIcon = ({ className, classNameStroke }: IconProps) => {
           d="M1530.436,80.478l39.486,38.427-39.486,41.453" transform="translate(162.082 -1528.625) rotate(90)" fill="none" 
           strokeLinecap="round" 
           strokeWidth="12"
-          className={classNameStroke}
+          className={strokeClassName}
         />
       </svg>
     </>

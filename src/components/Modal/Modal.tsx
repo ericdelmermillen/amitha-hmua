@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { 
-  useAppContext,
-  useModalContext 
-} from "@/hooks/hooks";
+import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
 import "./Modal.scss";
 

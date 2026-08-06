@@ -82,7 +82,7 @@ export interface ColorThemeContextValue {
 
 export interface IconProps {
   className?: string;
-  classNameStroke?: string;
+  strokeClassName?: string;
 }
 
 export interface ColorModetoggleProps {
@@ -137,4 +137,17 @@ export interface ClientButtonProps {
   variant: string;
   buttonType: string;
   modifierClass?: string;
+}
+
+export interface InputPhoto {
+  photoNo: number;
+  photoPreview: string | null;
+  photoData: File | Blob | null;
+  displayOrder: number;
+}
+
+export interface BioUpdateData {
+  bioName: string;
+  bioText: string;
+  photo: InputPhoto;
 }

@@ -4,14 +4,14 @@
 .bioPage {
 	@include mx.page;
 	& {
-		padding-inline: 2rem;
-		padding-top: 2rem;
+		padding-top: vars.$nav-height;
 	}
 
 	&__inner {
 		// border: 2px solid red;
 		display: grid;
 		justify-content: center;
+		margin-top: 2rem;
 		max-width: calc(100vw - 4rem);
 		min-width: calc(100vw - 4rem);
 		overflow-y: hidden;
@@ -25,7 +25,6 @@
 	&__heroImg-container {
 		left: 50%;
 		margin-bottom: 2rem;
-		margin-top: vars.$nav-height;
 		max-width: calc(100vw - 4rem);
 		min-width: calc(100vw - 4rem);
 		padding-bottom: 100%;

@@ -85,6 +85,12 @@ const normalizeCasing = (string: string | undefined): string => {
     : ""
 };
 
+
+const checkIfIsFirefox = () => {
+  return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+};
+
+
 export {
   scrollToTop,
   addClassToDiv,
@@ -98,5 +104,6 @@ export {
   isValidMessage,
   staggerToastsByN,
   splitOnNewLine,
-  normalizeCasing
+  normalizeCasing,
+  checkIfIsFirefox
 }
