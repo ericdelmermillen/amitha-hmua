@@ -1,21 +1,30 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useAppContext } from "@/hooks/hooks";
+import { 
+  ChangeEvent, 
+  SubmitEvent, 
+  useState, 
+  useEffect, 
+  useCallback 
+} from "react";
 import { useRouter } from "next/navigation";
-import { BioData, InputPhoto } from "@/typing/interfaces";
+import { InputPhoto } from "@/typing/interfaces";
+import { useAppContext } from "@/hooks/hooks";
 import { getBio, updateBio } from "@/actions/bioActions";
+import { getSignedURL } from "@/actions/s3Actions";
+import { staggerToastsByN } from "@/utils/utils";
 import { toast } from "react-toastify";
 import Compressor from "compressorjs";
 import PhotoInput from "@/components/PhotoInput/PhotoInput";
 import "./EditBioPage.scss";
 
-const EditBioPage = () => {
-  const router = useRouter();
+const BIO_DIRNAME = process.env.NEXT_PUBLIC_AWS_BIO_DIRNAME || "bioimages";
 
+const EditBioPage = () => {
   const { setAppIsLoading } = useAppContext();
 
-  const [bioData, setBioData] = useState<BioData | null>(null);
+  const [ bioName, setBioName ] = useState("");
+  const [ bioText, setBioText ] = useState("");
 
   const [ inputPhotos, setInputPhotos ] = useState<InputPhoto[]>([
     {
@@ -26,55 +35,18 @@ const EditBioPage = () => {
     }
   ]);
 
-  const [ newBioName, setNewBioName ] = useState("");
-  const [ newBioText, setNewBioText ] = useState("");
+  const router = useRouter();
 
-  useEffect(() => {
-    const loadBio = async () => {
-      try {
-        const response = await getBio();
-
-        if (!response.success || !response.data) {
-          throw new Error(response.message ?? "Failed to load bio");
-        }
-
-        setBioData(response.data);
-
-        setNewBioName(response.data.bioName);
-        setNewBioText(response.data.bioText);
-
-        setInputPhotos([
-          {
-            photoNo: 1,
-            photoPreview: response.data.bioImgURL ?? null,
-            photoData: null,
-            displayOrder: 1
-          }
-        ]);
-
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to load bio page");
-      }
-    };
-
-    loadBio();
-  }, []);
-
-  const handleBioCaptionChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setNewBioName(e.target.value);
+  const handleBioCNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setBioName(e.target.value);
   };
 
-  const handleBioTextChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setNewBioText(e.target.value);
+  const handleBioTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setBioText(e.target.value);
   };
 
   const handleImageChange = useCallback(async (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: ChangeEvent<HTMLInputElement>,
     inputNo: number
   ) => {
     const file = e.target.files?.[0];
@@ -113,52 +85,89 @@ const EditBioPage = () => {
             : photo
         )
       );
-
     } catch (error) {
       console.error("Image compression failed:", error);
       toast.error("Unable to process image");
+    } finally {
+      e.target.value = "";
     }
-
   }, []);
 
-  const handleCancel = () => {
-    router.push("/bio");
-  };
-
-  const handleSubmitBioUpdate = async (
-     e: React.SubmitEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!newBioName.trim()) {
-      toast.error("Bio name cannot be left blank");
-      return;
+    let errors = 0;
+
+    if (!bioName.trim()) {
+      staggerToastsByN("Bio name cannot be left blank", "error", errors);
+      errors++;
     }
 
-    if (!newBioText.trim()) {
-      toast.error("Bio text cannot be left blank");
-      return;
+    if (!bioText.trim()) {
+      staggerToastsByN("Bio text cannot be left blank", "error", errors);
+      errors++;
     }
 
-    if (!bioData?.bioImgURL) {
-      toast.error("Bio image missing");
+    if (!inputPhotos[0]?.photoPreview) {
+      staggerToastsByN("Bio image missing", "error", errors);
+      errors++;
+    }
+
+    if (errors > 0) {
       return;
     }
 
     try {
       setAppIsLoading(true);
 
-      const imageName = bioData.bioImgURL.split("/").pop();
+      const targetPhoto = inputPhotos[0];
+      let newImageName = "";
+      let isPhotoUpdated = false;
 
-      if (!imageName) {
-        throw new Error("Unable to determine image name");
+      // 1. Check if a new compressed image file was selected
+      if (targetPhoto.photoData) {
+        // Fetch presigned URL from S3 server action
+        const signedUrlRes = await getSignedURL(BIO_DIRNAME);
+
+        if (!signedUrlRes.success || !signedUrlRes.url) {
+          throw new Error(signedUrlRes.error || "Failed to generate S3 upload URL");
+        }
+
+        // Upload compressed image directly to S3
+        const uploadRes = await fetch(signedUrlRes.url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": targetPhoto.photoData.type || "image/jpeg",
+          },
+          body: targetPhoto.photoData,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error("Failed to upload image to S3");
+        }
+
+        // Extract clean object key/filename from the upload URL (strip query params)
+        const uploadedFullUrl = signedUrlRes.url.split("?")[0];
+        newImageName = uploadedFullUrl.split(`${BIO_DIRNAME}/`)[1] || "";
+        
+        isPhotoUpdated = true;
+
+      } else if (targetPhoto?.photoPreview) {
+        // Step 2: Existing photo retained -> Extract filename directly from photoPreview URL
+        const cleanUrl = targetPhoto.photoPreview.split("?")[0];
+        newImageName = cleanUrl.split(`${BIO_DIRNAME}/`)[1] || "";
       }
 
+      if (!newImageName) {
+        throw new Error("Unable to determine image filename");
+      }
+
+      // 3. Update database via server action
       const response = await updateBio({
-        bio_name: newBioName,
-        bio_img_url: imageName,
-        bio_text: newBioText,
-        updated_Photo: false
+        bio_name: bioName,
+        bio_img_url: newImageName,
+        bio_text: bioText,
+        updated_Photo: isPhotoUpdated,
       });
 
       if (!response.success) {
@@ -166,17 +175,52 @@ const EditBioPage = () => {
       }
 
       toast.success("Bio page updated");
-
       router.push("/bio");
 
     } catch (error) {
       console.error("Failed to update bio:", error);
-      toast.error("Error updating bio page");
+      toast.error(error instanceof Error ? error.message : "Error updating bio page");
 
     } finally {
       setAppIsLoading(false);
     }
   };
+
+  const handleCancel = () => {
+    router.push("/bio");
+    toast.success("Cancelling...");
+  };
+
+  // useEffect to call for bioData to populate form
+  useEffect(() => {
+    const loadBio = async () => {
+      try {
+        const response = await getBio();
+
+        if (!response.success || !response.data) {
+          throw new Error(response.message ?? "Failed to load bio");
+        }
+
+        setBioName(response.data.bioName);
+        setBioText(response.data.bioText);
+
+        setInputPhotos([
+          {
+            photoNo: 1,
+            photoPreview: response.data.bioImgURL ?? null,
+            photoData: null,
+            displayOrder: 1
+          }
+        ]);
+
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load bio page");
+      };
+    };
+
+    loadBio();
+  }, []);
 
   return (
     <div className="editBioPage">
@@ -186,10 +230,7 @@ const EditBioPage = () => {
           Edit Your Bio
         </h1>
 
-        <form
-          className="editBioPage__form"
-          onSubmit={handleSubmitBioUpdate}
-        >
+        <form className="editBioPage__form" onSubmit={handleSubmit}>
 
           <div className="editBioPage__hero-section">
 
@@ -208,24 +249,21 @@ const EditBioPage = () => {
             <input
               type="text"
               className="editBioPage__bio-caption"
-              value={newBioName}
-              onChange={handleBioCaptionChange}
+              value={bioName}
+              onChange={handleBioCNameChange}
             />
 
           </div>
 
           <div className="editBioPage__text-section">
-
             <textarea
               className="editBioPage__bio-text"
-              value={newBioText}
+              value={bioText}
               onChange={handleBioTextChange}
             />
-
           </div>
 
           <div className="editBioPage__button-container">
-
             <button
               type="button"
               className="editBioPage__button"
@@ -233,18 +271,16 @@ const EditBioPage = () => {
             >
               Cancel
             </button>
-
             <button
               type="submit"
               className="editBioPage__button"
             >
               Update
             </button>
-
           </div>
 
         </form>
-
+        
       </div>
     </div>
   );

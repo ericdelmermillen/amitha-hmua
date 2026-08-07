@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
 			{
 				protocol: "https",
 				hostname: "amitha-hmua-images.s3.ca-central-1.amazonaws.com",
-				pathname: "/bioimages/**",
+        // probably need to restrict the pathname to bioimages and shoots to matdh AWS dirname
+				pathname: "/**",
 			},
 		],
 	},

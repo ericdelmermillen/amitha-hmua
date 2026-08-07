@@ -4,7 +4,12 @@ import { ClientButtonProps } from "@/typing/interfaces";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import "./ClientButton.scss";
 
-const ClientButton = ({ text, variant, buttonType, modifierClass }: ClientButtonProps) => {
+const ClientButton = ({ 
+  text, 
+  variant = "standard", 
+  buttonType, 
+  modifierClass 
+}: ClientButtonProps) => {
 
   const {
     isLoggedIn,
@@ -20,7 +25,6 @@ const ClientButton = ({ text, variant, buttonType, modifierClass }: ClientButton
 
   const modalIsOpen = false;
 
-
   if (isLoggedIn && buttonType === "editBio") {
     return (
       <button
@@ -32,7 +36,6 @@ const ClientButton = ({ text, variant, buttonType, modifierClass }: ClientButton
       </button>
     );
   };
-
 
   if (isLoggedIn && buttonType === "logOut") {
     return (

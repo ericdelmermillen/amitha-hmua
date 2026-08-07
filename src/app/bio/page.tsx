@@ -1,9 +1,9 @@
+import Image from "next/image";
 import { BioResponse } from "@/typing/interfaces";
 import { getBio } from "@/actions/bioActions";
-import Image from "next/image";
+import { toast } from "react-toastify";
 import ClientButton from "@/components/ClientButton/ClientButton";
 import "./BioPage.scss";
-import { toast } from "react-toastify";
 
 const BioPage = async () => {
   let response: BioResponse;
@@ -14,7 +14,7 @@ const BioPage = async () => {
     console.error("Failed to load bio:", error);
     toast.error("An error occured. Please try again later.")
     throw error;
-  }
+  };
 
   if (!response.success || !response.data) {
     throw new Error(response.message ?? "Failed to load bio data");
@@ -26,8 +26,6 @@ const BioPage = async () => {
     bioImgURL,
     bioImageNotSet
   } = response.data;
-  
-  // const bioImageNotSet = true;
   
 return (
     <>
@@ -51,8 +49,8 @@ return (
                     className="bioPage__heroImg"
                     src={bioImgURL}
                     alt={`Hero Image of ${bioName}`}
-                    fill
                     sizes="(max-width: 768px) calc(100vw - 4rem), 50vw"
+                    fill
                     priority
                     // onClick={handleSetLightBox}
                   />
@@ -60,15 +58,13 @@ return (
               }
 
             </div>
-            <h3 className={`bioPage__heroCaption`}>
+            <h3 className={`bioPage__heroName`}>
               {bioName}
             </h3>
-
 
             <div className="bioPage__button-container">
               <ClientButton
                 text="Edit Bio"
-                variant="standard"
                 buttonType="editBio"
               />
             </div>

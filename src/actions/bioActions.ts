@@ -1,6 +1,7 @@
 "use server";
 
-import { BioResponse } from "@/typing/interfaces";
+import { BioResponse, UpdatedBioData } from "@/typing/interfaces";
+import { revalidatePath } from 'next/cache';
 import { pool } from "@/db/dbClient";
 import { deleteFiles } from "@/s3/s3";
 
@@ -10,7 +11,6 @@ const BIO_DIRNAME = process.env.BIO_DIRNAME;
 if (!BUCKET_PATH || !BIO_DIRNAME) {
 	throw new Error("Missing required AWS environment variables.");
 }
-
 
 const getBio = async (): Promise<BioResponse> => {
 	try {
@@ -48,160 +48,113 @@ const getBio = async (): Promise<BioResponse> => {
 			success: false,
 			message: "An error occurred while fetching the Bio Page data"
 		};
-	}
+	};
 };
-
 
 const updateBio = async ({
-	bio_name,
-	bio_img_url,
-	bio_text,
-	updated_Photo
-}: {
-	bio_name: string;
-	bio_img_url: string;
-	bio_text: string;
-	updated_Photo: boolean;
-}) => {
+  bio_name,
+  bio_img_url,
+  bio_text,
+  updated_Photo
+}: UpdatedBioData) => {
+  let connection;
 
-	let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
 
-	try {
-		connection = await pool.getConnection();
+    const [existingRows] = await connection.query(
+      `SELECT * FROM bio LIMIT 1`
+    );
 
-		await connection.beginTransaction();
+    const existingBioData = (existingRows as any[])[0];
 
-		// 1. Check existing row
-		const [existingRows] = await connection.query(
-			`SELECT * FROM bio LIMIT 1`
-		);
+    if (!existingBioData) {
+      await connection.query(
+        `
+        INSERT INTO bio
+        (
+          bio_name,
+          bio_text,
+          bio_img_url
+        )
+        VALUES (?, ?, ?)
+        `,
+        [bio_name, bio_text, bio_img_url]
+      );
 
-		const existingBioData = (existingRows as any[])[0];
+      await connection.commit();
+      revalidatePath('/bio');
 
-		// 2. Insert if none exists
-		if (!existingBioData) {
+      return {
+        success: true,
+        message: "Bio inserted successfully"
+      };
+    }
 
-			await connection.query(
-				`INSERT INTO bio 
-				(bio_name, bio_text, bio_img_url)
-				VALUES (?, ?, ?)`,
-				[
-					bio_name,
-					bio_text,
-					bio_img_url
-				]
-			);
+    const previousBioImg = existingBioData.bio_img_url;
 
-			await connection.commit();
+    await connection.query(
+      `
+      UPDATE bio
+      SET
+        bio_name = ?,
+        bio_text = ?,
+        bio_img_url = ?
+      WHERE id = ?
+      `,
+      [bio_name, bio_text, bio_img_url, existingBioData.id]
+    );
 
-			return {
-				success: true,
-				message: "Bio inserted successfully",
-				data: {
-					bioName: bio_name,
-					bioText: bio_text,
-					bioImgURL:
-						`${BUCKET_PATH}${BIO_DIRNAME}/${bio_img_url}`
-				}
-			};
-		}
+    await connection.commit();
+    revalidatePath('/bio');
 
-		const previousBioImgURL = existingBioData.bio_img_url;
+    // Clean up old photo after successful DB update
+    if (
+      updated_Photo &&
+      previousBioImg &&
+      previousBioImg !== bio_img_url
+    ) {
+      try {
+        await deleteFiles([`${BIO_DIRNAME}/${previousBioImg}`]);
+      } catch (error) {
+        console.error("Failed deleting old bio image:", error);
+      };
+    }
 
-		// 3. Update existing row
-		await connection.query(
-			`UPDATE bio
-			 SET bio_name = ?, 
-			     bio_text = ?, 
-			     bio_img_url = ?
-			 WHERE id = ?`,
-			[
-				bio_name,
-				bio_text,
-				bio_img_url,
-				existingBioData.id
-			]
-		);
+    return {
+      success: true,
+      message: "Bio updated successfully"
+    };
 
-		await connection.commit();
+  } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
 
-		// 4. Delete old AWS image after DB succeeds
-		if (updated_Photo && previousBioImgURL) {
+    console.error("Error updating Bio:", error);
 
-			try {
-				await deleteFiles([
-					`${BIO_DIRNAME}/${previousBioImgURL}`
-				]);
+    // Remove newly uploaded image if DB write failed
+    if (updated_Photo && bio_img_url) {
+      try {
+        await deleteFiles([`${BIO_DIRNAME}/${bio_img_url}`]);
+      } catch (deleteError) {
+        console.error("Failed removing orphaned upload:", deleteError);
+      };
+    }
 
-			} catch(deleteError) {
+    return {
+      success: false,
+      message: "Error updating Bio page"
+    };
 
-				console.error(
-					"Error deleting old AWS file:",
-					deleteError
-				);
-
-			}
-		}
-
-		// Fetch updated record
-		const [updatedRows] = await pool.query(
-			`SELECT * FROM bio LIMIT 1`
-		);
-
-		const updatedBioData = (updatedRows as any[])[0];
-
-		return {
-			success: true,
-			message: "Bio updated successfully",
-			data: {
-				bioName: updatedBioData.bio_name,
-				bioText: updatedBioData.bio_text,
-				bioImgURL:
-					`${BUCKET_PATH}${BIO_DIRNAME}/${updatedBioData.bio_img_url}`
-			}
-		};
-
-	} catch(error) {
-		if(connection) {
-			await connection.rollback();
-		}
-
-		console.error(
-			"Error updating Bio page:",
-			error
-		);
-
-		// Remove uploaded image if DB failed
-		try {
-			if(bio_img_url) {
-
-				await deleteFiles([
-					`${BIO_DIRNAME}/${bio_img_url}`
-				]);
-
-			}
-
-		} catch(deleteError) {
-
-			console.error(
-				"Error deleting failed upload:",
-				deleteError
-			);
-		}
-
-		return {
-			success: false,
-			message: "Error updating Bio page"
-		};
-
-	} finally {
-
-		if(connection) {
-			connection.release();
-		}
-
-	}
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  };
 };
+
 
 export {
   getBio,

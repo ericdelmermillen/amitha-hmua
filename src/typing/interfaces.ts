@@ -1,7 +1,6 @@
 import { 
   type ReactNode, 
   type ChangeEvent,
-  type RefObject,
   type SetStateAction, 
   type Dispatch, 
   type MouseEvent,
@@ -15,50 +14,38 @@ export interface ContextProviderProps {
 };
 
 export interface AppContextValue {
+  // state, state setting and ref
   appIsLoading: boolean;
   setAppIsLoading: Dispatch<SetStateAction<boolean>>;
   isLoggedIn: boolean;
   setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
-  handleNavigateHome: (tagObj?: Tag) => void;
-
   showSideNav: boolean;
-  setShowSideNav: Dispatch<SetStateAction<boolean>>;
-  
-  handleToggleSideNav: () => void;
-  handleTouchOffDiv: () => void;
-
+  setShowSideNav: Dispatch<SetStateAction<boolean>>;  
   showTouchOffDiv: boolean;
-   setShowTouchOffDiv: Dispatch<SetStateAction<boolean>>;
-
-  handleSetShowSideNavFalse: () => void;
-  handleNavLinkClick: () => void;
-  handleIsOnSamePage: () => void;
-  handleSideNavLinkClick: (e: MouseEvent<HTMLAnchorElement>) => void;
-  // state, state setting and ref
-  handleIsOnCurrentPage: (e: MouseEvent<HTMLAnchorElement>) => void;
-  // isLoggedIn: boolean; 
-  // setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
+  setShowTouchOffDiv: Dispatch<SetStateAction<boolean>>;
   scrollYPos: number;
   setScrollYPos: Dispatch<SetStateAction<number>>;
-
   selectValue: string | null;
   setSelectValue: Dispatch<SetStateAction<string | null>>;
-
   selectedTag: Tag | null;
   setSelectedTag: Dispatch<SetStateAction<Tag | null>>;
   showNavSelectOptions: boolean;
   setShowNavSelectOptions: Dispatch<SetStateAction<boolean>>;
   tags: Tag[];
+  
+  // handler functions
+  handleToggleSideNav: () => void;
+  handleTouchOffDiv: () => void;
+  handleNavLinkClick: () => void;
+  handleIsOnSamePage: () => void;
+  handleSideNavLinkClick: (e: MouseEvent<HTMLAnchorElement>) => void;
   handleLogoutUser: () => void;
+  handleNavigateHome: (tagObj?: Tag) => void;
+  handleSetShowSideNavFalse: () => void;
+  handleIsOnCurrentPage: (e: MouseEvent<HTMLAnchorElement>) => void;
   
-  
-  //   // functions
-  //   loginUser: (email: string, password: string) => Promise<boolean>;
-  //   showNav: () => void;
+  // functions
   getPrevScrollYPosValue: () => number;
-  //   notFoundNavLinkClick: (to: string) => void;
-  // hideNav: () => void;
-  //   logoutUser: () => void;
 };
 
 export interface ModalContextValue {
@@ -69,7 +56,6 @@ export interface ModalContextValue {
   modalType: string | null;
   setModalType: Dispatch<SetStateAction<string | null>>;
 }
-
 
 export interface ColorThemeContextProps {
   children: ReactNode;
@@ -90,11 +76,6 @@ export interface ColorModetoggleProps {
   inputId?: string;
 }
 
-export interface Tag {
-  id: number;
-  tagName: string;
-}
-
 export interface ContactFormData {
   firstName: string;
   lastName: string;
@@ -106,6 +87,11 @@ export interface ContactFormData {
 export interface IsLoadingProps {
   id: string;
   initiallyShowing: boolean;
+}
+
+export interface Tag {
+  id: number;
+  tagName: string;
 }
 
 export interface NavPage {
@@ -135,7 +121,7 @@ export interface BioResponse {
 
 export interface ClientButtonProps {
   text: string; 
-  variant: string;
+  variant?: string;
   buttonType: string;
   modifierClass?: string;
 }
@@ -160,7 +146,7 @@ export interface PhotoInputProps {
   handleImageChange: (
     e: ChangeEvent<HTMLInputElement>,
     inputNo: number
-  ) => void;
+  ) => Promise<void>;
 
   handleInputDragStart?: (inputNo: number) => void | undefined;
 
@@ -168,4 +154,11 @@ export interface PhotoInputProps {
     inputNo: number,
     displayOrder: number
   ) => void | undefined;
+}
+
+export interface UpdatedBioData {
+  bio_name: string;
+  bio_img_url: string;
+  bio_text: string;
+  updated_Photo: boolean;
 }

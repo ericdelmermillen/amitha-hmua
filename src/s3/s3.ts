@@ -6,9 +6,9 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuid } from "uuid";
 
+const ACCESS_KEY_ID = process.env.ACCESS_KEY_ID;
 const BUCKET_NAME = process.env.BUCKET_NAME;
 const REGION = process.env.REGION;
-const ACCESS_KEY_ID = process.env.ACCESS_KEY_ID;
 const SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY;
 
 if (!BUCKET_NAME || !REGION || !ACCESS_KEY_ID || !SECRET_ACCESS_KEY) {

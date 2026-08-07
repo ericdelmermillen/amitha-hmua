@@ -1,9 +1,15 @@
 "use client";
 
-import { type MouseEvent, useState,  useRef, useEffect, createContext } from "react";
+import { 
+  type MouseEvent, 
+  useState,  
+  useRef, 
+  useEffect, 
+  createContext 
+} from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { scrollToTop, isModifiedClick, normalizeCasing } from "@/utils/utils";
-import { ContextProviderProps, AppContextValue } from "@/typing/interfaces";
+import { AppContextValue, ContextProviderProps } from "@/typing/interfaces";
+import { isModifiedClick, normalizeCasing, scrollToTop } from "@/utils/utils";
 import { Tag } from "@/typing/interfaces";
 import { toast } from "react-toastify";
 
@@ -11,46 +17,49 @@ const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL
 const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
 const NAV_CLICK_DELAY = Number(process.env.NEXT_PUBLIC_NAV_CLICK_DELAY);
 
+
+// need to get this from tagActions and store in state
+const tags = [
+  {id: 1, tagName: "COMMERCIAL"},
+  {id: 2, tagName: "CREATIVE"},
+  {id: 3, tagName: "STYLING"},
+  {id: 4, tagName: "BEAUTY"},
+  {id: 5, tagName: "WIGS"},
+  {id: 6, tagName: "GROOMING"},
+  {id: 7, tagName: "THEATER"},
+  {id: 8, tagName: "CELEBRITIES"},
+  {id: 9, tagName: "BRIDAL"},
+  {id: 10, tagName: "FASHION"},
+  {id: 11, tagName: "COSPLAY"},
+  {id: 12, tagName: "DRAG"},
+]
+
+
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 const AppContextProvider = ({ children }: ContextProviderProps) => {
 
   const [ scrollYPos, setScrollYPos ] = useState(0);
-
-  const [ isOrderEditable, setIsOrderEditable ] = useState(false);
-  
   const [ appIsLoading, setAppIsLoading ] = useState(true)
-  
-  const [ isLoggedIn, setIsLoggedIn ] = useState(true)
   
   const [ showSideNav, setShowSideNav ] = useState(false);
   const [ showTouchOffDiv, setShowTouchOffDiv ] = useState(false);
   
+  const [ selectedTag, setSelectedTag ] = useState<Tag | null>(null);
   const [ selectValue, setSelectValue ] = useState<string | null>(null);
   const [ showNavSelectOptions, setShowNavSelectOptions ] = useState(false);
-  const [ selectedTag, setSelectedTag ] = useState<Tag | null>(null);
+  
+  const [ isLoggedIn, setIsLoggedIn ] = useState(true);
 
+  const [ isOrderEditable, setIsOrderEditable ] = useState(false);
+  
+  
   const prevScrollYPosRef = useRef<number | null>(null);
+  
   const getPrevScrollYPosValue = () => prevScrollYPosRef.current ?? 0;
 
   const pathname = usePathname();
   const router = useRouter();
-
-
-  const tags = [
-    {id: 1, tagName: "COMMERCIAL"},
-    {id: 2, tagName: "CREATIVE"},
-    {id: 3, tagName: "STYLING"},
-    {id: 4, tagName: "BEAUTY"},
-    {id: 5, tagName: "WIGS"},
-    {id: 6, tagName: "GROOMING"},
-    {id: 7, tagName: "THEATER"},
-    {id: 8, tagName: "CELEBRITIES"},
-    {id: 9, tagName: "BRIDAL"},
-    {id: 10, tagName: "FASHION"},
-    {id: 11, tagName: "COSPLAY"},
-    {id: 12, tagName: "DRAG"},
-  ]
 
   const handleTouchOffDiv = () => {
     setShowTouchOffDiv(false);
@@ -138,25 +147,12 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   };
 
 
-    // const handleDeleteOrEditClick = (e, action, shoot_id = null) => {
-    //   e.preventDefault();
-    //   e.stopPropagation();
-    //   setShowDeleteOrEditModal(true);
-    //   setDeleteOrEditClickAction(action);
-      
-    //   if (shoot_id) {
-    //     setSelectedShoot(shoot_id);
-    //   };
-    // };
-
-
-
-    const handleLogoutUser = () => {
-      console.log("Logout?")
-      setIsLoggedIn(false);
-      setShowSideNav(false);
-      toast.success("Logging you out...")
-    }
+  const handleLogoutUser = () => {
+    console.log("Logout?")
+    setIsLoggedIn(false);
+    setShowSideNav(false);
+    toast.success("Logging you out...")
+  }
 
   // useEffect for updating of scrollYPos
   useEffect(() => {
