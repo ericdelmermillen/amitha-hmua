@@ -4,10 +4,10 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useAppContext } from "@/hooks/hooks";
 import { navPages } from "@/constants/navPages";
-import ClientButton from "../ClientButton/ClientButton";
-import ColorModeToggle from "../ColorModeToggle/ColorModeToggle";
-import ClientLink from "../ClientLink/ClientLink";
-import NavSelect from "../NavSelect/NavSelect";
+import ClientButton from "@/components/ClientButton/ClientButton";
+import ColorModeToggle from "@/components/ColorModeToggle/ColorModeToggle";
+import ClientLink from "@/components/ClientLink/ClientLink";
+import NavSelect from "@/components/NavSelect/NavSelect";
 import "./SideNav.scss";
 
 const NAV_CLICK_DELAY = Number(process.env.NEXT_PUBLIC_NAV_CLICK_DELAY);
@@ -54,71 +54,69 @@ const SideNav = () => {
   }, [showSideNav, setShowSideNav]);
 
   return (
-    <>
-      <div className={`sideNav ${showSideNav ? "show" : ""}`}>
-        <div className="sideNav__inner">
+    <div className={`sideNav ${showSideNav ? "show" : ""}`}>
+      <div className="sideNav__inner">
 
-          <div 
-            className="sideNav__close-button" 
-            onClick={handleSetShowSideNav}
-          >
-            <div className="sideNav__close-icon"></div>
-            <div className="sideNav__close-icon"></div>
-          </div>
-          
-          <div className="sideNav__menu">
-            <ul className="sideNav__links">
-              <li className="sideNav__link">
-                <NavSelect 
-                  selectOptions={tags} 
-                  modifierClass="side-nav"
-                />
-              </li>
+        <div 
+          className="sideNav__close-button" 
+          onClick={handleSetShowSideNav}
+        >
+          <div className="sideNav__close-icon"></div>
+          <div className="sideNav__close-icon"></div>
+        </div>
+        
+        <div className="sideNav__menu">
+          <ul className="sideNav__links">
+            <li className="sideNav__link">
+              <NavSelect 
+                selectOptions={tags} 
+                modifierClass="side-nav"
+              />
+            </li>
 
-              {navPages.map((page) => page.href.startsWith("/") 
-              
-                ? (
+            {navPages.map((page) => page.href.startsWith("/") 
+            
+              ? (
+                <li 
+                  key={page.href} 
+                  className={`sideNav__link sideNav__link"${page.modifierClass}`}
+                  onClick={pathname !== page.href
+                    ? handleSideNavLinkClick
+                    : handleIsOnSamePage
+                  }
+                >
+                  <ClientLink href={page.href}>
+                    {page.pageName}
+                  </ClientLink>
+                </li>
+                ) 
+              : (
                   <li 
-                    key={page.href} 
-                    className={`sideNav__link sideNav__link"${page.modifierClass}`}
-                    onClick={pathname !== page.href
-                      ? handleSideNavLinkClick
-                      : handleIsOnSamePage
-                    }
+                    className={`sideNav__link sideNav__link${page.modifierClass}`}
+                    key={page.href}
                   >
-                    <ClientLink href={page.href}>
+                    <a href={page.href} target="_blank" rel="noopener noreferrer">
                       {page.pageName}
-                    </ClientLink>
+                    </a>
                   </li>
-                  ) 
-                : (
-                    <li 
-                      className={`sideNav__link sideNav__link${page.modifierClass}`}
-                      key={page.href}
-                    >
-                      <a href={page.href} target="_blank" rel="noopener noreferrer">
-                        {page.pageName}
-                      </a>
-                    </li>
-                  )
-              )}
+                )
+            )}
 
-              <div className="sideNav__logOut">
-                <ClientButton 
-                  text="Logout"
-                  variant="rounded"
-                  buttonType="logOut"
-                />
-              </div>
-              <li className="sideNav__colorModeToggler">
-                <ColorModeToggle inputId={"sideNavColorModeToggle"} />
-              </li>
-            </ul>
+            <div className="sideNav__logOut">
+              <ClientButton 
+                text="Logout"
+                variant="rounded"
+                buttonType="logOut"
+              />
+            </div>
+            <li className="sideNav__colorModeToggler">
+              <ColorModeToggle inputId={"sideNavColorModeToggle"} />
+            </li>
+          </ul>
 
-          </div>
         </div>
       </div>
-    </>
+    </div>
   )};
 
 export default SideNav;

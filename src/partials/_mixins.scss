@@ -382,3 +382,12 @@
 	gap: 2rem;
 	justify-content: center;
 }
+
+// ----
+@mixin shootImg {
+	aspect-ratio: 1 / 1;
+	max-width: 100%;
+	object-fit: cover;
+	object-position: center;
+	width: 100%;
+}
