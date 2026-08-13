@@ -1,7 +1,8 @@
 import { normalizeCasing } from "@/utils/utils";
-import "./HomePage.scss";
+import Shoots from "@/components/Shoots/Shoots";
+import "./WorkPage.scss";
 
-const HomePage = async ({ searchParams }: { searchParams: Promise<{ tag?: string }> }) => {
+const WorkPage = async ({ searchParams }: { searchParams: Promise<{ tag?: string }> }) => {
   const { tag } = await searchParams;
 
   const normalizedTag = normalizeCasing(tag)
@@ -9,19 +10,12 @@ const HomePage = async ({ searchParams }: { searchParams: Promise<{ tag?: string
   return (
     <>
       <div className="homePage">
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
         <div className="homePage__inner">
-          <h1 className="homePage__heading">work/{normalizedTag ?? "all"}</h1>
-          {/* <Shoots /> */}
+          <Shoots />
         </div>
       </div>
     </>
   )
 };
 
-export default HomePage;
+export default WorkPage;

@@ -1,31 +1,37 @@
 "use client";
 
-import { useState, DragEvent } from "react";
-import { useAppContext } from "@/hooks/hooks";
+import { useState, DragEvent, MouseEvent } from "react";
+import { ShootProps } from "@/typing/interfaces";
+import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { checkIfIsFirefox } from "@/utils/utils";
-// import DeleteIcon from "@/assets/icons/DeleteIcon"
-// import EditIcon from "@/assets/icons/EditIcon";
+import DeleteIcon from "@/assets/icons/DeleteIcon"
+import EditIcon from "@/assets/icons/EditIcon";
+import Image from "next/image";
 import "./Shoot.scss";
 
 const isFirefox = checkIfIsFirefox();
 
+
 const Shoot = ({ 
-  // shootID, 
-  // displayOrder,
-  // thumbnailURL, 
-  // models, 
-  // photographers, 
-  // isOnShootDetails,
-  // handleNewShootId,
-  // isOrderEditable, 
-  // handleShootDragStart,
-  // handleDropShootTarget
-}) => {
+  shootID, 
+  displayOrder,
+  thumbnailURL, 
+  models, 
+  photographers, 
+  isOnShootDetails,
+  handleNewShootID,
+  shootOrderIsEditable, 
+  handleShootDragStart,
+  handleDropShootTarget
+}: ShootProps) => {
 
   const { 
     isLoggedIn, 
-    // handleDeleteOrEditClick
   } = useAppContext();
+  
+  const {  
+    handleOpenModal
+  } = useModalContext();
 
   const [ imageIsLoaded, setIsImagedLoaded ] = useState(false);
 
@@ -39,90 +45,97 @@ const Shoot = ({
 
   return (
     <div 
-      // draggable={isOrderEditable}
-      // className={isOrderEditable 
-      //   ? "shoot draggable" 
-      //   : "shoot"}
-      // onDragStart={isOrderEditable && !isFirefox
-      //   ? () => handleShootDragStart(shootID)
-      //   : undefined}
-      // onMouseDown={isOrderEditable && isFirefox
-      //   ? () => handleShootDragStart(shootID)
-      //   : undefined}
-      // onDragOver={isOrderEditable
-      //   ? handleDragOver
-      //   : undefined}
-      // onDrop={isOrderEditable
-      //   ? () => handleDropShootTarget(shootID, displayOrder)
-      //   : undefined}
-      // onClick={() => handleNewShootId(shootID)}
+      draggable={shootOrderIsEditable}
+      className={shootOrderIsEditable 
+        ? "shoot draggable" 
+        : "shoot"}
+      onDragStart={shootOrderIsEditable && !isFirefox && handleShootDragStart && shootID !== undefined
+        ? (e) => handleShootDragStart(e, shootID)
+        : undefined}
+      onMouseDown={shootOrderIsEditable && isFirefox && handleShootDragStart && shootID !== undefined
+        ? (e) => handleShootDragStart(e, shootID)
+        : undefined}
+      onDragOver={shootOrderIsEditable
+        ? handleDragOver
+        : undefined}
+      onDrop={shootOrderIsEditable && handleDropShootTarget && shootID !== undefined && displayOrder !== undefined
+        ? (e) => handleDropShootTarget(shootID, displayOrder)
+        : undefined}
+      onClick={handleNewShootID && shootID !== undefined
+        ? () => handleNewShootID(shootID)
+        : undefined
+      }
     >
       
       <div className="shoot__overlay"></div>
       
-      {/* {isLoggedIn && !isOnShootDetails && !isOrderEditable
+      {isLoggedIn && !isOnShootDetails && !shootOrderIsEditable
 
         ? <div 
-            className="shoot__delete-btn"
-            // onClick={(e) => handleDeleteOrEditClick(e, "Delete", shootID)}
+            className="shoot__deleteBtn"
+            onClick={(e) => handleOpenModal({e, action: "delete", entityType: "shoot", entityID: shootID})}
           >
-            <DeleteIcon
-              // onClick={(e) => handleDeleteOrEditClick(e, "Delete", shootID)}
-              className={"shoot__delete-btn--icon"}
-            />
+            <DeleteIcon className={"shoot__deleteBtn--icon"} />
           </div>
 
         : null
         
-      } */}
+      }
 
-      {/* {isLoggedIn && !isOnShootDetails && !isOrderEditable
+      {isLoggedIn && !isOnShootDetails && !shootOrderIsEditable
 
         ? <div 
-            className="shoot__edit-btn"
-            // onClick={(e) => handleDeleteOrEditClick(e, "Edit", shootID)}
+            className="shoot__editBtn"
+            onClick={(e) => handleOpenModal({e, action: "edit", entityType: "shoot", entityID: shootID})}
           >
-            <EditIcon
-              // onClick={(e) => handleDeleteOrEditClick(e, "Edit", shootID)}
-              className={"shoot__edit-btn--icon"}
-            />
+            <EditIcon className={"shoot__editBtn--icon"} />
           </div>
 
         : null
         
-      } */}
+      }
 
-      {/* <img 
-        draggable={isOrderEditable}
-        className={`shoot__img ${imageIsLoaded ? "show" : ""}`}
-        src={thumbnailURL} 
-        alt={`Thumbnail for "${shootID}" shoot`}
-        onLoad={handleUpdateImageIsLoaded}
-        onDragStart={isOrderEditable 
-          ? (e) => handleShootDragStart(e, shootID) 
-          : undefined}
-      /> */}
+      <div className="shoot__imgBox">
+            
+        {thumbnailURL 
+          ? (
+              <Image
+                className={`shoot__img ${imageIsLoaded ? "show" : ""}`}
+                src={thumbnailURL}
+                alt={`Thumbnail for shoot ${shootID ?? ""}`}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                draggable={shootOrderIsEditable}
+                onLoad={handleUpdateImageIsLoaded}
+                onDragStart={
+                  shootOrderIsEditable && handleShootDragStart && shootID !== undefined
+                  ? (e) => handleShootDragStart(e, shootID)
+                  : undefined
+                }
+                fill
+              />
+            ) 
+        : null}
+      </div>
 
-      <div 
-        // className={`shoot__info ${!isOnShootDetails ? "show" : ""}`}
-        className={`shoot__info`}
-      >
-        {/* <p className="shoot__models">
+      <div className={`shoot__info ${!isOnShootDetails ? "show" : ""}`}>
+        <p className="shoot__models">
           <span className="models__label">
-            {models.length > 1 
+            {models && models.length > 1 
               ? "Models: " 
               : "Model: "}
           </span>
-          {models.length > 1 ? models.join(", ") : models}
-        </p> */}
-        {/* <p className="shoot__photographers">
+          {models && models.length > 1 
+            ? models.join(", ") 
+            : models}
+        </p>
+        <p className="shoot__photographers">
           <span className="photographers__label">   
             Photos
           </span>
-            {photographers.length > 1 
-              ? photographers.join(", ") 
-              : photographers}
-        </p> */}
+            {photographers && photographers.length > 0
+              ? photographers.join(", ")
+              : ""}
+        </p>
       </div>
 
     </div>

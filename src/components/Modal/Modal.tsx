@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
 import "./Modal.scss";
@@ -10,19 +10,39 @@ const Modal = () => {
     setAppIsLoading,
     scrollYPos 
   } = useAppContext();
+
   const { 
     showModal,
-    modalType,
+    modalAction,
+    modalEntityType,
+    modalEntityID,
     handleClearModal,
   } = useModalContext();
+
+  const [ cancelling, setCancelling ] = useState(false);
   
   const router = useRouter();
 
   const handleEditBio = () => {
     setAppIsLoading(true)
-    handleClearModal();
     router.push("/bio/edit");
+    handleClearModal();
   };
+  
+  const handleDeleteShoot = () => {
+    // can use function from context to refresh feed via new call
+    console.log(`Deleting shoot ${modalEntityID}...`)
+  };
+  
+  const handleEditShoot = () => {
+    // can use function from context to refresh feed via new call
+    console.log(`Editing shoot ${modalEntityID}...`)
+  };
+
+  const handleCancel = () => {
+    setCancelling(true);
+    handleClearModal();
+  }
 
     // useEffect to hide and clear modal on esc
   useEffect(() => {
@@ -48,6 +68,13 @@ const Modal = () => {
     };
   }, [scrollYPos]);
 
+  // useEffect to reset cancelling when modal opens again
+  useEffect(() => {
+    if (showModal) {
+      setCancelling(false);
+    }
+  }, [showModal]);
+
 
   return (
     <>
@@ -55,7 +82,7 @@ const Modal = () => {
         <div className="modal__overlay" onClick={handleClearModal}></div>
         <div className="modal__card">
 
-          {showModal && modalType === "editBio" 
+          {modalAction === "edit"  && modalEntityType === "bio"
 
             ? (
                 <>
@@ -70,8 +97,55 @@ const Modal = () => {
                       Edit Bio
                     </button>
                     <button
-                      className="modal__button modal__button--cancel"
-                      onClick={handleClearModal}
+                      className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
+                      onClick={handleCancel}
+                      disabled={cancelling}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              )
+            : modalAction === "delete" && modalEntityType === "shoot"
+            ? (
+                <>
+                  <h3 className="modal__heading">
+                    Delete Shoot {modalEntityID}?
+                  </h3>
+                  <div className="modal__button-container">
+                    <button
+                      className="modal__button modal__button--edit"
+                      onClick={handleDeleteShoot}
+                    >
+                      Delete Shoot
+                    </button>
+                    <button
+                      className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
+                      onClick={handleCancel}
+                      disabled={cancelling}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              )
+            : modalAction === "edit" && modalEntityType === "shoot"
+            ? (
+                <>
+                  <h3 className="modal__heading">
+                    Edit Shoot {modalEntityID}?
+                  </h3>
+                  <div className="modal__button-container">
+                    <button
+                      className="modal__button modal__button--edit"
+                      onClick={handleEditShoot}
+                    >
+                      Edit Shoot
+                    </button>
+                    <button
+                      className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
+                      onClick={handleCancel}
+                      disabled={cancelling}
                     >
                       Cancel
                     </button>
@@ -79,6 +153,8 @@ const Modal = () => {
                 </>
               )
             : null
+
+
           
           }
 

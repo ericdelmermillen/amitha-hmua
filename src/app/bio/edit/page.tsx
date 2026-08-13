@@ -19,12 +19,14 @@ import PhotoInput from "@/components/PhotoInput/PhotoInput";
 import "./EditBioPage.scss";
 
 const BIO_DIRNAME = process.env.NEXT_PUBLIC_AWS_BIO_DIRNAME || "bioimages";
+const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL) || 250;
 
 const EditBioPage = () => {
   const { setAppIsLoading } = useAppContext();
 
   const [ bioName, setBioName ] = useState("");
   const [ bioText, setBioText ] = useState("");
+  const [ cancelling, setCancelling ] = useState(false);
 
   const [ inputPhotos, setInputPhotos ] = useState<InputPhoto[]>([
     {
@@ -187,8 +189,11 @@ const EditBioPage = () => {
   };
 
   const handleCancel = () => {
-    router.push("/bio");
-    toast.success("Cancelling...");
+    setAppIsLoading(true);
+    setCancelling(true);
+    setTimeout(() => {
+      router.push("/bio");
+    }, MIN_LOADING_INTERVAL);
   };
 
   // useEffect to call for bioData to populate form
@@ -266,8 +271,9 @@ const EditBioPage = () => {
           <div className="editBioPage__button-container">
             <button
               type="button"
-              className="editBioPage__button"
+              className={`editBioPage__button editBioPage__button--cancel ${cancelling ? "disabled" : ""}`}
               onClick={handleCancel}
+              disabled={cancelling}
             >
               Cancel
             </button>

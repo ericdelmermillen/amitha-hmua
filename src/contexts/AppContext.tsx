@@ -46,13 +46,13 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const [ showTouchOffDiv, setShowTouchOffDiv ] = useState(false);
   
   const [ selectedTag, setSelectedTag ] = useState<Tag | null>(null);
+  
   const [ selectValue, setSelectValue ] = useState<string | null>(null);
   const [ showNavSelectOptions, setShowNavSelectOptions ] = useState(false);
   
   const [ isLoggedIn, setIsLoggedIn ] = useState(true);
 
-  const [ isOrderEditable, setIsOrderEditable ] = useState(false);
-  
+  const [ shootOrderIsEditable, setShootOrderIsEditable ] = useState(false);
   
   const prevScrollYPosRef = useRef<number | null>(null);
   
@@ -74,7 +74,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     } else if (tagObj) {
       router.push(`/work?tag=${normalizeCasing(tagObj.tagName)}`);
     };
-    setIsOrderEditable(false);
+    setShootOrderIsEditable(false);
 
     // won't need this; will be set to false when page content loads
     setTimeout(() => {
@@ -145,7 +145,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       scrollToTop();
     }, MIN_LOADING_INTERVAL);
   };
-
 
   const handleLogoutUser = () => {
     console.log("Logout?")
@@ -230,7 +229,9 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     showNavSelectOptions, 
     setShowNavSelectOptions,
     tags,
-    handleLogoutUser
+    handleLogoutUser,
+    shootOrderIsEditable, 
+    setShootOrderIsEditable
   };
 
   return (

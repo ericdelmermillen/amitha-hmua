@@ -384,10 +384,9 @@
 }
 
 // ----
-@mixin shootImg {
-	aspect-ratio: 1 / 1;
-	max-width: 100%;
-	object-fit: cover;
-	object-position: center;
-	width: 100%;
+@mixin imageBox {
+	display: block;
+	inset: 0;
+	position: relative;
+	z-index: 0;
 }

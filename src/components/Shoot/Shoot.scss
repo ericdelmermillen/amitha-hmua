@@ -32,6 +32,13 @@
 		}
 	}
 
+	&__imgBox {
+		@include mx.imageBox;
+		& {
+			aspect-ratio: 1/1;
+		}
+	}
+
 	&__img {
 		@include mx.shootImg;
 		* {
@@ -63,7 +70,7 @@
 		text-align: center;
 	}
 
-	&__delete-btn {
+	&__deleteBtn {
 		align-items: center;
 		background: var(--background-color);
 		border-radius: 50%;
@@ -77,17 +84,18 @@
 		top: 0.75rem;
 		padding: 0.55rem;
 		width: 2.5rem;
+		z-index: 1;
 
 		&:hover {
 			scale: 1.05;
 		}
+
+		&--icon {
+			fill: var(--text-color);
+		}
 	}
 
-	&__delete-btn--icon {
-		fill: var(--text-color);
-	}
-
-	&__edit-btn {
+	&__editBtn {
 		align-items: center;
 		background: var(--background-color);
 		border-radius: 50%;
@@ -101,14 +109,15 @@
 		top: 0.75rem;
 		padding: 0.55rem;
 		width: 2.5rem;
+		z-index: 1;
 
 		&:hover {
 			scale: 1.05;
 		}
-	}
 
-	&__edit-btn--icon {
-		fill: var(--text-color);
+		&--icon {
+			fill: var(--text-color);
+		}
 	}
 
 	&__shoot_id {

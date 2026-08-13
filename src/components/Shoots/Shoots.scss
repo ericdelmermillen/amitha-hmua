@@ -2,17 +2,31 @@
 @use "../../partials/variables.scss" as vars;
 
 .shoots {
-	max-width: min(calc(100vw - 4rem), vars.$desktop);
-	min-width: min(calc(100vw - 4rem), vars.$desktop);
+	& {
+		display: flex;
+		flex-direction: column;
+		max-width: min(calc(100vw - 4rem), vars.$desktop);
+		min-width: min(calc(100vw - 4rem), vars.$desktop);
+		border: 2px solid red;
+	}
+
+	&__shootDetailsHeading {
+		color: red;
+		text-align: center;
+		color: var(--text-color);
+		font-size: 1.5rem;
+		margin-bottom: 0.5rem;
+	}
 
 	&__inner {
+		border: 2px solid blue;
 		display: grid;
 		gap: 1rem;
 		grid-template-columns: repeat(1, 1fr);
 		height: 80%;
-		min-height: 55vh;
+		min-height: calc(100vw - vars.$nav-height);
 		min-width: 100%;
-		position: sticky;
+		// position: sticky;
 
 		&.onShootDetails {
 			grid-template-columns: repeat(2, 1fr);
@@ -39,8 +53,10 @@
 	}
 
 	&__editShootOrder {
-		margin-inline: auto;
 		@include mx.button;
+		& {
+			margin-inline: auto;
+		}
 	}
 
 	&__placeholders {
@@ -69,5 +85,10 @@
 				grid-template-columns: repeat(3, 1fr);
 			}
 		}
+	}
+
+	&__sentinel {
+		height: 0;
+		width: 100%;
 	}
 }

@@ -134,5 +134,9 @@
 				width: 12rem;
 			}
 		}
+
+		&--cancel.disabled {
+			@include mx.disabledButton;
+		}
 	}
 }

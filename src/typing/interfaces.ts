@@ -5,7 +5,8 @@ import {
   type Dispatch, 
   type MouseEvent,
   type ComponentType, 
-  type SVGProps
+  type SVGProps,
+  DragEvent
 } from "react";
 import { ColorMode } from "./types";
 
@@ -43,18 +44,26 @@ export interface AppContextValue {
   handleNavigateHome: (tagObj?: Tag) => void;
   handleSetShowSideNavFalse: () => void;
   handleIsOnCurrentPage: (e: MouseEvent<HTMLAnchorElement>) => void;
+  shootOrderIsEditable: boolean;
+  setShootOrderIsEditable: Dispatch<SetStateAction<boolean>>;
   
   // functions
   getPrevScrollYPosValue: () => number;
 };
 
 export interface ModalContextValue {
-  handleEditBio: () => void;
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
   handleClearModal: () => void;
-  modalType: string | null;
-  setModalType: Dispatch<SetStateAction<string | null>>;
+  modalAction: string | null;
+  setModalAction: Dispatch<SetStateAction<string | null>>;
+  handleOpenModal: (data: ModalData) => void;
+  modalEntityType: string | null;
+  setModalEntityType: Dispatch<SetStateAction<string | null>>;
+  modalEntityID: number | null;
+  setModalEntityID: Dispatch<SetStateAction<number | null>>;
+  modalEntityName: string | null;
+  setModalEntityName: Dispatch<SetStateAction<string | null>>;
 }
 
 export interface ColorThemeContextProps {
@@ -162,3 +171,45 @@ export interface UpdatedBioData {
   bio_text: string;
   updated_Photo: boolean;
 }
+
+export interface ShootSummary {
+  shootID: number;
+  displayOrder: number;
+  shootDate: string;
+  tags: string[];
+  photographers: string[];
+  models: string[];
+  thumbnailURL: string;
+}
+
+export interface GetShootSummariesParams {
+  page?: number;
+  limit?: number;
+  tagID?: number | string;
+}
+
+export interface GetShootSummariesResponse {
+  shootSummaries: ShootSummary[];
+  isFinalPage: boolean;
+}
+
+export interface ShootProps {
+  shootID?: number;
+  displayOrder?: number;
+  thumbnailURL?: string;
+  models?: string[];
+  photographers?: string[];
+  isOnShootDetails?: boolean;
+  handleNewShootID?: (shootId: number) => void;
+  shootOrderIsEditable?: boolean;
+  handleShootDragStart?: (e: DragEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>, shootID: number) => void;
+  handleDropShootTarget?: (shootID: number, displayOrder: number) => void;
+}
+
+export interface ModalData {
+    e?: MouseEvent<HTMLDivElement>;
+    action: "edit" | "delete";
+    entityType: "bio" | "shoot" | "tag" | "model" | "photographer";
+    entityName?: string | null;
+    entityID?: number | null;
+  }

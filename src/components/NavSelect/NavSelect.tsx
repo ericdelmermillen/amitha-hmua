@@ -6,6 +6,7 @@ import { useAppContext } from "@/hooks/hooks";
 import { NavSelectProps, Tag } from "@/typing/interfaces";
 import DownIcon from "@/assets/icons/DownIcon";
 import "./NavSelect.scss";
+import { scrollToTop } from "@/utils/utils";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
@@ -65,6 +66,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     setTimeout(() => {
       requestAnimationFrame(() => {
         setShowSideNav(false);
+        scrollToTop();
       })
     }, MIN_LOADING_INTERVAL);
   };
@@ -173,7 +175,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
               >
                 <DownIcon 
                   className={"navSelect__down-icon"}
-                  classNameStroke={"navSelect__down-stroke"}
+                  strokeClassName={"navSelect__down-stroke"}
                 />
               </div>
             </div>

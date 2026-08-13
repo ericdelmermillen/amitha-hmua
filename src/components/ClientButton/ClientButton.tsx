@@ -18,8 +18,12 @@ const ClientButton = ({
   } = useAppContext()
     
   const {
-    handleEditBio,
+    handleOpenModal,
   } = useModalContext()
+  
+  const handleNavigateToEditoBio = ()=> {
+    handleOpenModal({ action: "edit", entityType: "bio" })
+  }
   
   const safeModifierClass = typeof modifierClass === "string" ? modifierClass : "";
 
@@ -29,7 +33,7 @@ const ClientButton = ({
     return (
       <button
         className={`clientButton ${variant} ${safeModifierClass}`}
-        onClick={handleEditBio}
+        onClick={handleNavigateToEditoBio}
         disabled={modalIsOpen}
         >
         {text}

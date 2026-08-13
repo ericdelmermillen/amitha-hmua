@@ -2,7 +2,6 @@ import { IconProps } from "@/typing/interfaces";
 
 const EditIcon = ({ className, strokeClassName }: IconProps) => {
   return (
-    <>
       <svg 
         xmlns="http://www.w3.org/2000/svg" 
         className={className}
@@ -22,7 +21,7 @@ const EditIcon = ({ className, strokeClassName }: IconProps) => {
           />
         </g>
       </svg>      
-    </>
-  )};
+  );
+};
 
 export default EditIcon;

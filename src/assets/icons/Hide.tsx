@@ -40,6 +40,7 @@ const Hide = ({ className }: IconProps) => {
         />
       </g>
     </svg>
-  )};
+  );
+};
 
 export default Hide;

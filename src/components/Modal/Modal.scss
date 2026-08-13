@@ -93,6 +93,10 @@
 				max-width: 12rem;
 				min-width: 8rem;
 			}
+
+			&--cancel.disabled {
+				@include mx.disabledButton;
+			}
 		}
 	}
 }

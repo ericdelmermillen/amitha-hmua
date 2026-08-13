@@ -15,6 +15,7 @@ const Delete = ({ className }: IconProps) => {
         className={className} 
       />
     </svg>
-  )};
+  );
+};
 
 export default Delete;

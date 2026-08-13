@@ -13,6 +13,7 @@ const Instagram = ({ className }: IconProps) => {
         className={className}
       />
     </svg>
-  )};
+  );
+};
 
 export default Instagram;

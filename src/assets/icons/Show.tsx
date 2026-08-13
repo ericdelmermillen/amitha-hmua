@@ -38,6 +38,7 @@ const Show = ({ className }: IconProps) => {
         />
       </g>
     </svg>
-  )};
+  );
+};
 
 export default Show;
