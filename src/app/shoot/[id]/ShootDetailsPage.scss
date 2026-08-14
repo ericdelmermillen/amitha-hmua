@@ -8,11 +8,13 @@
 		align-items: center;
 		display: flex;
 		flex-direction: column;
+		margin-top: vars.$nav-height;
 		width: 100%;
 	}
 
 	&__photos {
 		margin-top: 1.5rem;
+		min-height: 100vh;
 		position: relative;
 	}
 
@@ -20,66 +22,11 @@
 		position: sticky;
 		opacity: 1;
 		width: 100%;
-
-		&.hide {
-			display: none;
-		}
 	}
 
-	&__date-placeholder {
-		background: var(--placeholder-color);
-		border-radius: var(--border-radius);
-		height: 1.5rem;
-		margin-bottom: 0.6rem;
-		margin-inline-start: auto;
-		width: 6rem;
-	}
+	// &__photo-container {
 
-	&__photo-placeholder {
-		@include mx.shootDetailsImg;
-		& {
-			background: var(--placeholder-color);
-			border-radius: var(--border-radius);
-			margin-bottom: 2rem;
-
-			&--1 {
-				margin-bottom: 0;
-			}
-		}
-	}
-
-	&__detail-placeholders {
-		align-items: center;
-		display: flex;
-		flex-direction: column;
-		height: 5rem;
-		justify-content: center;
-		margin-bottom: 1.75rem;
-		margin-top: 0.5rem;
-	}
-
-	&__detail-placeholder {
-		background: var(--placeholder-color);
-		border-radius: var(--border-radius);
-		height: 1.75rem;
-
-		&:first-of-type {
-			margin-bottom: 0.4rem;
-			width: 12rem;
-		}
-
-		&:last-of-type {
-			width: 14rem;
-		}
-	}
-
-	&__photo-container {
-		display: none;
-
-		&.show {
-			display: block;
-		}
-	}
+	// }
 
 	&__info {
 		display: flex;
@@ -90,62 +37,43 @@
 	}
 
 	&__date {
-		background: var(--placeholder-color);
-		color: transparent;
+		color: var(--text-color);
+		font-size: 1.125rem;
+		font-weight: normal;
 		height: 2rem;
 		margin-bottom: 0.125rem;
 		padding-inline-end: 0.25rem;
+		text-align: right;
 		width: 100%;
 
 		@media (min-width: vars.$tablet) {
 			margin-bottom: 0.75rem;
 		}
-
-		&.show {
-			background: transparent;
-			color: var(--text-color);
-			font-size: 1.125rem;
-			font-weight: normal;
-			text-align: right;
-			transition: color 0.2s ease-out;
-		}
 	}
 
 	&__photographers {
-		background: var(--placeholder-color);
-		color: transparent;
+		color: var(--text-color);
+		display: block;
+		font-size: 1.125rem;
+		font-weight: normal;
 		height: 2rem;
 		margin-inline: auto;
 		min-width: 70%;
-
-		&.show {
-			background: transparent;
-			color: var(--text-color);
-			display: block;
-			font-size: 1.125rem;
-			font-weight: normal;
-			text-align: center;
-			transition: color 0.2s ease-out;
-		}
+		text-align: center;
+		transition: color 0.2s ease-out;
 	}
 
 	&__models {
-		background: var(--placeholder-color);
-		color: transparent;
+		color: var(--text-color);
+		display: block;
+		font-size: 1.125rem;
+		font-weight: normal;
 		height: 2rem;
 		margin-inline: auto;
 		max-width: 90%;
 		min-width: 50%;
-
-		&.show {
-			background: transparent;
-			color: var(--text-color);
-			display: block;
-			font-size: 1.125rem;
-			font-weight: normal;
-			text-align: center;
-			transition: color 0.2s ease-out;
-		}
+		text-align: center;
+		transition: color 0.2s ease-out;
 	}
 
 	&__photos {
@@ -159,12 +87,16 @@
 		}
 	}
 
-	&__photo {
+	&__imageBox {
+		@include mx.imageBox;
 		@include mx.shootDetailsImg;
 		& {
 			cursor: pointer;
 		}
 	}
+
+	// &__image {
+	// }
 
 	&__divider {
 		background-color: var(--text-color);

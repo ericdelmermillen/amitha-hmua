@@ -212,4 +212,28 @@ export interface ModalData {
     entityType: "bio" | "shoot" | "tag" | "model" | "photographer";
     entityName?: string | null;
     entityID?: number | null;
-  }
+}
+
+
+
+export interface ShootDetailPhoto {
+  id: number;
+  display_order: number;
+  photo_url: string;
+}
+
+export interface ShootDetailResponse {
+  shoot_id: number;
+  shoot_date: string | null;
+  photographer_ids: number[];
+  photographers: string[];
+  model_ids: number[];
+  models: string[];
+  tag_ids: number[];
+  tags: string[];
+  photo_urls: ShootDetailPhoto[];
+}
+
+export interface ShootDetailsPageProps {
+  params: Promise<{ id: string }>;
+}

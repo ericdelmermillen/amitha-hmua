@@ -1,141 +1,106 @@
+import { redirect } from "next/navigation";
+import { ShootDetailsPageProps } from "@/typing/interfaces";
+import { getShootByID } from "@/actions/shootActions"
+import Image from "next/image";
 import Shoots from "@/components/Shoots/Shoots";
 import "./ShootDetailsPage.scss";
-import { useAppContext } from "@/hooks/hooks";
 
-const ShootDetailsPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
   const { id } = await params;
+  const shootIdNum = parseInt(id, 10);
 
-  // const { selectedTag } = useAppContext()
+  if (isNaN(shootIdNum)) {
+    redirect("/not-found");
+  }
+
+  let data;
+
+  try {
+    data = await getShootByID(shootIdNum);
+
+  } catch (error) {
+    console.error(`Error fetching shoot details for ID ${shootIdNum}:`, error);
+    throw error;
+  }
+
+  // refactor to use notFound() after implementing Text Themes
+  if (!data) {
+    redirect("/not-found");
+  }
+
+  const {
+    shoot_id: shootID,
+    photographers,
+    models,
+    photo_urls: photos,
+    shoot_date: date
+  } = data;
+
+  const formattedDate = date 
+    ? new Date(date).toLocaleString("en-US", { month: "short", year: "numeric" }) 
+    : "";
+
   return (
     <div className="shootDetailsPage">
       <div className="shootDetailsPage__inner">
 
-        {/* *** */}
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
-        <h1 className="shootDetailsPage__heading">Shoot {id}</h1>
-        
-        {/* *** */}
-
-
         <div className="shootDetailsPage__photos">   
-
-          <div className={`shootDetailsPage__photo-placeholders`}
-          >
-            <div className="shootDetailsPage__date-placeholder"></div>
-            <div className="shootDetailsPage__photo-placeholder shootDetailsPage__photo-placeholder--1"></div>
-            <div className="shootDetailsPage__detail-placeholders">
-              <div className="shootDetailsPage__detail-placeholder"></div>
-              <div className="shootDetailsPage__detail-placeholder"></div>
-            </div>
-            <div className="shootDetailsPage__photo-placeholder"></div>
-            <div className="shootDetailsPage__photo-placeholder"></div>
-            <div className="shootDetailsPage__photo-placeholder"></div>
-            <div className="shootDetailsPage__photo-placeholder"></div>
-          </div>
           
-          {/* {photos && photos.map((photo, idx) => 
-            <div 
-              className={`shootDetailsPage__photo-container ${componentIsLoaded 
-                ? "show"
-              : ""}`}
-              key={idx}
-            >
+          {photos && photos.map((photo, idx) => 
+
+            <div key={photo.photo_url} className="shootDetailsPage__photo-container">
               
               {idx === 0 && 
 
-                <h4 
-                  className={`shootDetailsPage__date ${shootDetailsPage 
-                    ? "show"
-                    : ""}`}
-                >
-                  {formattedDate && formattedDate}
+                <h4 className="shootDetailsPage__date">
+                  {formattedDate}
                 </h4>
               }
-              
-              <img 
-                className='shootDetailsPage__photo'
-                src={photo.photo_url} 
-                alt={`Photo from photo shoot ${shoot_id}`} 
-                onClick={() => handleSetLightBoxImages(idx)}
-                onLoad={idx === photos.length - 1 
-                  ? handlePhotosLoaded 
-                  : null} 
-              />
+
+              <div className="shootDetailsPage__imageBox">
+
+                <Image 
+                  src={photo.photo_url} 
+                  alt={`Photo from photo shoot ${shootID}`} 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="shootDetailsPage__image"
+                  priority={idx === 0}
+                  fill
+                />
+
+              </div>
 
               {idx === 0 && 
+
                 (
-                  <>
-                    <div className="shootDetailsPage__info">
-                      
-                      <h3   
-                        className={`shootDetailsPage__models ${shootDetailsPage && "show"}`}
-                      >
-                        {shootDetailsPage 
-                          ? (
-                            <span 
-                              className={"shootDetailsPage__models-label"}>
-                                {models.length > 1 
-                                ? "Models: " 
-                                : "Model: "}
-                            </span>
-                            )
-                          : null
-                        }
-                      
-                        {shootDetailsPage && models.length > 1 
-                            ? models.join(", ") 
-                            : models
-                        }
-                      </h3>
+                  <div className="shootDetailsPage__info">
+                    <h3 className="shootDetailsPage__models">
 
-                      <h3   
-                        className={`shootDetailsPage__photographers ${shootDetailsPage 
-                          ? "show"
-                          : ""}`}
-                      >
-                        {photographers 
-                          ? 
-                            <span className="shootDetailsPage__photographers-label">
-                              {"Photos: "}
-                            </span>              
+                    <span className={"shootDetailsPage__models-label"}>
+                      {models.length > 1 ? "Models: " : "Model: "}
+                    </span>
+                      {models.join(", ")}
+                    </h3>
 
-                          : null
-                        }
+                    <h3 className="shootDetailsPage__photographers">
 
-                        {shootDetailsPage && photographers.length > 1 
-                          ? photographers.join(", ") 
-                          : photographers}
-                      </h3>
+                      <span className="shootDetailsPage__photographers-label">
+                        {"Photos: "}
+                      </span>              
 
-                      <h3   
-                        className={`shootDetailsPage__photographers ${shootDetailsPage 
-                          ? "show"
-                          : ""}`}
-                      >
-                        {/* showing shoot tags if logged in to help with debugging */}
-                        {/* {isLoggedIn && shootDetailsPage && shootDetailsPage.tags.length < 1
-                          ? `Tags: ${shootDetailsPage.tags}`
-                          : isLoggedIn && shootDetailsPage && shootDetailsPage.tags.length >= 1  && !shootDetailsPage.tags !== null
-                          ? `Tags: ${shootDetailsPage.tags.join(", ")}`
-                          : null}
-                      </h3>
-                    </div>
-                  </>
-
+                      {photographers.join(", ")}
+                    </h3>
+                  </div>
                 )}
-            </div>
-          )}  */}
 
+            </div>
+          )}  
 
         </div>
 
       </div>
-      <div className="shootDetails__divider"></div>
-      <div className="shootDetails__bottom">
+      <div className="shootDetailsPage__divider"></div>
+      <div className="shootDetailsPage__bottom">
         <Shoots />
       </div>
     </div>

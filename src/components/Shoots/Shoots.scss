@@ -7,26 +7,22 @@
 		flex-direction: column;
 		max-width: min(calc(100vw - 4rem), vars.$desktop);
 		min-width: min(calc(100vw - 4rem), vars.$desktop);
-		border: 2px solid red;
 	}
 
 	&__shootDetailsHeading {
-		color: red;
-		text-align: center;
 		color: var(--text-color);
 		font-size: 1.5rem;
 		margin-bottom: 0.5rem;
+		text-align: center;
 	}
 
 	&__inner {
-		border: 2px solid blue;
 		display: grid;
 		gap: 1rem;
 		grid-template-columns: repeat(1, 1fr);
 		height: 80%;
 		min-height: calc(100vw - vars.$nav-height);
 		min-width: 100%;
-		// position: sticky;
 
 		&.onShootDetails {
 			grid-template-columns: repeat(2, 1fr);
@@ -56,34 +52,6 @@
 		@include mx.button;
 		& {
 			margin-inline: auto;
-		}
-	}
-
-	&__placeholders {
-		display: none;
-		gap: 1rem;
-		position: sticky;
-
-		&.show {
-			display: grid;
-			grid-template-columns: 1fr;
-			min-width: 100%;
-
-			&.onShootDetails {
-				grid-template-columns: repeat(2, 1fr);
-
-				@media (min-width: vars.$tablet) {
-					grid-template-columns: repeat(3, 1fr);
-				}
-			}
-
-			@media (min-width: vars.$tablet) {
-				grid-template-columns: repeat(2, 1fr);
-			}
-
-			@media (min-width: vars.$desktop) {
-				grid-template-columns: repeat(3, 1fr);
-			}
 		}
 	}
 

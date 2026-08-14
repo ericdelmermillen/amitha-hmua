@@ -1,10 +1,17 @@
 "use server";
 
+import { 
+  GetShootSummariesParams, 
+  GetShootSummariesResponse, 
+  ShootDetailResponse, 
+  ShootSummary 
+} from "@/typing/interfaces";
 import { pool } from "@/db/dbClient";
-import { GetShootSummariesParams, GetShootSummariesResponse, ShootSummary } from "@/typing/interfaces";
+import { RowDataPacket } from "mysql2";
 
 const BUCKET_PATH = process.env.BUCKET_PATH || '';
 const SHOOTS_DIRNAME = process.env.SHOOTS_DIRNAME || '';
+
 
 const getShootSummaries = async ({
   page = 1,
@@ -94,9 +101,89 @@ const getShootSummaries = async ({
 };
 
 
-const getShootByID = () => {
-  console.log("Getting your shoot...")
+const getShootByID = async (id: number): Promise<ShootDetailResponse | null> => {
+  try {
+    const [shoots] = await pool.query<RowDataPacket[]>(
+      `SELECT id AS shoot_id, shoot_date FROM shoots WHERE id = ? LIMIT 1`,
+      [id]
+    );
+
+    if (!shoots.length) {
+      return null;
+    }
+
+    const shoot = shoots[0];
+
+    const [
+      [photographers],
+      [models],
+      [tags],
+      [photos]
+    ] = await Promise.all([
+      pool.query<RowDataPacket[]>(
+        `SELECT p.id, p.photographer_name 
+         FROM photographers p
+         JOIN shoot_photographers sp ON p.id = sp.photographer_id
+         WHERE sp.shoot_id = ?`,
+        [id]
+      ),
+      pool.query<RowDataPacket[]>(
+        `SELECT m.id, m.model_name 
+         FROM models m
+         JOIN shoot_models sm ON m.id = sm.model_id
+         WHERE sm.shoot_id = ?`,
+        [id]
+      ),
+      pool.query<RowDataPacket[]>(
+        `SELECT t.id, t.tag_name 
+         FROM tags t
+         JOIN shoot_tags st ON t.id = st.tag_id
+         WHERE st.shoot_id = ?`,
+        [id]
+      ),
+      pool.query<RowDataPacket[]>(
+        `SELECT id, display_order, photo_url 
+         FROM photos 
+         WHERE shoot_id = ? 
+         ORDER BY display_order ASC 
+         LIMIT 10`,
+        [id]
+      ),
+    ]);
+
+    const bucketPath = process.env.BUCKET_PATH || "";
+    const dirname = process.env.SHOOTS_DIRNAME || "";
+
+    return {
+      shoot_id: shoot.shoot_id,
+      shoot_date: shoot.shoot_date
+        ? new Date(shoot.shoot_date).toISOString().split("T")[0]
+        : null,
+
+      photographer_ids: photographers.map((p) => p.id),
+      photographers: photographers.map((p) => p.photographer_name),
+
+      model_ids: models.map((m) => m.id),
+      models: models.map((m) => m.model_name),
+
+      tag_ids: tags.map((t) => t.id),
+      tags: tags.map((t) => t.tag_name),
+
+      photo_urls: photos.map((photo) => ({
+        id: photo.id,
+        display_order: photo.display_order,
+        photo_url: photo.photo_url?.startsWith("http")
+          ? photo.photo_url
+          : `${bucketPath}${dirname}/${photo.photo_url}`,
+      })),
+    };
+  } catch (error) {
+    console.error("getShootByID error:", error);
+    throw new Error("Failed to fetch shoot details");
+  }
 };
+
+
 
 const addShoot = () => {
   console.log("Adding your shoot")

@@ -50,7 +50,6 @@ const Shoots = () => {
 
 
   const [ currentPage, setCurrentPage ] = useState(1);
-  // const [ isOnShootDetails, setIsOnShootDetails ] = useState(location.pathname.includes("/shoot/"));
   // const [ currentShootId, setCurrentShootId ] = useState(shoot_id);
   const [ currentShootId, setCurrentShootId ] = useState<number | null>(null);
 
@@ -296,21 +295,11 @@ const Shoots = () => {
           )
         : null
       }
-
-      {/* <div 
-        className={`shoots__placeholders ${isInitialShootsLoad && isOnShootDetails
-        ? "show onShootDetails"
-        : isInitialShootsLoad && !isOnShootDetails
-        ? "show"
-        : ""}`}
-      >
-
-      </div> */}
       
-      {/* <div className={`shoots__inner ${isOnShootDetails ? "onShootDetails" : ""}`}> */}
-      <div className={`shoots__inner`}>
+      <div className={`shoots__inner ${isOnShootDetails ? "onShootDetails" : ""}`}>
 
-        {shoots.map((shoot, idx) => (
+        {shoots.map(shoot => (
+
           <Link
             href={`/shoot/${shoot.shootID}`} 
             key={shoot.shootID}
@@ -332,23 +321,6 @@ const Shoots = () => {
               />
             </Link>
         ))}
-        
-        {/* {!isInitialShootsLoad && !finalPageLoaded 
-        
-          ?
-
-            (Array.from({ length: itemsPerPage }, (_, idx) => 
-
-              <ShootPlaceHolder 
-                isOnShootDetails={isOnShootDetails}
-                key={idx}
-              />
-              )
-            )
-
-          : null
-
-        } */}
 
       </div>
       
