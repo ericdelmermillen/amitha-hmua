@@ -34,7 +34,6 @@ const tags = [
   {id: 12, tagName: "DRAG"},
 ]
 
-
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 const AppContextProvider = ({ children }: ContextProviderProps) => {
@@ -52,7 +51,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const [ selectValue, setSelectValue ] = useState<string | null>(null);
   const [ showNavSelectOptions, setShowNavSelectOptions ] = useState(false);
   
-  const [ isLoggedIn, setIsLoggedIn ] = useState(true);
+  const [ isLoggedIn, setIsLoggedIn ] = useState(false);
 
   const [ shootOrderIsEditable, setShootOrderIsEditable ] = useState(false);
   

@@ -9,6 +9,7 @@ import {
   DragEvent
 } from "react";
 import { ColorMode } from "./types";
+import { RowDataPacket } from "mysql2";
 
 export interface ContextProviderProps {
   children: ReactNode;
@@ -146,13 +147,13 @@ export interface InputPhoto {
   displayOrder: number;
 }
 
-export interface BioUpdateData {
+interface BioUpdateData {
   bioName: string;
   bioText: string;
   photo: InputPhoto;
 }
 
-export interface PhotoInputProps {
+interface PhotoInputProps {
   shootPhoto: InputPhoto;
   setShootPhotos: Dispatch<SetStateAction<InputPhoto[]>>;
 
@@ -169,14 +170,14 @@ export interface PhotoInputProps {
   ) => void | undefined;
 }
 
-export interface UpdatedBioData {
+interface UpdatedBioData {
   bio_name: string;
   bio_img_url: string;
   bio_text: string;
   updated_Photo: boolean;
 }
 
-export interface ShootSummary {
+interface ShootSummary {
   shootID: number;
   displayOrder: number;
   shootDate: string;
@@ -186,18 +187,18 @@ export interface ShootSummary {
   thumbnailURL: string;
 }
 
-export interface GetShootSummariesParams {
+interface GetShootSummariesParams {
   page?: number;
   limit?: number;
   tagID?: number | string;
 }
 
-export interface GetShootSummariesResponse {
+interface GetShootSummariesResponse {
   shootSummaries: ShootSummary[];
   isFinalPage: boolean;
 }
 
-export interface ShootProps {
+interface ShootProps {
   shootID?: number;
   displayOrder?: number;
   thumbnailURL?: string;
@@ -210,7 +211,7 @@ export interface ShootProps {
   handleDropShootTarget?: (shootID: number, displayOrder: number) => void;
 }
 
-export interface ModalData {
+interface ModalData {
     e?: MouseEvent<HTMLDivElement>;
     action: "edit" | "delete";
     entityType: "bio" | "shoot" | "tag" | "model" | "photographer";
@@ -218,15 +219,13 @@ export interface ModalData {
     entityID?: number | null;
 }
 
-
-
-export interface ShootDetailPhoto {
+interface ShootDetailPhoto {
   id: number;
   display_order: number;
   photo_url: string;
 }
 
-export interface ShootDetailResponse {
+interface ShootDetailResponse {
   shoot_id: number;
   shoot_date: string | null;
   photographer_ids: number[];
@@ -238,6 +237,47 @@ export interface ShootDetailResponse {
   photo_urls: ShootDetailPhoto[];
 }
 
-export interface ShootDetailsPageProps {
+interface ShootDetailsPageProps {
   params: Promise<{ id: string }>;
+}
+
+
+interface AuthCredentials {
+  email?: string;
+  password?: string;
+}
+
+interface AuthResponse {
+  success: boolean;
+  message: string;
+  userId?: number;
+}
+
+interface TokenPayload {
+  userId: number;
+}
+
+interface UserRow extends RowDataPacket {
+  id: number;
+  email: string;
+  password: string;
+}
+
+
+export {
+  type BioUpdateData,
+  type PhotoInputProps,
+  type UpdatedBioData,
+  type ShootSummary,
+  type GetShootSummariesParams,
+  type GetShootSummariesResponse,
+  type ShootProps,
+  type ModalData,
+  type ShootDetailPhoto,
+  type ShootDetailResponse,
+  type ShootDetailsPageProps,
+  type AuthResponse,
+  type AuthCredentials,
+  type TokenPayload,
+  type UserRow
 }

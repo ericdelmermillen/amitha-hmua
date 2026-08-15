@@ -4,14 +4,19 @@ import { type ChangeEvent, type SubmitEvent, useState, useEffect } from "react";
 import { useAppContext } from "@/hooks/hooks"; 
 import { isValidEmail, isValidPassword, staggerToastsByN } from "@/utils/utils";
 import { toast } from "react-toastify";
+import { loginUser } from "@/actions/authActions"
 import Hide from "@/assets/icons/Hide";
 import Show from "../../assets/icons/Show";
 import "./LoginForm.scss";
+import { useRouter } from "next/navigation";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
 const LoginForm = () => {
-  const { setAppIsLoading, handleNavigateHome } = useAppContext();
+  const { 
+    setAppIsLoading, 
+    setIsLoggedIn,
+    handleNavigateHome } = useAppContext();
 
   const [ isSafari, setIsSafari ] = useState(false);
   
@@ -25,6 +30,8 @@ const LoginForm = () => {
   const [ showPassword, setShowPassword ] = useState(false);
 
   const [ isSubmitting, setIsSubmitting ] = useState(false);
+
+  const router = useRouter();
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     const emailValue = e.target.value;
@@ -81,44 +88,26 @@ const LoginForm = () => {
       return;
     };
     
-    
-    // try {
+    try {
       setIsSubmitting(true);
       setAppIsLoading(true);
-    //   const response = await fetch(`${BASE_URL}/auth/login`, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json"
-    //     },
-    //     body: JSON.stringify({
-    //       email,
-    //       password
-    //     })
-    //   });
-  
-    //   if (response.ok) {
-    //     const data = await response.json();
-    //     const { token, refreshToken } = data;
-    //     localStorage.setItem("token", token);
-    //     localStorage.setItem("refreshToken", refreshToken); 
-    //     setIsLoggedIn(true);
-    //     handleNavigateHome();
+      const response = await loginUser({ email, password });
 
-        // staggerToastsByN(response.message, "success", 1);
-        // staggerToastsByN("Redirecting...", "info", 2);
-        // handleClearFormAndGoHome();
-
-    //   } else if (response.status === 401) {
-    //     console.log("401");
-    //     toast.error("Login Failed. Check Email & Password")
-    //   } else if (response.status === 404) {
-    //     console.log(`response.status: ${response.status}`)
-    //     toast.error("User not found");
-    //   };
-    // } catch(error) {
-    //   toast.error(error.message)
-    //   console.error("Error:", error);
-    // };
+      if (!response.success) {
+        toast.error(response.message);
+        return;
+      } 
+      
+      setIsLoggedIn(true)
+      toast.success("Logging you in...")
+      router.push("/work");
+    } catch (error) {
+      console.error("Login submission error:", error);
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsSubmitting(false);
+      setAppIsLoading(false);
+    }
   };
 
 
@@ -135,8 +124,9 @@ const LoginForm = () => {
     const handleClearFormAndGoHome = () => {
     setTimeout(() => {
       setEmail("");
-      setEmail("");
       setEmailIsValid(true);
+      setPassword("");
+      setPasswordIsValid(true);
 
       setIsSubmitting(false);
       
@@ -149,96 +139,97 @@ const LoginForm = () => {
 
   // useEffect to check isSafari boolean after hydration on client
   useEffect(() => {
-    const navigatorValue = navigator.userAgent.toLowerCase();
-    setIsSafari(
-      navigatorValue.includes("safari") && 
-      (navigatorValue.includes("chrome") || navigatorValue.includes("mozilla")))
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isUsingSafari = userAgent.includes("safari") && 
+      !userAgent.includes("chrome") && 
+      !userAgent.includes("chromium") && 
+      !userAgent.includes("crios");
+    setIsSafari(isUsingSafari);
   }, []);
 
   return (
-    <>
-      <div className="loginForm">
-        <div className="loginForm__modal">
-          <h1 className="loginForm__title">
-            Admin Login
-          </h1>
-          <form 
-            className="loginForm__form"
-            onSubmit={handleSubmit}>
-            <div className="loginForm__group">
-              <label htmlFor="email" className="loginForm__label">
-                Email
-              </label>
+    <div className="loginForm">
+      <div className="loginForm__modal">
+        <h1 className="loginForm__title">
+          Admin Login
+        </h1>
+        <form 
+          className="loginForm__form"
+          onSubmit={handleSubmit}
+        >
+          <div className="loginForm__group">
+            <label htmlFor="email" className="loginForm__label">
+              Email
+            </label>
+            <input
+              type="text"
+              id="email"
+              className="loginForm__input"
+              value={email}
+              placeholder="Email"
+              onChange={handleEmailChange}
+            />
+            <div 
+              className={`loginForm__error ${!emailIsValid && initialFormCheck 
+                ? "email-error"
+                : ""}`}
+            >
+              Invalid Email
+            </div>
+          </div>
+          <div className="loginForm__group">
+            <label htmlFor="password" className="loginForm__label">
+                Password
+            </label>
+            <div className="passwordInput">
               <input
-                type="text"
-                id="email"
+                type={!isSafari && showPassword ? "text" : "password"}
+                id="password"
                 className="loginForm__input"
-                value={email}
-                placeholder="Email"
-                onChange={handleEmailChange}
+                value={password}
+                placeholder="Password"
+                onChange={handlePasswordChange}
               />
-              <div 
-                className={`loginForm__error ${!emailIsValid && initialFormCheck 
-                  ? "email-error"
-                  : ""}`}
-              >
-                Invalid Email
-              </div>
-            </div>
-            <div className="loginForm__group">
-              <label htmlFor="password" className="loginForm__label">
-                  Password
-              </label>
-              <div className="passwordInput">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  className="loginForm__input"
-                  value={password}
-                  placeholder="Password"
-                  onChange={handlePasswordChange}
-                />
 
-                <div 
-                  className={`passwordInput__icon ${!isSafari ? "show": ""}`}
-                  onClick={handleTogglePasswordVisibility}
-                >
-
-                  {showPassword 
-                    ? <Hide className={"passwordInput__icon--hide"}/>
-                    : <Show className={"passwordInput__icon--show"}/>
-                  }
-                </div>
-              </div>
               <div 
-                className={`loginForm__error ${!passwordIsValid && initialFormCheck && "password-error"}`}
+                className={`passwordInput__icon ${!isSafari ? "show": ""}`}
+                onClick={handleTogglePasswordVisibility}
               >
-                Invalid Password
+
+                {showPassword 
+                  ? <Hide className={"passwordInput__icon--hide"}/>
+                  : <Show className={"passwordInput__icon--show"}/>
+                }
               </div>
             </div>
-            <div className="loginForm__button-container">
-              <button 
-                type="submit" 
-                className={`loginForm__button loginForm__button--login ${isSubmitting 
-                  ? "disabled"
-                  : ""
-                }`}
-                disabled={isSubmitting}
-              >
-                Login
-              </button>
-              <button 
-                type="button" 
-                className="loginForm__button loginForm__button--cancel"
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
+            <div 
+              className={`loginForm__error ${!passwordIsValid && initialFormCheck && "password-error"}`}
+            >
+              Invalid Password
             </div>
-          </form>
-        </div>
+          </div>
+          <div className="loginForm__button-container">
+            <button 
+              type="submit" 
+              className={`loginForm__button loginForm__button--login ${isSubmitting 
+                ? "disabled"
+                : ""
+              }`}
+              disabled={isSubmitting}
+            >
+              Login
+            </button>
+            <button 
+              type="button" 
+              className="loginForm__button loginForm__button--cancel"
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 
