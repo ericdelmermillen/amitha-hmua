@@ -387,6 +387,7 @@
 @mixin imageBox {
 	display: block;
 	inset: 0;
+	overflow: hidden;
 	position: relative;
 	z-index: 0;
 }

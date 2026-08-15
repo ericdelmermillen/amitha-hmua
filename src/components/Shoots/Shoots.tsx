@@ -26,10 +26,9 @@ const Shoots = () => {
 
   const { 
     isLoggedIn,
-    setIsLoggedIn,
-    scrollYPos, 
+    // setIsLoggedIn,
+    // scrollYPos, 
     tags,
-    // minLoadingInterval, 
     selectedTag, 
     setSelectedTag, 
     // prevURL, 
@@ -38,28 +37,9 @@ const Shoots = () => {
     // setShootDetails,
     shootOrderIsEditable, 
     setShootOrderIsEditable,
-    appIsLoading,
+    // appIsLoading,
     setAppIsLoading
   } = useAppContext();
-  
-  const [ shoots, setShoots ] = useState<ShootSummary[]>([]);;
-
-  const [ isFetching, setIsFetching ] = useState<boolean>(false);
-  
-  const [ isInitialShootsLoad, setIsInitialShootsLoad ] = useState(true);
-
-
-  const [ currentPage, setCurrentPage ] = useState(1);
-  // const [ currentShootId, setCurrentShootId ] = useState(shoot_id);
-  const [ currentShootId, setCurrentShootId ] = useState<number | null>(null);
-
-  // const [ activeDragShoot, setActiveDragShoot ] = useState({id: -1}); 
-  const [ activeDragShoot, setActiveDragShoot ] = useState<ShootSummary | null>(null);
-
-  const [ finalPageLoaded, setFinalPageLoaded ] = useState(false);
-
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-
 
   const searchParams = useSearchParams();
   const tagParam = searchParams.get("tag");
@@ -68,14 +48,26 @@ const Shoots = () => {
 
   const pathname = usePathname();
   const isOnShootDetails = pathname.startsWith("/shoot/");
+  
+  const [ shoots, setShoots ] = useState<ShootSummary[]>([]);;
+  
+  // const [ isInitialShootsLoad, setIsInitialShootsLoad ] = useState(true);
 
-  const handleShootDragStart = (
-  e: DragEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>, 
-  shootID: number
-) => {
-  const selectedShoot = shoots.find(shoot => shoot.shootID === shootID);
-  setActiveDragShoot(selectedShoot || null);
-};
+  const [ currentPage, setCurrentPage ] = useState(1);
+  // const [ currentShootId, setCurrentShootId ] = useState(shoot_id);
+  const [ currentShootId, setCurrentShootId ] = useState<number | null>(null);
+
+  const [ activeDragShoot, setActiveDragShoot ] = useState<ShootSummary | null>(null);
+
+  const [ finalPageLoaded, setFinalPageLoaded ] = useState(false);
+
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const isFetchingRef = useRef(false);
+
+  const handleShootDragStart = (e: DragEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>, shootID: number) => {
+    const selectedShoot = shoots.find(shoot => shoot.shootID === shootID);
+    setActiveDragShoot(selectedShoot || null);
+  };
   
   const handleNewShootID = (shootId: number) => {
     // setShootDetails(null);
@@ -91,7 +83,6 @@ const Shoots = () => {
   const saveNewOrder = async () => {
     setShootOrderIsEditable(false);
     setAppIsLoading(true);
-    setAppIsLoading(false);
 
     // const tokenIsExpired = await checkTokenExpiration(setIsLoggedIn, navigate);
 
@@ -207,18 +198,17 @@ const Shoots = () => {
   useEffect(() => {
     const sentinel = sentinelRef.current;
 
-    if (!sentinel || finalPageLoaded || isFetching) {
+    if (!sentinel || finalPageLoaded) {
       return;
     }
 
     const observer = new IntersectionObserver(async (entries) => {
       const target = entries[0];
 
-      if (target.isIntersecting || currentPage === 1) {
-        setIsFetching(true);
+      if (target.isIntersecting && !isFetchingRef.current) {
+        isFetchingRef.current = true;
         setAppIsLoading(true);
 
-        console.log(selectedTag)
 
         try {
           const data = await getShootSummaries({
@@ -236,7 +226,10 @@ const Shoots = () => {
             filteredShoots = shootSummaries.filter(shoot => shoot.shootID !== currentShootIdNum);
           }
 
-          setShoots(prevShoots => [...prevShoots, ...filteredShoots.filter(shoot => !prevShoots.some(prev => prev.shootID === shoot.shootID))]);
+          setShoots(prevShoots => [
+            ...prevShoots, 
+            ...filteredShoots.filter(shoot => !prevShoots.some(prev => prev.shootID === shoot.shootID))
+          ]);
 
           if (isFinalPage || shootSummaries.length === 0) {
             setFinalPageLoaded(true);
@@ -246,7 +239,7 @@ const Shoots = () => {
         } catch (error) {
           console.error(`Error loading page ${currentPage} shoots:`, error);
         } finally {
-          setIsFetching(false);
+          isFetchingRef.current = false;
           setAppIsLoading(false);
         }
       }
@@ -257,7 +250,7 @@ const Shoots = () => {
     return () => {
       observer.disconnect();
     };
-  }, [currentPage, finalPageLoaded, isFetching, itemsPerPage, selectedTag, isOnShootDetails, shootID]);
+  }, [currentPage, finalPageLoaded, itemsPerPage, selectedTag?.id, isOnShootDetails, shootID, setAppIsLoading]);
 
   // useEffect to clear state on updating selectedTag in NavSelect
   useEffect(() => {
@@ -283,7 +276,6 @@ const Shoots = () => {
     }
   }, [tagParam, tags, selectedTag]);
   
-  
   return (
     <div className="shoots">
 
@@ -300,59 +292,55 @@ const Shoots = () => {
 
         {shoots.map(shoot => (
 
-          <Link
-            href={`/shoot/${shoot.shootID}`} 
-            key={shoot.shootID}
-          >
+          <Link key={shoot.shootID} href={`/shoot/${shoot.shootID}`}>
+            <Shoot
+              shootID={shoot.shootID}
+              displayOrder={shoot.displayOrder}
+              thumbnailURL={shoot.thumbnailURL}
+              models={shoot.models}
+              photographers={shoot.photographers}
+              isOnShootDetails={isOnShootDetails}
+              handleNewShootID={handleNewShootID}
+              shootOrderIsEditable={shootOrderIsEditable}
+              handleShootDragStart={handleShootDragStart}
+              handleDropShootTarget={handleDropShootTarget}
+              // tags={shoot.tags}
+            />
+          </Link>
 
-              <Shoot
-                key={shoot.shootID}
-                shootID={shoot.shootID}
-                displayOrder={shoot.displayOrder}
-                thumbnailURL={shoot.thumbnailURL}
-                models={shoot.models}
-                photographers={shoot.photographers}
-                isOnShootDetails={isOnShootDetails}
-                handleNewShootID={handleNewShootID}
-                shootOrderIsEditable={shootOrderIsEditable}
-                handleShootDragStart={handleShootDragStart}
-                handleDropShootTarget={handleDropShootTarget}
-                // tags={shoot.tags}
-              />
-            </Link>
         ))}
 
       </div>
       
-      {isLoggedIn && !isOnShootDetails && finalPageLoaded && !shootOrderIsEditable
-      // !selectedTag && 
+      {isLoggedIn && !isOnShootDetails && finalPageLoaded && !shootOrderIsEditable && !selectedTag 
 
-        ? <div className="shoots__button-container">
-            <button
-              className="shoots__editShootOrder"
-              onClick={makeOrderEditable}
-            >
-              Edit Order
-            </button>
-          </div>
+        ? (
+            <div className="shoots__button-container">
+              <button
+                className="shoots__editShootOrder"
+                onClick={makeOrderEditable}
+              >
+                Edit Order
+              </button>
+            </div>
+          )
 
-        : isLoggedIn && !isOnShootDetails && finalPageLoaded && shootOrderIsEditable
-        // !selectedTag && 
-        
-        ? <div className="shoots__button-container">
-            <button
-              className="shoots__editShootOrder"
-              onClick={saveNewOrder}
-            >
-              Save Order
-            </button>
-          </div>
-        
+        : isLoggedIn && !isOnShootDetails && finalPageLoaded && shootOrderIsEditable && !selectedTag ? 
+
+          (
+            <div className="shoots__button-container">
+              <button
+                className="shoots__editShootOrder"
+                onClick={saveNewOrder}
+                >
+                Save Order
+              </button>
+            </div>
+          )
         : null
       }
 
       <div className="shoots__sentinel" ref={sentinelRef}></div>
-
     </div>
   );
 };

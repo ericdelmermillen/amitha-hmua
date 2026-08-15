@@ -38,6 +38,8 @@ const tags = [
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 const AppContextProvider = ({ children }: ContextProviderProps) => {
+  const pathname = usePathname();
+  const router = useRouter();
 
   const [ scrollYPos, setScrollYPos ] = useState(0);
   const [ appIsLoading, setAppIsLoading ] = useState(true)
@@ -55,11 +57,19 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const [ shootOrderIsEditable, setShootOrderIsEditable ] = useState(false);
   
   const prevScrollYPosRef = useRef<number | null>(null);
-  
+
+  const [ showFloatingButton, setShowFloatingButton ] = useState<boolean>(
+    !pathname.includes("edit") && !pathname.includes("add")
+  );
+    
   const getPrevScrollYPosValue = () => prevScrollYPosRef.current ?? 0;
 
-  const pathname = usePathname();
-  const router = useRouter();
+
+  const handleNavigateToAddShoot = () => {
+    setSelectedTag(null);
+    setSelectValue(null);
+    router.push("/shoot/add");
+  };
 
   const handleTouchOffDiv = () => {
     setShowTouchOffDiv(false);
@@ -151,6 +161,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setIsLoggedIn(false);
     setShowSideNav(false);
     toast.success("Logging you out...")
+    router.push("/work");
   }
 
   // useEffect for updating of scrollYPos
@@ -231,7 +242,10 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     tags,
     handleLogoutUser,
     shootOrderIsEditable, 
-    setShootOrderIsEditable
+    setShootOrderIsEditable,
+    showFloatingButton, 
+    setShowFloatingButton,
+    handleNavigateToAddShoot
   };
 
   return (

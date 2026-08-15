@@ -1,0 +1,43 @@
+@use "../../partials/_mixins" as mx;
+@use "../../partials/_variables" as vars;
+
+.floatingButton {
+	& {
+		align-items: center;
+		background: var(--background-color);
+		border-radius: 50%;
+		bottom: 2.5rem;
+		box-shadow: var(--box-shadow);
+		cursor: pointer;
+		display: flex;
+		height: 3rem;
+		justify-content: center;
+		padding: 0.25rem;
+		position: fixed;
+		right: 2.5rem;
+		width: 3rem;
+		z-index: 5;
+	}
+
+	@media (min-width: vars.$ultra-wide) {
+		right: calc((100vw - vars.$ultra-wide) / 2 + 2.5rem);
+	}
+
+	&__up-stroke {
+		stroke: var(--text-color);
+	}
+
+	&__add,
+	&__up {
+		height: 2.5rem;
+		width: 2.5rem;
+	}
+
+	&__add-stroke {
+		stroke: var(--text-color);
+	}
+
+	&.hide {
+		display: none;
+	}
+}

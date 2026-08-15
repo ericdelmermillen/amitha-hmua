@@ -89,14 +89,17 @@
 
 	&__imageBox {
 		@include mx.imageBox;
-		@include mx.shootDetailsImg;
 		& {
+			aspect-ratio: 4 / 5;
 			cursor: pointer;
+			width: 100%;
 		}
 	}
 
-	// &__image {
-	// }
+	&__image {
+		object-fit: cover;
+		object-position: top center;
+	}
 
 	&__divider {
 		background-color: var(--text-color);

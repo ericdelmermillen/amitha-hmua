@@ -21,8 +21,16 @@
 		gap: 1rem;
 		grid-template-columns: repeat(1, 1fr);
 		height: 80%;
-		min-height: calc(100vw - vars.$nav-height);
+		min-height: 60vh;
 		min-width: 100%;
+
+		@media (min-width: vars.$tablet) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		@media (min-width: vars.$desktop) {
+			grid-template-columns: repeat(3, 1fr);
+		}
 
 		&.onShootDetails {
 			grid-template-columns: repeat(2, 1fr);
@@ -31,14 +39,6 @@
 			@media (min-width: vars.$tablet) {
 				grid-template-columns: repeat(3, 1fr);
 			}
-		}
-
-		@media (min-width: vars.$tablet) {
-			grid-template-columns: repeat(2, 1fr);
-		}
-
-		@media (min-width: vars.$desktop) {
-			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 

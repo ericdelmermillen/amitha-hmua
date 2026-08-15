@@ -10,6 +10,7 @@ import Nav from "@/components/Nav/Nav";
 import SideNav from "@/components/SideNav/SideNav";
 import TouchOffDiv from "@/components/TouchOffDiv/TouchOffDiv";
 import "./globals.scss";
+import FloatingButton from "@/components/FloatingButton/FloatingButton";
 
 
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
@@ -60,6 +61,7 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
               <SideNav />
               <Modal />
               {children}
+              <FloatingButton />
               <Footer />
               <ToastProvider />
 
@@ -78,5 +80,5 @@ export const metadata: Metadata = {
   description: "Portfolio Website of Amitha Millen-Suwanta Hair & Makeup Artist",
   icons: {
     icon: "/favicon.svg",
-  },
+  }
 };

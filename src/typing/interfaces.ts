@@ -46,6 +46,10 @@ export interface AppContextValue {
   handleIsOnCurrentPage: (e: MouseEvent<HTMLAnchorElement>) => void;
   shootOrderIsEditable: boolean;
   setShootOrderIsEditable: Dispatch<SetStateAction<boolean>>;
+
+  showFloatingButton: boolean;
+  setShowFloatingButton: Dispatch<SetStateAction<boolean>>;
+  handleNavigateToAddShoot: () => void;
   
   // functions
   getPrevScrollYPosValue: () => number;
