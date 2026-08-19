@@ -7,37 +7,24 @@ import {
   useEffect, 
   createContext 
 } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { AppContextValue, ContextProviderProps } from "@/typing/interfaces";
+import { usePathname, useSearchParams,useRouter } from "next/navigation";
+import { AppContextValue, ContextProviderProps, ShootSummary } from "@/typing/interfaces";
 import { isModifiedClick, normalizeCasing, scrollToTop } from "@/utils/utils";
 import { Tag } from "@/typing/interfaces";
 import { toast } from "react-toastify";
+import { checkUserSession } from "@/actions/authActions";
+import { getAllTags } from "@/actions/tagActions";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
 const NAV_CLICK_DELAY = Number(process.env.NEXT_PUBLIC_NAV_CLICK_DELAY);
 
 
-// need to get this from tagActions and store in state
-const tags = [
-  {id: 1, tagName: "COMMERCIAL"},
-  {id: 2, tagName: "CREATIVE"},
-  {id: 3, tagName: "STYLING"},
-  {id: 4, tagName: "BEAUTY"},
-  {id: 5, tagName: "WIGS"},
-  {id: 6, tagName: "GROOMING"},
-  {id: 7, tagName: "THEATER"},
-  {id: 8, tagName: "CELEBRITIES"},
-  {id: 9, tagName: "BRIDAL"},
-  {id: 10, tagName: "FASHION"},
-  {id: 11, tagName: "COSPLAY"},
-  {id: 12, tagName: "DRAG"},
-]
-
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 const AppContextProvider = ({ children }: ContextProviderProps) => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
 
   const [ scrollYPos, setScrollYPos ] = useState(0);
@@ -53,6 +40,15 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   
   const [ isLoggedIn, setIsLoggedIn ] = useState(false);
 
+  const [ tags, setTags ] = useState<Tag[]>([]);
+  
+  const [ shoots, setShoots ] = useState<ShootSummary[]>([]);;
+  const [ shouldUpdateShoots, setShouldUpdateShoots ] = useState(false);
+  const [ currentShootsPage, setCurrentShootsPage ] = useState(1);
+  const [ finalShootsPageLoaded, setFinalShootsPageLoaded ] = useState(false);
+  
+  const [ shouldRefreshTags, setShouldRefreshTags ] = useState(true);
+
   const [ shootOrderIsEditable, setShootOrderIsEditable ] = useState(false);
   
   const prevScrollYPosRef = useRef<number | null>(null);
@@ -63,6 +59,12 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     
   const getPrevScrollYPosValue = () => prevScrollYPosRef.current ?? 0;
 
+  const handleRefreshShoots = () => {
+    setShoots([]);
+    setFinalShootsPageLoaded(false);
+    setCurrentShootsPage(1);
+    setShouldUpdateShoots(true);
+  };
 
   const handleNavigateToAddShoot = () => {
     setSelectedTag(null);
@@ -104,13 +106,15 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   };
   
   const handleNavLinkClick = () => {
-    setShowTouchOffDiv(false);
-    setAppIsLoading(true);
-    setSelectedTag(null);
-    setSelectValue(null);
-    setShowNavSelectOptions(false);
-    setShowTouchOffDiv(false);
-    setShowSideNav(false);
+    // setShowTouchOffDiv(false);
+    // setAppIsLoading(true);
+    // setSelectedTag(null);
+    // setSelectValue(null);
+    // setShowNavSelectOptions(false);
+    // setShowTouchOffDiv(false);
+    // setShowSideNav(false);
+    // setShouldUpdateShoots(true);
+    handleClearAppState();
 };
 
   const handleSideNavLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
@@ -118,7 +122,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       return;
     };
     
-    setAppIsLoading(true)
+    handleClearAppState();
 
     setTimeout(() => {
      requestAnimationFrame(() => handleSetShowSideNavFalse());
@@ -156,12 +160,89 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   };
 
   const handleLogoutUser = () => {
-    console.log("Logout?")
-    setIsLoggedIn(false);
-    setShowSideNav(false);
-    toast.success("Logging you out...")
+    handleClearAppState(true);
+    toast.success("Logging you out...");
     router.push("/work");
   }
+
+  const handleClearAppState = (logOutUser = false) => {
+    setAppIsLoading(true);
+
+    if (logOutUser) {
+      setIsLoggedIn(false);
+    }
+    
+    setShowSideNav(false);
+    setAppIsLoading(false);
+    setShowTouchOffDiv(false);
+    setSelectedTag(null);
+    setSelectValue(null);
+    setShowNavSelectOptions(false);
+    setShootOrderIsEditable(false);
+    setShouldUpdateShoots(true);
+    setFinalShootsPageLoaded(false);
+    setCurrentShootsPage(1);
+
+    setTimeout(() => {
+      setShowSideNav(false);
+    }, MIN_LOADING_INTERVAL * 2);
+  };
+
+  // useEffect to grab tags on mount
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await getAllTags();
+
+        if (response.success) {
+          const updatedTags = response.tags.map((tag) => (
+            { ...tag,
+              tagName: tag.tagName.toUpperCase()
+          }));
+
+          setTags(updatedTags);
+        }
+      } catch (error) {
+        console.error("Error fetching tags in AppContext:", error);
+      } finally {
+        setShouldRefreshTags(false);
+      }
+    };
+
+    if (shouldRefreshTags) {
+      fetchTags();
+    }
+  }, [shouldRefreshTags]);
+
+  // useEffect for tracking if user gets logged out on navigating to a protected rout and then redirected to /work?auth=false
+  useEffect(() => {
+    const authStatus = searchParams.get("auth");
+
+    if (authStatus === "false") {
+      handleClearAppState(true);
+      toast.error("Authorization failed. Logging you out...")
+
+      window.history.replaceState(null, "", pathname);
+    }
+  }, [searchParams, pathname]);
+
+
+  // useEffect to turn off appIsLoading on page load or after navigation
+  useEffect(() => {
+    const handleLoad = () => {
+      setTimeout(() => {
+        setAppIsLoading(false);
+      }, APP_ISLOADING_DELAY);
+    };
+
+    if (document.readyState === "complete") {
+      scrollToTop();
+      handleLoad();
+    } else {
+      window.addEventListener("load", handleLoad);
+      return () => window.removeEventListener("load", handleLoad);
+    }
+  }, [pathname]);
 
   // useEffect for updating of scrollYPos
   useEffect(() => {
@@ -193,25 +274,24 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  
-  // useEffect to turn off appIsLoading on page load or after navigation
+
+  // useEffect to check user session and set isLoggedIn state
   useEffect(() => {
-    const handleLoad = () => {
-      setTimeout(() => {
-        setAppIsLoading(false);
-      }, APP_ISLOADING_DELAY);
+    const verifySession = async () => {
+      try {
+        const { isAuthenticated } = await checkUserSession();
+        setIsLoggedIn(isAuthenticated);
+        console.log(`isAuthenticated: ${isAuthenticated}`)
+      } catch (error) {
+        console.error("Session check failed:", error);
+        setIsLoggedIn(false);
+      }
     };
 
-    if (document.readyState === "complete") {
-      scrollToTop();
-      handleLoad();
-    } else {
-      window.addEventListener("load", handleLoad);
-      return () => window.removeEventListener("load", handleLoad);
-    }
-  }, [pathname]);
+    verifySession();
+  }, []);
 
-
+  
   const contextValues = {
     appIsLoading, 
     setAppIsLoading,
@@ -238,13 +318,26 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setShowTouchOffDiv,
     showNavSelectOptions, 
     setShowNavSelectOptions,
-    tags,
+    tags, 
+    setTags,
     handleLogoutUser,
     shootOrderIsEditable, 
     setShootOrderIsEditable,
     showFloatingButton, 
     setShowFloatingButton,
-    handleNavigateToAddShoot
+    handleNavigateToAddShoot,
+    handleClearAppState,
+    shouldRefreshTags,
+    setShouldRefreshTags,
+    shoots, 
+    setShoots,
+    shouldUpdateShoots, 
+    setShouldUpdateShoots,
+    currentShootsPage, 
+    setCurrentShootsPage,
+    finalShootsPageLoaded, 
+    setFinalShootsPageLoaded,
+    handleRefreshShoots
   };
 
   return (

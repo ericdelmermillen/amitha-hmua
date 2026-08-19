@@ -3,12 +3,18 @@
 import { useEffect, useState } from "react";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
+import { deleteShootByID } from "@/actions/shootActions";
+import { scrollToTop } from "@/utils/utils";
+import { toast } from "react-toastify";
 import "./Modal.scss";
+
+const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
 const Modal = () => {
   const { 
     setAppIsLoading,
-    scrollYPos 
+    scrollYPos,
+    handleRefreshShoots
   } = useAppContext();
 
   const { 
@@ -29,11 +35,46 @@ const Modal = () => {
     handleClearModal();
   };
   
-  const handleDeleteShoot = () => {
-    // can use function from context to refresh feed via new call
+  const handleDeleteShoot = async () => {
     console.log(`Deleting shoot ${modalEntityID}...`)
+    
+    if (!modalEntityID) {
+      return;
+    }
+
+    const modalEntityIDNum = parseInt(String(modalEntityID), 10);
+
+    if (isNaN(modalEntityIDNum)) {
+      console.error("Invalid shoot ID provided for deletion");
+      return;
+    }
+
+    try {
+      setAppIsLoading(true);
+      const response = await deleteShootByID(modalEntityIDNum);
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+      } else {
+        handleRefreshShoots();
+        toast.success(response.message);
+      }
+      
+    } catch (error) {
+      console.error("Error executing handleDeleteShoot:", error);
+    } finally {
+      setAppIsLoading(false);
+      
+      setTimeout(() => {
+        handleClearModal();
+        scrollToTop();
+      }, MIN_LOADING_INTERVAL);
+      return;
+    }
   };
-  
+
+
   const handleEditShoot = () => {
     // can use function from context to refresh feed via new call
     console.log(`Editing shoot ${modalEntityID}...`)
@@ -77,91 +118,86 @@ const Modal = () => {
 
 
   return (
-    <>
-      <div className={`modal ${showModal ? "show" : ""}`}>
-        <div className="modal__overlay" onClick={handleClearModal}></div>
-        <div className="modal__card">
+    <div className={`modal ${showModal ? "show" : ""}`}>
+      <div className="modal__overlay" onClick={handleClearModal}></div>
+      <div className="modal__card">
 
-          {modalAction === "edit"  && modalEntityType === "bio"
+        {modalAction === "edit"  && modalEntityType === "bio"
 
-            ? (
-                <>
-                  <h3 className="modal__heading">
-                    Edit Your Bio Page?
-                  </h3>
-                  <div className="modal__button-container">
-                    <button
-                      className="modal__button modal__button--edit"
-                      onClick={handleEditBio}
-                    >
-                      Edit Bio
-                    </button>
-                    <button
-                      className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                      onClick={handleCancel}
-                      disabled={cancelling}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </>
-              )
-            : modalAction === "delete" && modalEntityType === "shoot"
-            ? (
-                <>
-                  <h3 className="modal__heading">
-                    Delete Shoot {modalEntityID}?
-                  </h3>
-                  <div className="modal__button-container">
-                    <button
-                      className="modal__button modal__button--edit"
-                      onClick={handleDeleteShoot}
-                    >
-                      Delete Shoot
-                    </button>
-                    <button
-                      className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                      onClick={handleCancel}
-                      disabled={cancelling}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </>
-              )
-            : modalAction === "edit" && modalEntityType === "shoot"
-            ? (
-                <>
-                  <h3 className="modal__heading">
-                    Edit Shoot {modalEntityID}?
-                  </h3>
-                  <div className="modal__button-container">
-                    <button
-                      className="modal__button modal__button--edit"
-                      onClick={handleEditShoot}
-                    >
-                      Edit Shoot
-                    </button>
-                    <button
-                      className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                      onClick={handleCancel}
-                      disabled={cancelling}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </>
-              )
-            : null
-
-
-          
-          }
-
-        </div>
+          ? (
+              <>
+                <h3 className="modal__heading">
+                  Edit Your Bio Page?
+                </h3>
+                <div className="modal__button-container">
+                  <button
+                    className="modal__button modal__button--edit"
+                    onClick={handleEditBio}
+                  >
+                    Edit Bio
+                  </button>
+                  <button
+                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )
+          : modalAction === "delete" && modalEntityType === "shoot"
+          ? (
+              <>
+                <h3 className="modal__heading">
+                  Delete Shoot {modalEntityID}?
+                </h3>
+                <div className="modal__button-container">
+                  <button
+                    className="modal__button modal__button--edit"
+                    onClick={handleDeleteShoot}
+                  >
+                    Delete Shoot
+                  </button>
+                  <button
+                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )
+          : modalAction === "edit" && modalEntityType === "shoot"
+          ? (
+              <>
+                <h3 className="modal__heading">
+                  Edit Shoot {modalEntityID}?
+                </h3>
+                <div className="modal__button-container">
+                  <button
+                    className="modal__button modal__button--edit"
+                    onClick={handleEditShoot}
+                  >
+                    Edit Shoot
+                  </button>
+                  <button
+                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )
+          : null
+        }
 
       </div>
-    </>
+
+    </div>
   );
 };
 

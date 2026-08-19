@@ -1,26 +1,51 @@
+import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { TokenPayload } from "@/typing/interfaces";
-import jwt, { type SignOptions, type Secret } from "jsonwebtoken";
+import type { TokenPayload, SessionResponse } from "@/typing/interfaces";
 
-const JWT_SECRET: Secret = process.env.JWT_SECRET ?? "";
-const JWT_REFRESH_SECRET: Secret = process.env.JWT_REFRESH_SECRET ?? "";
-const TOKEN_EXPIRATION_INTERVAL = (process.env.JWT_TOKEN_EXPIRATION_INTERVAL ?? "15m") as SignOptions["expiresIn"];
-const REFRESH_TOKEN_EXPIRATION_INTERVAL = (process.env.JWT_REFRESH_TOKEN_EXPIRATION_INTERVAL ?? "7d") as SignOptions["expiresIn"];
+const JWT_SECRET_STRING = process.env.JWT_SECRET ?? "";
+const JWT_REFRESH_SECRET_STRING = process.env.JWT_REFRESH_SECRET ?? "";
+const ACCESS_TOKEN_EXPIRATION = process.env.JWT_ACCESS_TOKEN_EXPIRATION_INTERVAL ?? "15m";
+const REFRESH_TOKEN_EXPIRATION = process.env.JWT_REFRESH_TOKEN_EXPIRATION_INTERVAL ?? "7d";
 
-if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
+if (!JWT_SECRET_STRING || !JWT_REFRESH_SECRET_STRING) {
   throw new Error("Missing required JWT environment variables.");
 }
 
-const generateAccessToken = (payload: TokenPayload): string => {
-  return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: TOKEN_EXPIRATION_INTERVAL,
-  });
+const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_STRING);
+const JWT_REFRESH_SECRET = new TextEncoder().encode(JWT_REFRESH_SECRET_STRING);
+
+const generateAccessToken = async (payload: TokenPayload): Promise<string> => {
+  return await new SignJWT({ ...payload })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime(ACCESS_TOKEN_EXPIRATION)
+    .sign(JWT_SECRET);
 };
 
-const generateRefreshToken = (payload: TokenPayload): string => {
-  return jwt.sign(payload, JWT_REFRESH_SECRET, {
-    expiresIn: REFRESH_TOKEN_EXPIRATION_INTERVAL,
-  });
+const generateRefreshToken = async (payload: TokenPayload): Promise<string> => {
+  return await new SignJWT({ ...payload })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime(REFRESH_TOKEN_EXPIRATION)
+    .sign(JWT_REFRESH_SECRET);
+};
+
+const verifyAccessToken = async (token: string): Promise<TokenPayload | null> => {
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload as unknown as TokenPayload;
+  } catch {
+    return null;
+  }
+};
+
+const verifyRefreshToken = async (token: string): Promise<TokenPayload | null> => {
+  try {
+    const { payload } = await jwtVerify(token, JWT_REFRESH_SECRET);
+    return payload as unknown as TokenPayload;
+  } catch {
+    return null;
+  }
 };
 
 const setAuthCookies = async (
@@ -34,7 +59,7 @@ const setAuthCookies = async (
     httpOnly: true,
     secure: isProduction,
     sameSite: "strict",
-    maxAge: 15 * 60, // 15 minutes in seconds
+    maxAge: 15 * 60,
     path: "/",
   });
 
@@ -42,13 +67,52 @@ const setAuthCookies = async (
     httpOnly: true,
     secure: isProduction,
     sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+    maxAge: 7 * 24 * 60 * 60,
     path: "/",
   });
+};
+
+const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  if (accessToken) {
+    const payload = await verifyAccessToken(accessToken);
+    if (payload) {
+      return {
+        isAuthenticated: true,
+        userId: payload.userId,
+      };
+    }
+  }
+
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+
+  if (refreshToken) {
+    const refreshPayload = await verifyRefreshToken(refreshToken);
+    if (refreshPayload) {
+      const newAccessToken = await generateAccessToken({ userId: refreshPayload.userId });
+      const newRefreshToken = await generateRefreshToken({ userId: refreshPayload.userId });
+
+      await setAuthCookies(newAccessToken, newRefreshToken);
+
+      return {
+        isAuthenticated: true,
+        userId: refreshPayload.userId,
+      };
+    }
+  }
+
+  return {
+    isAuthenticated: false,
+  };
 };
 
 export {
   generateAccessToken,
   generateRefreshToken,
-  setAuthCookies
+  verifyAccessToken,
+  verifyRefreshToken,
+  setAuthCookies,
+  verifyAndRefreshSession
 };

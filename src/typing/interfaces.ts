@@ -34,6 +34,22 @@ export interface AppContextValue {
   showNavSelectOptions: boolean;
   setShowNavSelectOptions: Dispatch<SetStateAction<boolean>>;
   tags: Tag[];
+  setTags: Dispatch<SetStateAction<Tag[]>>;
+  shouldRefreshTags: boolean;
+  setShouldRefreshTags: Dispatch<SetStateAction<boolean>>;
+
+  shoots: ShootSummary[];
+  setShoots: Dispatch<SetStateAction<ShootSummary[]>>;
+  
+  shouldUpdateShoots: boolean;
+  setShouldUpdateShoots: Dispatch<SetStateAction<boolean>>;
+  
+  currentShootsPage: number;
+  setCurrentShootsPage: Dispatch<SetStateAction<number>>;
+  
+  
+  finalShootsPageLoaded: boolean;
+  setFinalShootsPageLoaded: Dispatch<SetStateAction<boolean>>;
   
   // handler functions
   handleToggleSideNav: () => void;
@@ -54,6 +70,8 @@ export interface AppContextValue {
   
   // functions
   getPrevScrollYPosValue: () => number;
+  handleClearAppState: (logOutUser?: boolean) => void;
+  handleRefreshShoots: () => void;
 };
 
 export interface ModalContextValue {
@@ -127,20 +145,20 @@ export interface BioData {
 	bioImageNotSet: boolean;
 }
 
-export interface BioResponse {
+interface BioResponse {
 	success: boolean;
 	data?: BioData;
 	message?: string;
 }
 
-export interface ClientButtonProps {
+interface ClientButtonProps {
   text: string; 
   variant?: string;
   buttonType: string;
   modifierClass?: string;
 }
 
-export interface InputPhoto {
+interface InputPhoto {
   photoNo: number;
   photoPreview: string | null;
   photoData: File | Blob | null;
@@ -263,8 +281,16 @@ interface UserRow extends RowDataPacket {
   password: string;
 }
 
+interface SessionResponse {
+  isAuthenticated: boolean;
+  userId?: number;
+}
+
 
 export {
+  type BioResponse,
+  type ClientButtonProps,
+  type InputPhoto,
   type BioUpdateData,
   type PhotoInputProps,
   type UpdatedBioData,
@@ -279,5 +305,6 @@ export {
   type AuthResponse,
   type AuthCredentials,
   type TokenPayload,
-  type UserRow
+  type UserRow,
+  type SessionResponse
 }

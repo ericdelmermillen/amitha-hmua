@@ -1,12 +1,12 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { type MouseEvent, type TransitionEvent, useEffect } from "react";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useAppContext } from "@/hooks/hooks";
 import { NavSelectProps, Tag } from "@/typing/interfaces";
+import { scrollToTop } from "@/utils/utils";
 import DownIcon from "@/assets/icons/DownIcon";
 import "./NavSelect.scss";
-import { scrollToTop } from "@/utils/utils";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
@@ -22,10 +22,8 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     showNavSelectOptions, 
     setShowNavSelectOptions,
   } = useAppContext();
-
-  const pathname = usePathname();
+  
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const safeModifierClass = typeof modifierClass === "string" ? modifierClass : "";
 
@@ -43,6 +41,8 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
 
   const handleDownArrowClick = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
+
+    console.log("Down arrow click")
 
     setShowNavSelectOptions(prev => {
       const next = !prev
@@ -99,100 +99,68 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     }
   };
   
-  // handle refresh/initial mount with tag url query params and setting state for selectedTag
+// useEffect to keep select display value in sync with the active URL tag query param
   useEffect(() => {
     const locationTagName = searchParams.get("tag");
-
-    if (!locationTagName) {
-      return;
-    }
-
-    setSelectValue(locationTagName);
-
-    if (selectOptions.length) {
-      const foundTag = selectOptions.find(
-        tag => tag.tagName.toLowerCase() === locationTagName.toLowerCase()
-      );
-
-        if (foundTag) {
-          setSelectedTag(foundTag);
-        } else {
-          router.push("/notfound");
-          setSelectValue(null);
-        }
-      }
-    }, [searchParams, pathname, router, setSelectValue, setSelectedTag]);
+    setSelectValue(locationTagName ? locationTagName.toUpperCase() : null);
+  }, [searchParams, setSelectValue]);
     
 
   return (
-    <>
+    <div className={`navSelect ${showNavSelectOptions ? "tall" : "short"}`}>
       <div 
-        className={`navSelect ${showNavSelectOptions 
-          ? "tall" 
-          : "short"}`}
+        id="navSelectInner"
+        onTransitionEnd={handleTransitionEnd}
+        className={`navSelect__inner ${showNavSelectOptions ? "tall" : ""}`}
       >
-        <div 
-          id="navSelectInner"
-          onTransitionEnd={handleTransitionEnd}
-          className={`navSelect__inner ${showNavSelectOptions 
-            ? "tall" 
-            : ""
-          }`}
-        >
+        <div className={`navSelect__select ${showNavSelectOptions ? "tall" : ""}`} >
           <div 
-            className={`navSelect__select ${showNavSelectOptions 
-              ? "tall" 
-              : ""}`} 
+            className={`navSelect__selectValue ${safeModifierClass} ${!showNavSelectOptions ? "short" : ""}`} 
+              onClick={handleTopOptionClick}
           >
-            <div 
-              className={`navSelect__selectValue ${safeModifierClass} ${!showNavSelectOptions 
-                ? "short" 
-                : ""}`} 
-                onClick={handleTopOptionClick}
+            <span 
+              className={`navSelect__default-option 
+              ${(!showNavSelectOptions && !selectValue) 
+                || (showNavSelectOptions && !selectValue) 
+                || (showNavSelectOptions && selectValue)
+                ? "show" 
+                : "hide"}`}
             >
-              <span 
-                className={`navSelect__default-option 
-                ${(!showNavSelectOptions && !selectValue) 
-                  || (showNavSelectOptions && !selectValue) 
-                  || (showNavSelectOptions && selectValue)
-                  ? "show" 
-                  : "hide"}`}
-              >
-                WORK
-              </span>
-              <span 
-                className={`navSelect__default-option 
-                ${
-                  (showNavSelectOptions && !selectValue) || (!showNavSelectOptions && selectValue) 
-                  ? "show" 
-                  : "hide"}`}
-              >
-                {selectValue ? `# ${selectValue}` : null}
-              </span>
-              <div 
-                className="navSelect__down"
-                onClick={(e) => handleDownArrowClick(e)}
-              >
-                <DownIcon 
-                  className={"navSelect__down-icon"}
-                  strokeClassName={"navSelect__down-stroke"}
-                />
-              </div>
+              WORK
+            </span>
+            <span 
+              className={`navSelect__default-option 
+              ${
+                (showNavSelectOptions && !selectValue) || (!showNavSelectOptions && selectValue) 
+                ? "show" 
+                : "hide"}`}
+            >
+              {selectValue ? `# ${selectValue}` : null}
+            </span>
+            <div 
+              className="navSelect__down"
+              onClick={(e) => handleDownArrowClick(e)}
+            >
+              <DownIcon 
+                className={"navSelect__down-icon"}
+                strokeClassName={"navSelect__down-stroke"}
+              />
             </div>
-
-            {selectOptions.map(option => 
-              <div 
-                className="navSelect__option"
-                key={option.id} 
-                onClick={() => handleUpdateSelectValue(option)}
-              >
-                {`# ${option.tagName}`}
-              </div>
-            )}
           </div>
+
+          {selectOptions.map(option => 
+            <div 
+              className="navSelect__option"
+              key={option.id} 
+              onClick={() => handleUpdateSelectValue(option)}
+            >
+              {`# ${option.tagName}`}
+            </div>
+          )}
         </div>
       </div>
-    </>
-  )};
+    </div>
+  );
+};
 
 export default NavSelect;

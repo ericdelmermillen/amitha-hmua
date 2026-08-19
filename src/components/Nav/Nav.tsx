@@ -37,79 +37,77 @@ const Nav = () => {
     setShowSideNav(false);
   };
 
+  // console.log(tags)
+
   return (
-    <>
-      <nav 
-        id="nav"
-        className={`nav ${getPrevScrollYPosValue() < scrollYPos && scrollYPos > 50 
-          ? "hide" 
-          : ""}`
-      }>
-        <div className="nav__content">
+    <nav 
+      id="nav"
+      className={`nav ${getPrevScrollYPosValue() < scrollYPos && scrollYPos > 50 ? "hide" : ""}`}
+    >
+      <div className="nav__content">
 
-          <ClientLink 
-            href="/work" 
-            scroll={false}
-            onClick={isOnHome ? handleIsOnHome : handleNavLinkClick}
-          >
-            <div className="nav__logo">
-              <Logo className={"nav__logo--icon"}/>
-            </div>
-          </ClientLink>
-
-          <ul className="nav__links">
-
-            <NavSelect 
-              selectOptions={tags}
-            />
-
-            {navPages.map((page) => page.href.startsWith("/") 
-              
-              ? (
-                <li key={page.href} className={`nav__link nav__link${page.modifierClass}`}>
-                  <ClientLink 
-                    href={page.href}
-                    onClick={pathname !== page.href
-                      ? handleNavLinkClick
-                      : handleIsOnSamePage}
-                  >
-                    {page.pageName}
-                  </ClientLink>
-                </li>
-                ) 
-              : (
-                <li
-                  key={page.href}
-                  className="nav__link nav__link--instagram"
-                >
-                  <a
-                    href={page.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`nav__link nav__link${page.modifierClass}`}
-                  >
-                    {page.icon && <page.icon className="nav__link--instagram" />}
-                  </a>
-                </li>
-                )
-            )}
-            
-            <li className="nav__link nav__link--colorMode">
-              <ColorModeToggle inputId={"navColorModeToggle"}/>
-            </li>
-
-          </ul>
-          <div className="nav__logOut">
-            <ClientButton 
-              text="Logout"
-              variant="rounded"
-              buttonType="logOut"
-              />
+        <ClientLink 
+          href="/work" 
+          scroll={false}
+          onClick={isOnHome ? handleIsOnHome : handleNavLinkClick}
+        >
+          <div className="nav__logo">
+            <Logo className={"nav__logo--icon"}/>
           </div>
-          <NavBarToggle />
+        </ClientLink>
+
+        <ul className="nav__links">
+
+          <NavSelect 
+            selectOptions={tags}
+          />
+
+          {navPages.map((page) => page.href.startsWith("/") 
+            
+            ? (
+              <li key={page.href} className={`nav__link nav__link${page.modifierClass}`}>
+                <ClientLink 
+                  href={page.href}
+                  onClick={pathname !== page.href
+                    ? handleNavLinkClick
+                    : handleIsOnSamePage}
+                >
+                  {page.pageName}
+                </ClientLink>
+              </li>
+              ) 
+            : (
+              <li
+                key={page.href}
+                className="nav__link nav__link--instagram"
+              >
+                <a
+                  href={page.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`nav__link nav__link${page.modifierClass}`}
+                >
+                  {page.icon && <page.icon className="nav__link--instagram" />}
+                </a>
+              </li>
+              )
+          )}
+          
+          <li className="nav__link nav__link--colorMode">
+            <ColorModeToggle inputId={"navColorModeToggle"}/>
+          </li>
+
+        </ul>
+        <div className="nav__logOut">
+          <ClientButton 
+            text="Logout"
+            variant="rounded"
+            buttonType="logOut"
+            />
         </div>
-      </nav>
-    </>
+        <NavBarToggle />
+      </div>
+    </nav>
   );
 };
 

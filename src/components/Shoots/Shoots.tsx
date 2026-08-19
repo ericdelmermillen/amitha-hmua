@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useParams, useSearchParams } from "next/navigation";
+import { usePathname, useParams, useSearchParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect, DragEvent, MouseEvent } from "react";
 import { ShootSummary } from "@/typing/interfaces";
 import { useAppContext } from "@/hooks/hooks";
@@ -8,9 +8,7 @@ import { getShootSummaries } from "@/actions/shootActions";
 import { normalizeCasing } from "@/utils/utils";
 import { toast } from "react-toastify";
 import Link from "next/link";
-// import { checkTokenExpiration } from "@/actions/authActions";
 import Shoot from "@/components/Shoot/Shoot";
-// import ShootPlaceHolder from "../ShootPlaceholder/ShootPlaceHolder.jsx";
 import "./Shoots.scss";
 
 // const itemsPerPage = 1;
@@ -23,7 +21,6 @@ const itemsPerPage = 12;
 
 
 const Shoots = () => {
-
   const { 
     isLoggedIn,
     // setIsLoggedIn,
@@ -38,7 +35,16 @@ const Shoots = () => {
     shootOrderIsEditable, 
     setShootOrderIsEditable,
     // appIsLoading,
-    setAppIsLoading
+    setAppIsLoading,
+    shoots, 
+    setShoots,
+    shouldUpdateShoots, 
+    setShouldUpdateShoots,
+    currentShootsPage, 
+    setCurrentShootsPage,
+    finalShootsPageLoaded, 
+    setFinalShootsPageLoaded,
+    handleRefreshShoots
   } = useAppContext();
 
   const searchParams = useSearchParams();
@@ -49,17 +55,11 @@ const Shoots = () => {
   const pathname = usePathname();
   const isOnShootDetails = pathname.startsWith("/shoot/");
   
-  const [ shoots, setShoots ] = useState<ShootSummary[]>([]);;
-  
-  // const [ isInitialShootsLoad, setIsInitialShootsLoad ] = useState(true);
+  const router = useRouter();
 
-  const [ currentPage, setCurrentPage ] = useState(1);
-  // const [ currentShootId, setCurrentShootId ] = useState(shoot_id);
   const [ currentShootId, setCurrentShootId ] = useState<number | null>(null);
 
   const [ activeDragShoot, setActiveDragShoot ] = useState<ShootSummary | null>(null);
-
-  const [ finalPageLoaded, setFinalPageLoaded ] = useState(false);
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const isFetchingRef = useRef(false);
@@ -70,7 +70,6 @@ const Shoots = () => {
   };
   
   const handleNewShootID = (shootId: number) => {
-    // setShootDetails(null);
     setCurrentShootId(shootId);
   };
 
@@ -128,10 +127,7 @@ const Shoots = () => {
     setActiveDragShoot(null);
   };
 
-  const handleDropShootTarget = (
-    dropTargetShootID: number,
-    dropTargetShootDisplayOrder: number
-  ) => {
+  const handleDropShootTarget = (dropTargetShootID: number, dropTargetShootDisplayOrder: number) => {
     if (!activeDragShoot) {
       return;
     }
@@ -193,55 +189,76 @@ const Shoots = () => {
     setActiveDragShoot(null);
   };
 
-  
-  // useEffect to attach intersection observer and handle fetching of shoots data
+  // useEffect to fetch shoots
   useEffect(() => {
-    const sentinel = sentinelRef.current;
-
-    if (!sentinel || finalPageLoaded) {
+    // Guard: If tag is in URL but selectedTag hasn't resolved from DB tags yet, wait
+    if (tagParam && selectedTag === null) {
       return;
     }
 
-    const observer = new IntersectionObserver(async (entries) => {
-      const target = entries[0];
+    // Guard: Ensure selectedTag in state matches tagParam in URL to avoid stale tag fetches
+    if (tagParam && selectedTag && selectedTag.tagName.toLowerCase() !== tagParam.toLowerCase()) {
+      return;
+    }
 
-      if (target.isIntersecting && !isFetchingRef.current) {
+    if (!finalShootsPageLoaded && shouldUpdateShoots) {
+      const fetchShoots = async () => {
         isFetchingRef.current = true;
         setAppIsLoading(true);
-
 
         try {
           const data = await getShootSummaries({
             tagID: selectedTag?.id || undefined,
-            page: currentPage,
+            page: currentShootsPage,
             limit: itemsPerPage,
           });
 
-          const { shootSummaries, isFinalPage } = data;       
+          const { shootSummaries, isFinalPage } = data;
 
           let filteredShoots = [...shootSummaries];
 
-          if (isOnShootDetails) {
-            const currentShootIdNum = shootID;
-            filteredShoots = shootSummaries.filter(shoot => shoot.shootID !== currentShootIdNum);
+          if (isOnShootDetails && shootID) {
+            filteredShoots = shootSummaries.filter((shoot) => shoot.shootID !== shootID);
           }
+          console.log(filteredShoots)
 
-          setShoots(prevShoots => [
-            ...prevShoots, 
-            ...filteredShoots.filter(shoot => !prevShoots.some(prev => prev.shootID === shoot.shootID))
+          setShoots((prevShoots) => [
+            ...prevShoots,
+            ...filteredShoots.filter(
+              (shoot) => !prevShoots.some((prev) => prev.shootID === shoot.shootID)
+            ),
           ]);
 
-          if (isFinalPage || shootSummaries.length === 0) {
-            setFinalPageLoaded(true);
-          } else {
-            setCurrentPage((prev) => prev + 1);
+          if (isFinalPage || shootSummaries.length < itemsPerPage) {
+            setFinalShootsPageLoaded(true);
           }
         } catch (error) {
-          console.error(`Error loading page ${currentPage} shoots:`, error);
+          console.error(`Error loading shoots for page ${currentShootsPage}:`, error);
         } finally {
           isFetchingRef.current = false;
           setAppIsLoading(false);
+          setShouldUpdateShoots(false);
         }
+      };
+
+      fetchShoots();
+    }
+  }, [shouldUpdateShoots, selectedTag, currentShootsPage, isOnShootDetails, shootID, tagParam, setAppIsLoading]);
+
+  // useEffect for IntersectionObserver infinite scroll pagination
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+
+    if (!sentinel || finalShootsPageLoaded) {
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      const target = entries[0];
+
+      if (target.isIntersecting && !isFetchingRef.current && !finalShootsPageLoaded && shoots.length > 0) {
+        setCurrentShootsPage((prevPage) => prevPage + 1);
+        setShouldUpdateShoots(true);
       }
     }, { rootMargin: "200px" });
 
@@ -250,31 +267,41 @@ const Shoots = () => {
     return () => {
       observer.disconnect();
     };
-  }, [currentPage, finalPageLoaded, itemsPerPage, selectedTag?.id, isOnShootDetails, shootID, setAppIsLoading]);
+  }, [finalShootsPageLoaded, shoots.length]);
 
-  // useEffect to clear state on updating selectedTag in NavSelect
-  useEffect(() => {
-    setShoots([]);
-    setCurrentPage(1);
-    setFinalPageLoaded(false);
-  }, [selectedTag?.id, tagParam]);
-
-  // useEffect to sync URL searchParam to selectedTag state
+  // useEffect to sync URL tag param with AppContext
   useEffect(() => {
     if (!tags.length) {
       return;
     }
 
     if (tagParam) {
-      const matchedTag = tags.find((tag) => tag.tagName.toLowerCase() === tagParam.toLowerCase());
+      const matchedTag = tags.find(
+        (tag) => tag.tagName.toLowerCase() === tagParam.toLowerCase()
+      );
 
-      if (matchedTag && matchedTag.id !== selectedTag?.id) {
-        setSelectedTag(matchedTag);
+      if (matchedTag) {
+        if (matchedTag.id !== selectedTag?.id) {
+          setSelectedTag(matchedTag);
+          handleRefreshShoots();
+        }
+      } else {
+        // Tag param exists in URL but does not match any valid tag from DB
+        setSelectedTag(null);
+        router.push("/notfound");
       }
     } else if (selectedTag !== null && !isOnShootDetails) {
+      // Navigating from /work?tag=... back to /work
       setSelectedTag(null);
+      handleRefreshShoots();
     }
-  }, [tagParam, tags, selectedTag]);
+  }, [tagParam, tags, selectedTag, isOnShootDetails, router]);
+
+  // useEffect to clear shoots state and trigger load when navigating or changing tags
+  useEffect(() => {
+    handleRefreshShoots()
+  }, [pathname]);
+
   
   return (
     <div className="shoots">
@@ -304,7 +331,6 @@ const Shoots = () => {
               shootOrderIsEditable={shootOrderIsEditable}
               handleShootDragStart={handleShootDragStart}
               handleDropShootTarget={handleDropShootTarget}
-              // tags={shoot.tags}
             />
           </Link>
 
@@ -312,7 +338,7 @@ const Shoots = () => {
 
       </div>
       
-      {isLoggedIn && !isOnShootDetails && finalPageLoaded && !shootOrderIsEditable && !selectedTag 
+      {isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && !shootOrderIsEditable && !selectedTag 
 
         ? (
             <div className="shoots__button-container">
@@ -325,7 +351,7 @@ const Shoots = () => {
             </div>
           )
 
-        : isLoggedIn && !isOnShootDetails && finalPageLoaded && shootOrderIsEditable && !selectedTag ? 
+        : isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && shootOrderIsEditable && !selectedTag ? 
 
           (
             <div className="shoots__button-container">

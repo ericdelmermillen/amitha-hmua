@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import  { ReactNode, Suspense } from "react";
 import { AppContextProvider } from "@/contexts/AppContext";
 import { ColorThemeProvider } from "@/contexts/ColorThemeContext";
 import { ModalContextProvider } from "@/contexts/ModalContext";
 import { ToastProvider } from "@/providers/ToastProvider";
+import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import Footer from "@/components/Footer/Footer";
 import IsLoading from "@/components/IsLoading/IsLoading";
 import Modal from "@/components/Modal/Modal";
@@ -10,10 +12,9 @@ import Nav from "@/components/Nav/Nav";
 import SideNav from "@/components/SideNav/SideNav";
 import TouchOffDiv from "@/components/TouchOffDiv/TouchOffDiv";
 import "./globals.scss";
-import FloatingButton from "@/components/FloatingButton/FloatingButton";
 
 
-const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
+const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html
       lang="en"
@@ -51,23 +52,25 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
       </head>
 
       <body>
-        <AppContextProvider>
-          <ColorThemeProvider>
-            <ModalContextProvider>
-          
-              <IsLoading/>
-              <TouchOffDiv />
-              <Nav />
-              <SideNav />
-              <Modal />
-              {children}
-              <FloatingButton />
-              <Footer />
-              <ToastProvider />
+        <Suspense fallback={null}>
+          <AppContextProvider>
+            <ColorThemeProvider>
+              <ModalContextProvider>
+            
+                <IsLoading/>
+                <TouchOffDiv />
+                <Nav />
+                <SideNav />
+                <Modal />
+                {children}
+                <FloatingButton />
+                <Footer />
+                <ToastProvider />
 
-            </ModalContextProvider>
-          </ColorThemeProvider>
-        </AppContextProvider>
+              </ModalContextProvider>
+            </ColorThemeProvider>
+          </AppContextProvider>
+          </Suspense>
       </body>
     </html>
   );

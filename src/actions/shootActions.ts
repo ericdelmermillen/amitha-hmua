@@ -1,16 +1,25 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { 
   GetShootSummariesParams, 
   GetShootSummariesResponse, 
   ShootDetailResponse, 
-  ShootSummary 
+  ShootSummary,
 } from "@/typing/interfaces";
 import { pool } from "@/db/dbClient";
-import { RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { deleteFiles } from "@/s3/s3"
+import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
 const BUCKET_PATH = process.env.BUCKET_PATH || '';
 const SHOOTS_DIRNAME = process.env.SHOOTS_DIRNAME || '';
+
+
+interface ActionResponse {
+  success: boolean;
+  message: string;
+}
 
 
 const getShootSummaries = async ({
@@ -151,9 +160,6 @@ const getShootByID = async (id: number): Promise<ShootDetailResponse | null> => 
       ),
     ]);
 
-    const bucketPath = process.env.BUCKET_PATH || "";
-    const dirname = process.env.SHOOTS_DIRNAME || "";
-
     return {
       shoot_id: shoot.shoot_id,
       shoot_date: shoot.shoot_date
@@ -174,7 +180,7 @@ const getShootByID = async (id: number): Promise<ShootDetailResponse | null> => 
         display_order: photo.display_order,
         photo_url: photo.photo_url?.startsWith("http")
           ? photo.photo_url
-          : `${bucketPath}${dirname}/${photo.photo_url}`,
+          : `${BUCKET_PATH}${SHOOTS_DIRNAME}/${photo.photo_url}`,
       })),
     };
   } catch (error) {
@@ -184,14 +190,110 @@ const getShootByID = async (id: number): Promise<ShootDetailResponse | null> => 
 };
 
 
-
 const addShoot = () => {
   console.log("Adding your shoot")
 };
 
-const deleteShootByID = () => {
-  console.log("Deleting your shoot")
+
+interface ActionResponse {
+  success: boolean;
+  message: string;
+}
+
+const deleteShootByID = async (id: number): Promise<ActionResponse> => {
+  const session = await verifyAndRefreshSession();
+
+  if (!session.isAuthenticated) {
+    return {
+      success: false,
+      message: "Unauthorized: Invalid or expired session",
+    };
+  }
+
+  let connection;
+  let photoObjKeys: { photo_url: string }[] = [];
+
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const [photoRows] = await connection.query<RowDataPacket[]>(
+      "SELECT photo_url FROM photos WHERE shoot_id = ?",
+      [id]
+    );
+
+    photoObjKeys = photoRows as { photo_url: string }[];
+
+    await connection.query(
+      "DELETE FROM photos WHERE shoot_id = ?",
+      [id]
+    );
+
+    await connection.query(
+      "DELETE FROM shoot_models WHERE shoot_id = ?",
+      [id]
+    );
+
+    await connection.query(
+      "DELETE FROM shoot_photographers WHERE shoot_id = ?",
+      [id]
+    );
+
+    await connection.query(
+      "DELETE FROM shoot_tags WHERE shoot_id = ?",
+      [id]
+    );
+
+    const [result] = await connection.query<ResultSetHeader>(
+      "DELETE FROM shoots WHERE id = ?",
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      throw new Error(`Shoot number ${id} not deleted`);
+    }
+
+    await connection.commit();
+  } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
+    console.error("Error deleting shoot from DB:", error);
+    return {
+      success: false,
+      message: "Failed to delete shoot",
+    };
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+
+  try {
+    const objKeys = photoObjKeys.map((obj) => `${SHOOTS_DIRNAME}/${obj.photo_url}`);
+
+    if (objKeys.length > 0) {
+      const deleteResponse = await deleteFiles(objKeys);
+
+      if (!deleteResponse) {
+        throw new Error("Error deleting files from AWS");
+      }
+    }
+
+    return {
+      success: true,
+      message: `Shoot number ${id} and associated files deleted successfully`,
+    };
+  } catch (error) {
+    console.error("Error deleting file from AWS:", error);
+    return {
+      success: false,
+      message: "Shoot deleted from database, but failed to delete files from AWS",
+    };
+  }
 };
+
+
 
 const editShootByID = () => {
   console.log("Editing your shoot")

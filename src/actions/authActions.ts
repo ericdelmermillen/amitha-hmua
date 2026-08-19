@@ -1,12 +1,18 @@
 "use server";
 
-import type { AuthCredentials, AuthResponse, UserRow } from "@/typing/interfaces";
+import { cookies } from "next/headers";
+import type { AuthCredentials, AuthResponse, SessionResponse, UserRow } from "@/typing/interfaces";
 import type { RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import { authSchema } from "@/validation/authValidation";
-import { generateAccessToken, generateRefreshToken, setAuthCookies } from "@/utils/tokenUtils";
+import { 
+  generateAccessToken, 
+  generateRefreshToken, 
+  setAuthCookies, 
+  verifyAccessToken, 
+  verifyRefreshToken 
+} from "@/utils/tokenUtils";
 import { pool } from "@/db/dbClient";
 import bcrypt from "bcrypt";
-
 
 const createUser = async ({ email, password }: AuthCredentials): Promise<AuthResponse> => {
   const result = authSchema.safeParse({ email, password });
@@ -54,7 +60,6 @@ const createUser = async ({ email, password }: AuthCredentials): Promise<AuthRes
   }
 };
 
-
 const loginUser = async ({ email, password }: AuthCredentials): Promise<AuthResponse> => {
   const result = authSchema.safeParse({ email, password });
 
@@ -90,8 +95,8 @@ const loginUser = async ({ email, password }: AuthCredentials): Promise<AuthResp
       };
     }
 
-    const accessToken = generateAccessToken({ userId: user.id });
-    const refreshToken = generateRefreshToken({ userId: user.id });
+    const accessToken = await generateAccessToken({ userId: user.id });
+    const refreshToken = await generateRefreshToken({ userId: user.id });
 
     await setAuthCookies(accessToken, refreshToken);
 
@@ -109,19 +114,56 @@ const loginUser = async ({ email, password }: AuthCredentials): Promise<AuthResp
   }
 };
 
-const refreshToken = ()=> {
-  console.log("Refreshing your token...")
+const checkUserSession = async (): Promise<SessionResponse> => {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  if (accessToken) {
+    const payload = await verifyAccessToken(accessToken);
+
+    if (payload) {
+      return {
+        isAuthenticated: true,
+        userId: payload.userId,
+      };
+    }
+  }
+
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+
+  if (refreshToken) {
+    const refreshPayload = await verifyRefreshToken(refreshToken);
+    
+    if (refreshPayload) {
+      const newAccessToken = await generateAccessToken({ userId: refreshPayload.userId });
+      const newRefreshToken = await generateRefreshToken({ userId: refreshPayload.userId });
+
+      await setAuthCookies(newAccessToken, newRefreshToken);
+
+      return {
+        isAuthenticated: true,
+        userId: refreshPayload.userId,
+      };
+    }
+  }
+
+  return {
+    isAuthenticated: false,
+  };
 };
 
-const logout = ()=> {
-  console.log("Logging you out...")
+const refreshToken = () => {
+  console.log("Refreshing your token...");
 };
 
-
+const logout = () => {
+  console.log("Logging you out...");
+};
 
 export {
   createUser,
   loginUser,
+  checkUserSession,
   refreshToken,
   logout
 };
