@@ -1,7 +1,7 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { 
+  ActionResponse,
   GetShootSummariesParams, 
   GetShootSummariesResponse, 
   ShootDetailResponse, 
@@ -14,12 +14,6 @@ import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
 const BUCKET_PATH = process.env.BUCKET_PATH || '';
 const SHOOTS_DIRNAME = process.env.SHOOTS_DIRNAME || '';
-
-
-interface ActionResponse {
-  success: boolean;
-  message: string;
-}
 
 
 const getShootSummaries = async ({
@@ -195,20 +189,10 @@ const addShoot = () => {
 };
 
 
-interface ActionResponse {
-  success: boolean;
-  message: string;
-}
+
 
 const deleteShootByID = async (id: number): Promise<ActionResponse> => {
-  const session = await verifyAndRefreshSession();
-
-  if (!session.isAuthenticated) {
-    return {
-      success: false,
-      message: "Unauthorized: Invalid or expired session",
-    };
-  }
+  await verifyAndRefreshSession();
 
   let connection;
   let photoObjKeys: { photo_url: string }[] = [];

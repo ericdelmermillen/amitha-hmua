@@ -291,6 +291,11 @@ interface TokenDetails {
   expiresAt: Date;
 }
 
+interface ActionResponse {
+  success: boolean;
+  message: string;
+}
+
 
 export {
   type BioResponse,
@@ -312,5 +317,6 @@ export {
   type TokenPayload,
   type UserRow,
   type SessionResponse,
-  type TokenDetails
+  type TokenDetails,
+  type ActionResponse
 }

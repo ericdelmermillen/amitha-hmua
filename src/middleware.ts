@@ -49,9 +49,6 @@ const middleware = async (request: NextRequest) => {
 
   const response = NextResponse.redirect(redirectUrl);
 
-  // response.cookies.delete("accessToken");
-  // response.cookies.delete("refreshToken");
-
   return response;
 };
 

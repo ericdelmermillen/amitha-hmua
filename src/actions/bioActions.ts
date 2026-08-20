@@ -1,9 +1,10 @@
 "use server";
 
-import { BioResponse, UpdatedBioData } from "@/typing/interfaces";
-import { revalidatePath } from 'next/cache';
+import { ActionResponse, BioResponse, UpdatedBioData } from "@/typing/interfaces";
+import { revalidatePath } from "next/cache";
 import { pool } from "@/db/dbClient";
 import { deleteFiles } from "@/s3/s3";
+import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
 const BUCKET_PATH = process.env.BUCKET_PATH;
 const BIO_DIRNAME = process.env.BIO_DIRNAME;
@@ -12,6 +13,7 @@ if (!BUCKET_PATH || !BIO_DIRNAME) {
 	throw new Error("Missing required AWS environment variables.");
 }
 
+// getBio
 const getBio = async (): Promise<BioResponse> => {
 	try {
 		const [rows] = await pool.query(
@@ -48,15 +50,18 @@ const getBio = async (): Promise<BioResponse> => {
 			success: false,
 			message: "An error occurred while fetching the Bio Page data"
 		};
-	};
+	}
 };
 
+// updateBio
 const updateBio = async ({
   bio_name,
   bio_img_url,
   bio_text,
   updated_Photo
-}: UpdatedBioData) => {
+}: UpdatedBioData): Promise<ActionResponse> => {
+  await verifyAndRefreshSession();
+
   let connection;
 
   try {
@@ -84,7 +89,7 @@ const updateBio = async ({
       );
 
       await connection.commit();
-      revalidatePath('/bio');
+      revalidatePath("/bio");
 
       return {
         success: true,
@@ -107,7 +112,7 @@ const updateBio = async ({
     );
 
     await connection.commit();
-    revalidatePath('/bio');
+    revalidatePath("/bio");
 
     // Clean up old photo after successful DB update
     if (
@@ -119,7 +124,7 @@ const updateBio = async ({
         await deleteFiles([`${BIO_DIRNAME}/${previousBioImg}`]);
       } catch (error) {
         console.error("Failed deleting old bio image:", error);
-      };
+      }
     }
 
     return {
@@ -140,7 +145,7 @@ const updateBio = async ({
         await deleteFiles([`${BIO_DIRNAME}/${bio_img_url}`]);
       } catch (deleteError) {
         console.error("Failed removing orphaned upload:", deleteError);
-      };
+      }
     }
 
     return {
@@ -152,7 +157,7 @@ const updateBio = async ({
     if (connection) {
       connection.release();
     }
-  };
+  }
 };
 
 

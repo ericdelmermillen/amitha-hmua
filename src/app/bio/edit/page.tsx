@@ -180,9 +180,17 @@ const EditBioPage = () => {
       router.push("/bio");
 
     } catch (error) {
-      console.error("Failed to update bio:", error);
-      toast.error(error instanceof Error ? error.message : "Error updating bio page");
+      // console.error("Failed to update bio:", error);
+      // toast.error(error instanceof Error ? error.message : "Error updating bio page");
+      const errorMessage = error instanceof Error ? error.message : "";
 
+      // prevents the next error from showing in a toast
+      if (errorMessage === "NEXT_REDIRECT" || errorMessage.includes("NEXT_REDIRECT")) {
+        return;
+      }
+
+      console.error("Failed to update bio:", error);
+      toast.error(errorMessage || "Error updating bio page");
     } finally {
       setAppIsLoading(false);
     }

@@ -80,3 +80,35 @@ CREATE TABLE revoked_tokens (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_expires_at (expires_at)
 );
+
+-- automating deletion of revoked tokens: runs every 5 mins (DEV VERSION), purges tokens older than 2 mins
+SET
+  GLOBAL event_scheduler = ON;
+
+DROP EVENT IF EXISTS purge_expired_revoked_tokens;
+
+CREATE EVENT purge_expired_revoked_tokens ON SCHEDULE EVERY 5 MINUTE STARTS CURRENT_TIMESTAMP DO
+DELETE FROM
+  revoked_tokens
+WHERE
+  created_at < NOW() - INTERVAL 2 MINUTE;
+
+-- automating deletion of revoked tokens: runs every 24 hours (PROD VERSION), purges tokens older than 7 days
+-- CREATE EVENT purge_expired_revoked_tokens
+-- ON SCHEDULE EVERY 1 DAY
+-- STARTS CURRENT_TIMESTAMP
+-- DO
+--   DELETE FROM revoked_tokens
+--   WHERE created_at < NOW() - INTERVAL 7 DAY;
+-- select statement to see how many times the purge has run
+SELECT
+  EVENT_NAME,
+  STATUS,
+  INTERVAL_VALUE,
+  INTERVAL_FIELD,
+  STARTS,
+  LAST_EXECUTED
+FROM
+  information_schema.EVENTS
+WHERE
+  EVENT_NAME = "purge_expired_revoked_tokens";

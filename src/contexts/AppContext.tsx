@@ -11,7 +11,7 @@ import { usePathname, useSearchParams,useRouter } from "next/navigation";
 import { AppContextValue, ContextProviderProps, ShootSummary } from "@/typing/interfaces";
 import { isModifiedClick, normalizeCasing, scrollToTop } from "@/utils/utils";
 import { Tag } from "@/typing/interfaces";
-import { toast } from "react-toastify";
+import { type TypeOptions, toast } from "react-toastify";
 import { checkUserSession, logoutUser } from "@/actions/authActions";
 import { getAllTags } from "@/actions/tagActions";
 
@@ -159,15 +159,24 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     }, MIN_LOADING_INTERVAL);
   };
 
-  const handleLogoutUser = async (message = "") => {
+
+  const handleLogoutUser = async (
+    messageOrEvent?: unknown,
+    messageType: TypeOptions = "success"
+  ) => {
+    const finalMessage =
+      typeof messageOrEvent === "string" && messageOrEvent.length > 0
+        ? messageOrEvent
+        : "Logging you out...";
+
     try {
-      const response = await logoutUser(message);
+      const response = await logoutUser(finalMessage);
 
       if (response.success) {
-        toast.success(response.message);
+        toast(response.message, { type: messageType });
         handleClearAppState(true);
         handleRefreshShoots();
-        router.push("/work");
+        router.replace("/work");
       } else {
         console.error(response.message);
         toast.error(response.message);
@@ -231,8 +240,8 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     const authStatus = searchParams.get("auth");
 
     if (authStatus === "false") {
-      handleLogoutUser("Authentication failed. Logging you out...");
-      window.history.replaceState(null, "", pathname);
+      handleLogoutUser("Authentication failed. Logging you out...", "error");
+      // window.history.replaceState(null, "", pathname);
     }
   }, [searchParams, pathname]);
 

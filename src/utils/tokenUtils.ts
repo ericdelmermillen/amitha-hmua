@@ -1,8 +1,10 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { SignJWT, jwtVerify, decodeJwt } from "jose";
 import type { TokenPayload, SessionResponse, TokenDetails } from "@/typing/interfaces";
 import { RowDataPacket } from "mysql2";
 import { pool } from "@/db/dbClient";
+import { revokeToken } from "@/actions/authActions";
 
 const JWT_SECRET_STRING = process.env.JWT_SECRET ?? "";
 const JWT_REFRESH_SECRET_STRING = process.env.JWT_REFRESH_SECRET ?? "";
@@ -41,7 +43,7 @@ const verifyAccessToken = async (token: string): Promise<TokenPayload | null> =>
   }
 };
 
-const verifyRefreshToken = async (token: string): Promise<TokenPayload | null> => {
+  const verifyRefreshToken = async (token: string): Promise<TokenPayload | null> => {
   try {
     const { payload } = await jwtVerify(token, JWT_REFRESH_SECRET);
     return payload as unknown as TokenPayload;
@@ -74,41 +76,62 @@ const setAuthCookies = async (
   });
 };
 
+
 const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
-
-  if (accessToken) {
-    const payload = await verifyAccessToken(accessToken);
-    if (payload) {
-      return {
-        isAuthenticated: true,
-        userId: payload.userId,
-      };
-    }
-  }
-
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
-  if (refreshToken) {
-    const refreshPayload = await verifyRefreshToken(refreshToken);
-    if (refreshPayload) {
-      const newAccessToken = await generateAccessToken({ userId: refreshPayload.userId });
-      const newRefreshToken = await generateRefreshToken({ userId: refreshPayload.userId });
+  if (accessToken) {
+    const isRevoked = await isTokenRevoked(accessToken);
 
-      await setAuthCookies(newAccessToken, newRefreshToken);
+    if (!isRevoked) {
+      const payload = await verifyAccessToken(accessToken);
 
-      return {
-        isAuthenticated: true,
-        userId: refreshPayload.userId,
-      };
+      if (payload) {
+        return {
+          isAuthenticated: true,
+          userId: payload.userId,
+        };
+      }
     }
   }
 
-  return {
-    isAuthenticated: false,
-  };
+  if (refreshToken) {
+    const isRevoked = await isTokenRevoked(refreshToken);
+
+    if (!isRevoked) {
+      const refreshPayload = await verifyRefreshToken(refreshToken);
+
+      if (refreshPayload) {
+        const newAccessToken = await generateAccessToken({ userId: refreshPayload.userId });
+        const newRefreshToken = await generateRefreshToken({ userId: refreshPayload.userId });
+
+        await setAuthCookies(newAccessToken, newRefreshToken);
+
+        return {
+          isAuthenticated: true,
+          userId: refreshPayload.userId,
+        };
+      }
+    }
+  }
+
+  if (accessToken) {
+    await revokeToken(accessToken);
+    cookieStore.delete("accessToken");
+  }
+
+  if (refreshToken) {
+    await revokeToken(refreshToken);
+    cookieStore.delete("refreshToken");
+  }
+
+  redirect("/work?auth=false");
 };
+
+
+
 
 const extractTokenRevocationDetails = (token: string): TokenDetails | null => {
   try {
