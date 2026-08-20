@@ -12,7 +12,7 @@ import { AppContextValue, ContextProviderProps, ShootSummary } from "@/typing/in
 import { isModifiedClick, normalizeCasing, scrollToTop } from "@/utils/utils";
 import { Tag } from "@/typing/interfaces";
 import { toast } from "react-toastify";
-import { checkUserSession } from "@/actions/authActions";
+import { checkUserSession, logoutUser } from "@/actions/authActions";
 import { getAllTags } from "@/actions/tagActions";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
@@ -42,7 +42,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
   const [ tags, setTags ] = useState<Tag[]>([]);
   
-  const [ shoots, setShoots ] = useState<ShootSummary[]>([]);;
+  const [ shoots, setShoots ] = useState<ShootSummary[]>([]);
   const [ shouldUpdateShoots, setShouldUpdateShoots ] = useState(false);
   const [ currentShootsPage, setCurrentShootsPage ] = useState(1);
   const [ finalShootsPageLoaded, setFinalShootsPageLoaded ] = useState(false);
@@ -159,11 +159,23 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     }, MIN_LOADING_INTERVAL);
   };
 
-  const handleLogoutUser = () => {
-    handleClearAppState(true);
-    toast.success("Logging you out...");
-    router.push("/work");
-  }
+  const handleLogoutUser = async (message = "") => {
+    try {
+      const response = await logoutUser(message);
+
+      if (response.success) {
+        toast.success(response.message);
+        handleClearAppState(true);
+        handleRefreshShoots();
+        router.push("/work");
+      } else {
+        console.error(response.message);
+        toast.error(response.message);
+      }
+    } catch (error) {
+      console.error("Network or client error during logout:", error);
+    }
+  };
 
   const handleClearAppState = (logOutUser = false) => {
     setAppIsLoading(true);
@@ -173,7 +185,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     }
     
     setShowSideNav(false);
-    setAppIsLoading(false);
     setShowTouchOffDiv(false);
     setSelectedTag(null);
     setSelectValue(null);
@@ -185,6 +196,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
     setTimeout(() => {
       setShowSideNav(false);
+      setAppIsLoading(false);
     }, MIN_LOADING_INTERVAL * 2);
   };
 
@@ -219,9 +231,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     const authStatus = searchParams.get("auth");
 
     if (authStatus === "false") {
-      handleClearAppState(true);
-      toast.error("Authorization failed. Logging you out...")
-
+      handleLogoutUser("Authentication failed. Logging you out...");
       window.history.replaceState(null, "", pathname);
     }
   }, [searchParams, pathname]);

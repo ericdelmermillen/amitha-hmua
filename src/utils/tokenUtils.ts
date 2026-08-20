@@ -1,6 +1,8 @@
-import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import type { TokenPayload, SessionResponse } from "@/typing/interfaces";
+import { SignJWT, jwtVerify, decodeJwt } from "jose";
+import type { TokenPayload, SessionResponse, TokenDetails } from "@/typing/interfaces";
+import { RowDataPacket } from "mysql2";
+import { pool } from "@/db/dbClient";
 
 const JWT_SECRET_STRING = process.env.JWT_SECRET ?? "";
 const JWT_REFRESH_SECRET_STRING = process.env.JWT_REFRESH_SECRET ?? "";
@@ -108,11 +110,50 @@ const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
   };
 };
 
+const extractTokenRevocationDetails = (token: string): TokenDetails | null => {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      return null;
+    }
+
+    const signature = parts[2];
+    const decoded = decodeJwt(token);
+
+    if (!decoded.exp) {
+      return null;
+    }
+
+    const expiresAt = new Date(decoded.exp * 1000);
+    return { signature, expiresAt };
+  } catch {
+    return null;
+  }
+};
+
+const isTokenRevoked = async (token: string): Promise<boolean> => {
+  const parts = token.split(".");
+  if (parts.length !== 3) {
+    return true;
+  }
+
+  const signature = parts[2];
+
+  const [ rows ] = await pool.query<RowDataPacket[]>(
+    "SELECT id FROM revoked_tokens WHERE token_signature = ? LIMIT 1",
+    [signature]
+  );
+
+  return rows.length > 0;
+};
+
 export {
   generateAccessToken,
   generateRefreshToken,
   verifyAccessToken,
   verifyRefreshToken,
   setAuthCookies,
-  verifyAndRefreshSession
+  verifyAndRefreshSession,
+  extractTokenRevocationDetails,
+  isTokenRevoked
 };

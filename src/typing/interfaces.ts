@@ -286,6 +286,11 @@ interface SessionResponse {
   userId?: number;
 }
 
+interface TokenDetails {
+  signature: string; 
+  expiresAt: Date;
+}
+
 
 export {
   type BioResponse,
@@ -306,5 +311,6 @@ export {
   type AuthCredentials,
   type TokenPayload,
   type UserRow,
-  type SessionResponse
+  type SessionResponse,
+  type TokenDetails
 }

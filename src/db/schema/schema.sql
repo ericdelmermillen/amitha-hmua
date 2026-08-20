@@ -72,3 +72,11 @@ CREATE TABLE shoot_tags (
   FOREIGN KEY (shoot_id) REFERENCES shoots(id) ON DELETE CASCADE,
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
+
+CREATE TABLE revoked_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token_signature VARCHAR(255) NOT NULL UNIQUE,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_expires_at (expires_at)
+);

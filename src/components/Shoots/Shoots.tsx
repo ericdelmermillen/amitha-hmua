@@ -220,7 +220,6 @@ const Shoots = () => {
           if (isOnShootDetails && shootID) {
             filteredShoots = shootSummaries.filter((shoot) => shoot.shootID !== shootID);
           }
-          console.log(filteredShoots)
 
           setShoots((prevShoots) => [
             ...prevShoots,
