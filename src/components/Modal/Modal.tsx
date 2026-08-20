@@ -14,7 +14,8 @@ const Modal = () => {
   const { 
     setAppIsLoading,
     scrollYPos,
-    handleRefreshShoots
+    handleRefreshShoots,
+    handleNavigateToEditShoot
   } = useAppContext();
 
   const { 
@@ -78,6 +79,7 @@ const Modal = () => {
   const handleEditShoot = () => {
     // can use function from context to refresh feed via new call
     console.log(`Editing shoot ${modalEntityID}...`)
+    handleNavigateToEditShoot(modalEntityID);
   };
 
   const handleCancel = () => {

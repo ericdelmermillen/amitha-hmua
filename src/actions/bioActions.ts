@@ -1,9 +1,9 @@
 "use server";
 
-import { ActionResponse, BioResponse, UpdatedBioData } from "@/typing/interfaces";
 import { revalidatePath } from "next/cache";
-import { pool } from "@/db/dbClient";
+import { ActionResponse, BioResponse, UpdatedBioData } from "@/typing/interfaces";
 import { deleteFiles } from "@/s3/s3";
+import { pool } from "@/db/dbClient";
 import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
 const BUCKET_PATH = process.env.BUCKET_PATH;

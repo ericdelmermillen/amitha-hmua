@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { SignJWT, jwtVerify, decodeJwt } from "jose";
-import type { TokenPayload, SessionResponse, TokenDetails } from "@/typing/interfaces";
+import { decodeJwt, jwtVerify, SignJWT } from "jose";
+import type { SessionResponse, TokenDetails, TokenPayload } from "@/typing/interfaces";
 import { RowDataPacket } from "mysql2";
 import { pool } from "@/db/dbClient";
 import { revokeToken } from "@/actions/authActions";
@@ -9,7 +9,7 @@ import { revokeToken } from "@/actions/authActions";
 const JWT_SECRET_STRING = process.env.JWT_SECRET ?? "";
 const JWT_REFRESH_SECRET_STRING = process.env.JWT_REFRESH_SECRET ?? "";
 const ACCESS_TOKEN_EXPIRATION = process.env.JWT_ACCESS_TOKEN_EXPIRATION_INTERVAL ?? "15m";
-const REFRESH_TOKEN_EXPIRATION = process.env.JWT_REFRESH_TOKEN_EXPIRATION_INTERVAL ?? "7d";
+const REFRESH_TOKEN_EXPIRATION = process.env.JWT_REFRESH_TOKEN_EXPIRATION_INTERVAL ?? "1d";
 
 if (!JWT_SECRET_STRING || !JWT_REFRESH_SECRET_STRING) {
   throw new Error("Missing required JWT environment variables.");
@@ -43,7 +43,7 @@ const verifyAccessToken = async (token: string): Promise<TokenPayload | null> =>
   }
 };
 
-  const verifyRefreshToken = async (token: string): Promise<TokenPayload | null> => {
+const verifyRefreshToken = async (token: string): Promise<TokenPayload | null> => {
   try {
     const { payload } = await jwtVerify(token, JWT_REFRESH_SECRET);
     return payload as unknown as TokenPayload;
@@ -91,7 +91,7 @@ const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
       if (payload) {
         return {
           isAuthenticated: true,
-          userId: payload.userId,
+          userId: payload.userId
         };
       }
     }
@@ -129,9 +129,6 @@ const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
 
   redirect("/work?auth=false");
 };
-
-
-
 
 const extractTokenRevocationDetails = (token: string): TokenDetails | null => {
   try {

@@ -35,7 +35,7 @@ const ClientButton = ({
         className={`clientButton ${variant} ${safeModifierClass}`}
         onClick={handleNavigateToEditoBio}
         disabled={modalIsOpen}
-        >
+      >
         {text}
       </button>
     );
@@ -47,7 +47,7 @@ const ClientButton = ({
         className={`clientButton ${variant} ${safeModifierClass}`}
         onClick={handleLogoutUser}
         disabled={modalIsOpen}
-        >
+      >
         {text}
       </button>
     );

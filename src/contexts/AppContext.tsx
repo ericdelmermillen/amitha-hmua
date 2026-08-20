@@ -72,6 +72,12 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     router.push("/shoot/add");
   };
 
+  const handleNavigateToEditShoot = (id: number | null) => {
+    setSelectedTag(null);
+    setSelectValue(null);
+    router.push(`/shoot/edit/${id}`);
+  };
+
   const handleTouchOffDiv = () => {
     setShowTouchOffDiv(false);
     setShowSideNav(false);
@@ -345,6 +351,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     showFloatingButton, 
     setShowFloatingButton,
     handleNavigateToAddShoot,
+    handleNavigateToEditShoot,
     handleClearAppState,
     shouldRefreshTags,
     setShouldRefreshTags,

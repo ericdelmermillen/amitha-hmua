@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { jwtVerify } from "jose";
-
-const protectedRoutes = ["/bio/edit", "/shoot/add"];
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET ?? "");
 const JWT_REFRESH_SECRET = new TextEncoder().encode(process.env.JWT_REFRESH_SECRET ?? "");
+
+const protectedRoutes = ["/bio/edit", "/shoot/add", "/shoot/edit"];
 
 const verifyTokenEdge = async (token: string, secret: Uint8Array): Promise<boolean> => {
   try {
@@ -47,13 +46,12 @@ const middleware = async (request: NextRequest) => {
   const redirectUrl = new URL("/work", request.url);
   redirectUrl.searchParams.set("auth", "false");
 
-  const response = NextResponse.redirect(redirectUrl);
-
-  return response;
+  return NextResponse.redirect(redirectUrl);
 };
 
-export const config = {
+const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
 
+export { config };
 export default middleware;

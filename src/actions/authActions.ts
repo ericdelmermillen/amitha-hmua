@@ -1,10 +1,5 @@
 "use server";
 
-
-// *** test token checking scenarios: reoked tokens need to be added to db table
-// *** implement and test automated token purging in db
-
-
 import { cookies } from "next/headers";
 import type { AuthCredentials, AuthResponse, SessionResponse, UserRow } from "@/typing/interfaces";
 import type { RowDataPacket, ResultSetHeader } from "mysql2/promise";
@@ -120,45 +115,6 @@ const loginUser = async ({ email, password }: AuthCredentials): Promise<AuthResp
     };
   }
 };
-
-// const checkUserSession = async (): Promise<SessionResponse> => {
-//   const cookieStore = await cookies();
-//   const accessToken = cookieStore.get("accessToken")?.value;
-
-//   if (accessToken) {
-//     const payload = await verifyAccessToken(accessToken);
-
-//     if (payload) {
-//       return {
-//         isAuthenticated: true,
-//         userId: payload.userId,
-//       };
-//     }
-//   }
-
-//   const refreshToken = cookieStore.get("refreshToken")?.value;
-
-//   if (refreshToken) {
-//     const refreshPayload = await verifyRefreshToken(refreshToken);
-    
-//     if (refreshPayload) {
-//       const newAccessToken = await generateAccessToken({ userId: refreshPayload.userId });
-//       const newRefreshToken = await generateRefreshToken({ userId: refreshPayload.userId });
-
-//       await setAuthCookies(newAccessToken, newRefreshToken);
-
-//       return {
-//         isAuthenticated: true,
-//         userId: refreshPayload.userId,
-//       };
-//     }
-//   }
-
-//   return {
-//     isAuthenticated: false,
-//   };
-// };
-
 
 const checkUserSession = async (): Promise<SessionResponse> => {
   const cookieStore = await cookies();

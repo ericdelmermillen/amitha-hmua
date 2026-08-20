@@ -67,6 +67,7 @@ export interface AppContextValue {
   showFloatingButton: boolean;
   setShowFloatingButton: Dispatch<SetStateAction<boolean>>;
   handleNavigateToAddShoot: () => void;
+  handleNavigateToEditShoot: (id: number | null) => void;
   
   // functions
   getPrevScrollYPosValue: () => number;

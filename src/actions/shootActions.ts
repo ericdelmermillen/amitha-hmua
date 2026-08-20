@@ -12,10 +12,10 @@ import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { deleteFiles } from "@/s3/s3"
 import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
-const BUCKET_PATH = process.env.BUCKET_PATH || '';
-const SHOOTS_DIRNAME = process.env.SHOOTS_DIRNAME || '';
+const BUCKET_PATH = process.env.BUCKET_PATH || "";
+const SHOOTS_DIRNAME = process.env.SHOOTS_DIRNAME || "";
 
-
+// getShootSummaries
 const getShootSummaries = async ({
   page = 1,
   limit = 10,
@@ -36,7 +36,7 @@ const getShootSummaries = async ({
         GROUP_CONCAT(DISTINCT tags.tag_name) AS tags,
         SUBSTRING_INDEX(
           GROUP_CONCAT(DISTINCT photos.photo_url ORDER BY photos.display_order ASC),
-          ',', 1
+          ",", 1
         ) AS photo_url
       FROM shoots
       LEFT JOIN shoot_photographers 
@@ -103,7 +103,7 @@ const getShootSummaries = async ({
   }
 };
 
-
+// getShootByID
 const getShootByID = async (id: number): Promise<ShootDetailResponse | null> => {
   try {
     const [shoots] = await pool.query<RowDataPacket[]>(
@@ -188,6 +188,10 @@ const addShoot = () => {
   console.log("Adding your shoot")
 };
 
+
+const editShootByID = () => {
+  console.log("Editing your shoot")
+};
 
 
 
@@ -277,12 +281,6 @@ const deleteShootByID = async (id: number): Promise<ActionResponse> => {
   }
 };
 
-
-
-const editShootByID = () => {
-  console.log("Editing your shoot")
-};
-
 const updateShootOrder = () => {
   console.log("Updating your shoot")
 };
@@ -292,7 +290,7 @@ export {
   getShootSummaries,
   getShootByID,
   addShoot,
-  deleteShootByID,
   editShootByID,
+  deleteShootByID,
   updateShootOrder
 };

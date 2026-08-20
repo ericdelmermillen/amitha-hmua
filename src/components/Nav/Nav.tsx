@@ -37,8 +37,6 @@ const Nav = () => {
     setShowSideNav(false);
   };
 
-  // console.log(tags)
-
   return (
     <nav 
       id="nav"
@@ -58,9 +56,7 @@ const Nav = () => {
 
         <ul className="nav__links">
 
-          <NavSelect 
-            selectOptions={tags}
-          />
+          <NavSelect selectOptions={tags} />
 
           {navPages.map((page) => page.href.startsWith("/") 
             
@@ -103,7 +99,7 @@ const Nav = () => {
             text="Logout"
             variant="rounded"
             buttonType="logOut"
-            />
+          />
         </div>
         <NavBarToggle />
       </div>
