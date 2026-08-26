@@ -408,6 +408,44 @@ interface DeleteModelResponse {
   modelShoots?: ModelShoot[];
 }
 
+interface Photographer {
+  id: number;
+  photographerName: string;
+}
+
+interface PhotographerRow extends RowDataPacket {
+  id: number;
+  photographer_name: string;
+}
+
+interface GetAllPhotographersResponse {
+  success: boolean;
+  message: string;
+  photographers: Photographer[];
+}
+
+interface AddPhotographerResponse {
+  success: boolean;
+  message: string;
+  photographers?: Photographer[];
+}
+
+interface EditPhotographerResponse {
+  success: boolean;
+  message: string;
+  updatedPhotographer?: Photographer;
+}
+
+interface PhotographerShoot {
+  shoot_id: number;
+}
+
+interface DeletePhotographerResponse {
+  success: boolean;
+  message: string;
+  photographers?: Photographer[];
+  photographerShoots?: PhotographerShoot[];
+}
 
 export {
   type BioResponse,
@@ -449,4 +487,11 @@ export {
   type EditModelResponse,
   type ModelShoot,
   type DeleteModelResponse,
+  type Photographer,
+  type PhotographerRow,
+  type GetAllPhotographersResponse,
+  type AddPhotographerResponse,
+  type EditPhotographerResponse,
+  type PhotographerShoot,
+  type DeletePhotographerResponse,
 }

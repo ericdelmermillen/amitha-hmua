@@ -4,11 +4,31 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { EntryNameType } from "@/typing/types";
 import { ChooserEntry } from "@/typing/interfaces";
+
+// import { 
+//   addModel, 
+//   deleteModelByID, 
+//   editModelByID, 
+//   getAllModels 
+// } from "@/actions/modelActions";
+// import { 
+//   addPhotographer, 
+//   deletePhotographerByID, 
+//   editPhotographerByID, 
+//   getAllPhotographers 
+// } from "@/actions/photographerActions";
+// import { 
+//   addTag, 
+//   deleteTagByID, 
+//   editTagByID, 
+//   getAllTags 
+// } from "@/actions/tagActions";
+
 // import { toast } from "react-toastify";
 import AddIcon from "@/assets/icons/AddIcon";
+import CustomSelect from "../CustomSelect/CustomSelect";
 import ShootDatePicker from "../ShootDatePicker/ShootDatePicker";
 import "./AddEditShootForm.scss"
-import CustomSelect from "../CustomSelect/CustomSelect";
 
 const AddEditShootForm = () => {
   const params = useParams();
