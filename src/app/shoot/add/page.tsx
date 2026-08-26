@@ -1,16 +1,22 @@
 "use client";
 
+import { addTag, editTagByID } from "@/actions/tagActions";
 import AddEditShootForm from "@/components/AddEditShootForm/AddEditShootForm";
 import "./AddShootPage.scss";
 
-import { addTag } from "@/actions/tagActions";
 
-const newTagName = "XyZ"
+const tagNumber = 34
+const newTagName = "ZYZ";
 
 const AddShootPage = () => {
 
-  const handleAddTag = async () => {
-    const response = await addTag(newTagName);
+  // const handleAddTag = async () => {
+  //   const response = await addTag(newTagName);
+  //   console.log(response)
+  // }
+
+  const handleEditTagByID = async () => {
+    const response = await editTagByID(tagNumber, newTagName);
     console.log(response)
   }
 
@@ -20,9 +26,9 @@ const AddShootPage = () => {
         <AddEditShootForm />
 
         <button
-          onClick={handleAddTag}
+          onClick={handleEditTagByID}
         >
-          Add Shoot {newTagName}
+          Edit Tag {tagNumber}; new name: {newTagName}
         </button>
       </div>
     </div>

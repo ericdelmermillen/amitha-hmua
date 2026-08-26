@@ -326,6 +326,18 @@ interface CustomSelectProps {
   entryNameType: EntryNameType;
 }
 
+interface GetAllTagsResponse {
+  success: boolean;
+  message: string;
+  tags: Tag[];
+}
+
+
+interface TagRow extends RowDataPacket {
+  id: number;
+  tag_name: string;
+}
+
 
 export {
   type BioResponse,
@@ -352,4 +364,6 @@ export {
   type ChooserEntry, 
   type SelectOption, 
   type CustomSelectProps, 
+  type GetAllTagsResponse,
+  type TagRow,
 }
