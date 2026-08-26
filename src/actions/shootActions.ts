@@ -13,7 +13,7 @@ import { deleteFiles } from "@/s3/s3"
 import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
 const BUCKET_PATH = process.env.BUCKET_PATH || "";
-const SHOOTS_DIRNAME = process.env.SHOOTS_DIRNAME || "";
+const DIRNAME = process.env.SHOOTS_DIRNAME || "";
 
 // getShootSummaries
 const getShootSummaries = async ({
@@ -89,7 +89,7 @@ const getShootSummaries = async ({
       photographers: shoot.photographers ? shoot.photographers.split(",") : [],
       models: shoot.models ? shoot.models.split(",") : [],
       thumbnailURL: shoot.photo_url
-        ? `${BUCKET_PATH}${SHOOTS_DIRNAME}/${shoot.photo_url}`
+        ? `${BUCKET_PATH}${DIRNAME}/${shoot.photo_url}`
         : "",
     }));
 
@@ -174,7 +174,7 @@ const getShootByID = async (id: number): Promise<ShootDetailResponse | null> => 
         display_order: photo.display_order,
         photo_url: photo.photo_url?.startsWith("http")
           ? photo.photo_url
-          : `${BUCKET_PATH}${SHOOTS_DIRNAME}/${photo.photo_url}`,
+          : `${BUCKET_PATH}${DIRNAME}/${photo.photo_url}`,
       })),
     };
   } catch (error) {
@@ -258,7 +258,7 @@ const deleteShootByID = async (id: number): Promise<ActionResponse> => {
   }
 
   try {
-    const objKeys = photoObjKeys.map((obj) => `${SHOOTS_DIRNAME}/${obj.photo_url}`);
+    const objKeys = photoObjKeys.map((obj) => `${DIRNAME}/${obj.photo_url}`);
 
     if (objKeys.length > 0) {
       const deleteResponse = await deleteFiles(objKeys);

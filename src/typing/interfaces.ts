@@ -369,6 +369,44 @@ interface DeleteTagResponse {
   tagShoots?: TagShoot[];
 }
 
+interface Model {
+  id: number;
+  modelName: string;
+}
+
+interface ModelRow extends RowDataPacket {
+  id: number;
+  model_name: string;
+}
+
+interface GetAllModelsResponse {
+  success: boolean;
+  message: string;
+  models: Model[];
+}
+
+interface AddModelResponse {
+  success: boolean;
+  message: string;
+  models?: Model[];
+}
+
+interface EditModelResponse {
+  success: boolean;
+  message: string;
+  updatedModel?: Model;
+}
+
+interface ModelShoot {
+  shoot_id: number;
+}
+
+interface DeleteModelResponse {
+  success: boolean;
+  message: string;
+  models?: Model[];
+  modelShoots?: ModelShoot[];
+}
 
 
 export {
@@ -404,4 +442,11 @@ export {
   type ShootRow,
   type DeleteTagResponse,
   type TagShoot,
+  type Model,
+  type ModelRow,
+  type GetAllModelsResponse,
+  type AddModelResponse,
+  type EditModelResponse,
+  type ModelShoot,
+  type DeleteModelResponse,
 }
