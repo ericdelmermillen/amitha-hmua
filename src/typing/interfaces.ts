@@ -338,6 +338,38 @@ interface TagRow extends RowDataPacket {
   tag_name: string;
 }
 
+interface AddTagResponse {
+  success: boolean;
+  message: string;
+  tags?: Tag[];
+}
+
+interface EditTagResponse {
+  success: boolean;
+  message: string;
+  updatedTag?: Tag;
+}
+
+interface ShootLinkRow extends RowDataPacket {
+  shoot_id: number;
+}
+
+interface ShootRow extends RowDataPacket {
+  id: number;
+}
+
+interface TagShoot {
+  shoot_id: number;
+}
+
+interface DeleteTagResponse {
+  success: boolean;
+  message: string;
+  tags?: Tag[];
+  tagShoots?: TagShoot[];
+}
+
+
 
 export {
   type BioResponse,
@@ -364,6 +396,12 @@ export {
   type ChooserEntry, 
   type SelectOption, 
   type CustomSelectProps, 
+  type AddTagResponse,
+  type EditTagResponse,
   type GetAllTagsResponse,
   type TagRow,
+  type ShootLinkRow,
+  type ShootRow,
+  type DeleteTagResponse,
+  type TagShoot,
 }

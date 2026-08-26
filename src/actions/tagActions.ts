@@ -1,21 +1,18 @@
 "use server";
 
-import { GetAllTagsResponse, Tag, TagRow } from "@/typing/interfaces";
-import { RowDataPacket } from "mysql2";
+import { 
+  AddTagResponse, 
+  DeleteTagResponse, 
+  EditTagResponse, 
+  GetAllTagsResponse, 
+  ShootLinkRow, 
+  ShootRow, 
+  Tag, 
+  TagRow, 
+  TagShoot
+} from "@/typing/interfaces";
+import { ResultSetHeader } from "mysql2";
 import { pool } from "@/db/dbClient";
-
-
-interface AddTagResponse {
-  success: boolean;
-  message: string;
-  tags?: Tag[];
-}
-
-interface EditTagResponse {
-  success: boolean;
-  message: string;
-  updatedTag?: Tag;
-}
 
 
 // getAllTags
@@ -174,13 +171,94 @@ const editTagByID = async (id: number, newTagName: string): Promise<EditTagRespo
   }
 };
 
+// deleteTagByID
+const deleteTagByID = async (id: number): Promise<DeleteTagResponse> => {
+  const parsedID = parseInt(String(id), 10);
 
-const deleteTagByID = () => {
-  console.log("Deleting your tag...")
+  if (isNaN(parsedID) || parsedID <= 0) {
+    return {
+      success: false,
+      message: "Valid tag ID is required",
+    };
+  }
+
+  try {
+    const [links] = await pool.query<ShootLinkRow[]>(
+      "SELECT shoot_id FROM shoot_tags WHERE tag_id = ?",
+      [parsedID]
+    );
+
+    if (links.length > 0) {
+      const shootIds = links.map((r) => {
+        return r.shoot_id;
+      });
+
+      const [shootRows] = await pool.query<ShootRow[]>(
+        "SELECT id FROM shoots WHERE id IN (?)",
+        [shootIds]
+      );
+
+      const tagShoots: TagShoot[] = shootRows.map((s) => {
+        return {
+          shoot_id: s.id,
+        };
+      });
+
+      return {
+        success: false,
+        message: "Tag cannot be deleted because it appears in existing shoot(s)",
+        tagShoots,
+      };
+    }
+
+    const [existing] = await pool.query<TagRow[]>(
+      "SELECT id, tag_name FROM tags WHERE id = ? LIMIT 1",
+      [parsedID]
+    );
+
+    if (existing.length === 0) {
+      return {
+        success: false,
+        message: `Tag number ${parsedID} does not exist`,
+      };
+    }
+
+    const [result] = await pool.query<ResultSetHeader>(
+      "DELETE FROM tags WHERE id = ?",
+      [parsedID]
+    );
+
+    if (result.affectedRows === 0) {
+      return {
+        success: false,
+        message: `Tag number ${parsedID} not deleted`,
+      };
+    }
+
+    const [rows] = await pool.query<TagRow[]>(
+      "SELECT id, tag_name FROM tags ORDER BY tag_name ASC"
+    );
+
+    const formattedTags: Tag[] = rows.map((row) => {
+      return {
+        id: row.id,
+        tagName: row.tag_name,
+      };
+    });
+
+    return {
+      success: true,
+      message: "Tag deleted successfully",
+      tags: formattedTags,
+    };
+  } catch (error) {
+    console.error("Error deleting tag:", error);
+    return {
+      success: false,
+      message: "Failed to delete tag",
+    };
+  }
 };
-
-
-
 
 export {
   getAllTags,
