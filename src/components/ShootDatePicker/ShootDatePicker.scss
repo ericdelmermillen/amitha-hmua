@@ -1,0 +1,28 @@
+@use "../../partials/mixins.scss" as mx;
+@use "../../partials/variables.scss" as vars;
+
+.shootDatePicker {
+	& {
+		position: relative;
+		width: 9rem;
+		z-index: 2;
+	}
+
+	&__selector {
+		@include mx.input;
+		& {
+			cursor: pointer;
+		}
+	}
+
+	&:focus,
+	&:active {
+		outline: 1px solid var(--text-color);
+	}
+
+	&__icon-container {
+		position: absolute;
+		right: 0.8rem;
+		top: 0.45rem;
+	}
+}

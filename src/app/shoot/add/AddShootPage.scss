@@ -1,0 +1,15 @@
+@use "../../../partials/_mixins" as mx;
+@use "../../../partials/_variables" as vars;
+
+.addShootPage {
+	& {
+		@include mx.page;
+		& {
+			padding-top: vars.$nav-height;
+		}
+
+		&__inner {
+			@include mx.inner;
+		}
+	}
+}

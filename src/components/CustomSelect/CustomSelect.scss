@@ -1,0 +1,159 @@
+@use "../../partials/mixins.scss" as mx;
+@use "../../partials/variables.scss" as vars;
+
+.customSelect {
+	@include mx.input;
+	& {
+		height: 3rem;
+		margin-inline: auto;
+		padding: 0;
+		position: relative;
+		z-index: 1;
+	}
+
+	&.tall {
+		z-index: 2;
+	}
+
+	&__inner {
+		background: var(--background-color);
+		border-radius: var(--border-radius);
+		max-height: 3rem;
+		outline: 1px solid var(--text-color);
+		overflow-y: auto;
+		position: absolute;
+		scrollbar-width: none;
+		transition: none;
+		width: 100%;
+	}
+
+	&.tall &__inner {
+		max-height: 21rem;
+		transition: max-height 0.5s ease;
+	}
+
+	&.short &__inner {
+		overflow-y: hidden;
+	}
+
+	&__select {
+		color: var(--text-color);
+		cursor: pointer;
+	}
+
+	&__default-option {
+		&.hide {
+			display: none;
+		}
+
+		&.show {
+			display: block;
+		}
+	}
+
+	&__selectValue {
+		align-items: center;
+		background: var(--background-color);
+		display: flex;
+		justify-content: center;
+		min-height: 3rem;
+		outline: 2px solid var(--text-color);
+		position: relative;
+
+		& .down {
+			height: 0.75rem;
+			position: absolute;
+			right: 0.75rem;
+			top: 50%;
+			transform: translateY(-95%);
+			width: 0.75rem;
+
+			&__stroke {
+				stroke: var(--text-color);
+			}
+		}
+	}
+
+	&__option {
+		align-items: center;
+		border-top: 1px solid var(--text-color);
+		display: flex;
+		height: 3rem;
+		justify-content: center;
+		outline: none;
+		position: relative;
+
+		&.show.disabled {
+			opacity: 0.25;
+			pointer-events: none;
+			user-select: none;
+		}
+
+		&.show {
+			border-top: none;
+			outline: 1px solid var(--text-color);
+		}
+
+		&--edit-icon {
+			align-items: center;
+			display: flex;
+			height: 1.75rem;
+			justify-content: center;
+			position: absolute;
+			right: 1rem;
+			top: 25%;
+			transform: translateY(-10%);
+			width: 1.75rem;
+
+			.editStroke {
+				fill: var(--text-color);
+			}
+		}
+
+		&--delete-icon {
+			align-items: center;
+			display: flex;
+			height: 1.75rem;
+			justify-content: center;
+			left: 1rem;
+			position: absolute;
+			top: 25%;
+			transform: translateY(-10%);
+			width: 1.75rem;
+
+			.deleteSvg,
+			.deleteStroke {
+				fill: var(--text-color);
+			}
+		}
+
+		&--addNew {
+			color: var(--button-link);
+			text-decoration: underline;
+		}
+	}
+
+	/* Hide scrollbar for WebKit browsers (Safari and Chrome) */
+	&__inner::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* Hide the scrollbar */
+	&::-webkit-scrollbar {
+		width: 0;
+	}
+
+	&__touchOffDiv {
+		display: none;
+		height: 100dvh;
+		left: 0;
+		position: fixed;
+		top: 0;
+		width: 100vw;
+
+		&.show {
+			display: block;
+			z-index: 1;
+		}
+	}
+}

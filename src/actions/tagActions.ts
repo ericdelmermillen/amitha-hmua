@@ -15,6 +15,13 @@ interface GetAllTagsResponse {
   tags: Tag[];
 }
 
+interface AddTagResponse {
+  success: boolean;
+  message: string;
+  tags?: Tag[];
+}
+
+
 const getAllTags = async (): Promise<GetAllTagsResponse> => {
   try {
     const [rows] = await pool.query<TagRow[]>(
@@ -44,8 +51,57 @@ const getAllTags = async (): Promise<GetAllTagsResponse> => {
 };
 
 
-const addTag = () => {
-  console.log("Adding your tag...")
+const addTag = async (tagName: string): Promise<AddTagResponse> => {
+  const trimmedName = tagName.trim();
+
+  if (!trimmedName) {
+    return {
+      success: false,
+      message: "Tag name is required",
+    };
+  }
+
+  try {
+    const [existing] = await pool.query<TagRow[]>(
+      "SELECT id, tag_name FROM tags WHERE tag_name = ? LIMIT 1",
+      [trimmedName]
+    );
+
+    if (existing.length > 0) {
+      return {
+        success: false,
+        message: "A tag with that name already exists",
+      };
+    }
+
+    await pool.query(
+      "INSERT INTO tags (tag_name) VALUES (?)",
+      [trimmedName]
+    );
+
+    const [rows] = await pool.query<TagRow[]>(
+      "SELECT id, tag_name FROM tags ORDER BY tag_name ASC"
+    );
+
+    const formattedTags: Tag[] = rows.map((row) => {
+      return {
+        id: row.id,
+        tagName: row.tag_name,
+      };
+    });
+
+    return {
+      success: true,
+      message: "Tag added successfully",
+      tags: formattedTags,
+    };
+  } catch (error) {
+    console.error("Error adding tag:", error);
+    return {
+      success: false,
+      message: "Failed to add tag",
+    };
+  }
 };
 
 const editTagByID = () => {
@@ -55,7 +111,6 @@ const editTagByID = () => {
 const deleteTagByID = () => {
   console.log("Deleting your tag...")
 };
-
 
 
 

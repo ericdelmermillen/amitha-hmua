@@ -8,7 +8,7 @@ import {
   type SVGProps,
   DragEvent
 } from "react";
-import { ColorMode } from "./types";
+import { ChooserType, ColorMode, EntryNameType } from "./types";
 import { RowDataPacket } from "mysql2";
 
 export interface ContextProviderProps {
@@ -297,6 +297,35 @@ interface ActionResponse {
   message: string;
 }
 
+interface ChooserEntry {
+  chooserNo: number;
+  photographerID?: number | null;
+  photographerName?: string | null;
+  modelID?: number | null;
+  modelName?: string | null;
+  tagID?: number | null;
+  tagName?: string | null;
+  [key: string]: unknown;
+}
+
+interface SelectOption {
+  id: number;
+  photographer_name?: string;
+  model_name?: string;
+  tag_name?: string;
+  tagName?: string;
+}
+
+interface CustomSelectProps {
+  chooserNo: number;
+  chooserName?: string | null;
+  chooserType: ChooserType;
+  chooserIDs: ChooserEntry[];
+  setChooserIDs: Dispatch<SetStateAction<ChooserEntry[]>>;
+  selectOptions: SelectOption[];
+  entryNameType: EntryNameType;
+}
+
 
 export {
   type BioResponse,
@@ -319,5 +348,8 @@ export {
   type UserRow,
   type SessionResponse,
   type TokenDetails,
-  type ActionResponse
+  type ActionResponse,
+  type ChooserEntry, 
+  type SelectOption, 
+  type CustomSelectProps, 
 }

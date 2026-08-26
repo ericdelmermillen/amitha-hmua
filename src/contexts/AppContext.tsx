@@ -67,6 +67,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   };
 
   const handleNavigateToAddShoot = () => {
+    setAppIsLoading(true);
     setSelectedTag(null);
     setSelectValue(null);
     router.push("/shoot/add");
@@ -299,6 +300,15 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // useEffect to update showFloatingButton on page navigation
+  useEffect(() => {
+    if (!pathname.includes("edit") && !pathname.includes("add")) {
+      setShowFloatingButton(true);
+    } else {
+      setShowFloatingButton(false);
+    }
+  }, [pathname]);
 
   // useEffect to check user session and set isLoggedIn state
   useEffect(() => {

@@ -32,6 +32,7 @@
 	min-height: calc(100vh - calc(vars.$nav-height + vars.$footer-height) + 20px);
 	padding-block: 4rem;
 	padding-top: 0rem;
+	width: 100%;
 
 	@media (min-width: vars.$tablet) {
 		padding-top: 2rem;

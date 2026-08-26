@@ -1,0 +1,92 @@
+@use "../../partials/_mixins" as mx;
+@use "../../partials/_variables" as vars;
+
+.addEditShootForm {
+	& {
+		border: 2px solid var(--text-color);
+		flex-grow: 1;
+		padding-block: 2rem;
+		padding-inline: 1rem;
+		width: 90%;
+
+		@media (min-width: vars.$tablet) {
+			margin-top: 4rem;
+		}
+
+		@media (min-width: vars.$desktop) {
+			max-width: 1000px;
+		}
+
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		border: 2px solid var(--text-color);
+	}
+
+	&__heading {
+		font-size: 2.25rem;
+		font-weight: 600;
+		margin-bottom: 2rem;
+		text-align: center;
+
+		@media (min-width: vars.$tablet) {
+			font-size: 2.5rem;
+		}
+	}
+
+	&__date-container {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		left: 50%;
+		z-index: 3;
+	}
+
+	&__label {
+		display: none;
+
+		&--datePicker {
+			display: block;
+			margin-bottom: 0.5rem;
+		}
+	}
+
+	&__icon-container {
+		position: absolute;
+	}
+
+	&__calendarIcon {
+		fill: var(--text-color);
+	}
+
+	&__tagChoosers {
+		margin-inline: auto;
+		width: 100%;
+		max-width: 25rem;
+	}
+
+	&__textButton {
+		align-items: center;
+		display: flex;
+		color: var(--button-link);
+		cursor: pointer;
+		font-size: 1rem;
+		font-weight: normal;
+		height: 1.75rem;
+		justify-content: center;
+		margin-bottom: -0.5rem;
+		text-align: center;
+		text-decoration: underline;
+	}
+
+	&__textButton-icon {
+		height: 0.5rem;
+		transform: translateY(-100%);
+		width: 0.5rem;
+	}
+
+	&__add-stroke {
+		stroke: var(--button-link);
+	}
+}

@@ -79,7 +79,9 @@ const Modal = () => {
   const handleEditShoot = () => {
     // can use function from context to refresh feed via new call
     console.log(`Editing shoot ${modalEntityID}...`)
+    setAppIsLoading(true);
     handleNavigateToEditShoot(modalEntityID);
+    handleClearModal();
   };
 
   const handleCancel = () => {
