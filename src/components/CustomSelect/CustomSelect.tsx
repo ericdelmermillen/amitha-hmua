@@ -1,228 +1,167 @@
 "use client";
 
-import { useState, useEffect, useRef, type MouseEvent } from "react";
-import { useAppContext, useModalContext } from "@/hooks/hooks";
-import { 
-  CustomSelectProps,
-  SelectOption, 
- } 
-from "@/typing/interfaces";
-import { 
-  type EntryNameType ,
-  type ModalActionType 
-} from "@/typing/types";
+import { useSearchParams } from "next/navigation";
+import { type MouseEvent, type TransitionEvent, useEffect, useState } from "react";
+import { useAppContext } from "@/hooks/hooks";
+import { NavSelectProps, Tag } from "@/typing/interfaces";
+import { normalizeCasing } from "@/utils/utils";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
 import DownIcon from "@/assets/icons/DownIcon";
 import EditIcon from "@/assets/icons/EditIcon";
 import "./CustomSelect.scss";
 
+const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
- 
-const CustomSelect = ({ 
-  chooserNo,
-  chooserName,
-  chooserType, 
-  chooserIDs,
-  setChooserIDs,
-  selectOptions, 
-  entryNameType
- }: CustomSelectProps) => {
-  
+const CustomSelect = ({ selectOptions }: NavSelectProps) => {
   const {
-    // setShowPhotogModelTagModal,
-    // setSelectedPhotogModelTag,
+    setSelectedTag,
+    selectValue, 
+    setSelectValue,
+    // setAppIsLoading,
+    setShowTouchOffDiv
   } = useAppContext();
   
-  const {
-    // ({ e, action, entityType, entityName = null, entityID = null }: ModalData)
-    handleOpenModal
-  } = useModalContext();
-
-  const [ selectValue, setSelectValue ] = useState(null);
-  const [ showOptions, setShowOptions ] = useState(false);
-  const innerRef = useRef<HTMLDivElement | null>(null);
-
-  const handleToggleShowOptions = () => {
-    setShowOptions(!showOptions);
-  };
-
-  const alreadySelected = (chooserID: number) => {
-    const entryID = `${chooserType.toLowerCase()}ID`;
-
-    for(const chooser of chooserIDs) {
-      if(chooser[entryID] === chooserID) {
-        return true;
-      };
-    };
-  };
+  console.log(selectValue)
   
-  const handleTouchOff = () => {
-    setShowOptions(false);
+  const searchParams = useSearchParams();
 
-    // Reset scroll position to top
-    if(innerRef.current) {
-      innerRef.current.scrollTop = 0;
-    };
-  };
+  const chooserType = "tag"
 
-  // const handleOptionClick = (e, option, modalType, entryType) => {
-  const handleOptionClick = (
-    e: MouseEvent<HTMLDivElement>, 
-    option: SelectOption | null, 
-    modalType: ModalActionType, 
-    entryType?: EntryNameType
-  ) => {
-  
-    if(modalType !== "Add") {
-      e.stopPropagation();
-      // setSelectedPhotogModelTag(option);
-    } 
-    // else {
-    //   if(entryType === "photographer_name") {
-    //     setSelectedPhotogModelTag({id: null, photographer_name: null});
-    //   } else if(entryType === "model_name") {
-    //     setSelectedPhotogModelTag({id: null, model_name: null});
-    //   } else if(entryType === "tag_name") {
-    //     setSelectedPhotogModelTag({id: null, tag_name: null});
-    //   };
-    // };
-    // setShowPhotogModelTagModal({modalType: modalType});
-  };
+  const [ showSelectOptions, setShowSelectOptions ] = useState(false);
 
-  const handleUpdateSelectValue = (option: SelectOption) => {
-  // setSelectValue(option.photographer_name || option.model_name || option.tag_name);
+  const handleTopRowClick = (e: MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
 
-  setChooserIDs(prevChooserIDs => {
-    return prevChooserIDs.map(chooserID => {
-      if (chooserID.chooserNo !== chooserNo) {
-        return chooserID;
-      };
+    console.log("Down arrow click")
 
-      if (chooserType === "Photographer") {
-        return {
-          ...chooserID,
-          photographerID: option.id,
-          photographerName: option.photographer_name
-        };
-      } else if (chooserType === "Model") {
-        return {
-          ...chooserID,
-          modelID: option.id,
-          modelName: option.model_name
-        };
-      } else if (chooserType === "Tag") {
-        return {
-          ...chooserID,
-          tagID: option.id,
-          tagName: option.tag_name
-        };
-      };
-
-      return chooserID;
+    setShowSelectOptions(prev => {
+      const next = !prev
+      
+      // if (next) {
+      //   setShowTouchOffDiv(true)
+      // }
+      
+      return next;
     });
-  });
-
-  setShowOptions(false);
-
-  // Reset scroll position to top
-  if (innerRef.current) {
-    innerRef.current.scrollTop = 0;
   };
-};
+
+  const handleUpdateSelectValue = (option: Tag) => {
+    setSelectValue(option.tagName);
+    setShowSelectOptions(false);
+    setShowTouchOffDiv(false);    
+    setSelectedTag(option);
+  };
+
+  const handleTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
+    requestAnimationFrame(() => {
+      const nodes = document.querySelectorAll(".customSelect__inner");
+      
+      for (const node of nodes) {
+        if (!showSelectOptions) {
+          node.scrollTop = 0;
+        }
+      }
+    })
+  };
 
 
-  useEffect(() => {
-    // if (chooserName) {
-    //   setSelectValue(chooserName);
-    // };
-    // console.log(chooserName)
-  }, [chooserName]);
+  const handleDeleteEntry = (e: MouseEvent<HTMLElement>, id: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    console.log(`option.id ${id}`);
+    console.log(`Delete ${chooserType} ${id}?`);
+  };
   
+  const handleEditEntry = (e: MouseEvent<HTMLElement>, id: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    console.log(`Edit ${chooserType} ${id}?`);
+  };
+
+  const handleTouchOff = () => {
+    console.log("touch off")
+    setShowSelectOptions(false);
+  }
+  
+
   return (
     <>
-      <div className={`customSelect ${showOptions ? "tall" : "short"}`}>
-        <div 
-          ref={innerRef}
-          className={`customSelect__inner ${showOptions ? "tall" : ""}`}
-        >
-
-          <div className={`customSelect__select ${showOptions ? "tall" : ""}`} >
-            <div 
-              className={`customSelect__selectValue ${!showOptions ? "short" : ""}`} 
-              onClick={handleToggleShowOptions}
+    <div className={`customSelect ${showSelectOptions ? "tall" : "short"}`}>
+      <div 
+        className={`customSelect__inner ${showSelectOptions ? "tall" : ""}`}
+        onTransitionEnd={handleTransitionEnd}
+      >
+        <div className={`customSelect__select ${showSelectOptions ? "tall" : ""}`} >
+          <div 
+            className="customSelect__selectValue"
+            onClick={(e) => handleTopRowClick(e)}
+          >
+            <span 
+              className={`customSelect__default-option 
+              ${(!showSelectOptions && !selectValue) 
+                || (showSelectOptions && !selectValue) 
+                || (showSelectOptions && selectValue)
+                ? "show" 
+                : "hide"}`}
             >
-              <span 
-                className={`customSelect__default-option 
-                ${(!showOptions && !selectValue) 
-                  || (showOptions && !selectValue) 
-                  || (showOptions && selectValue)
-                    ? "show" 
-                    : "hide"}`}
-              >
-                --Select {chooserType}--
-              </span>
-              <span 
-                className={`customSelect__default-option 
-                  ${
-                    (showOptions && !selectValue) || (!showOptions && selectValue) 
-                    ? "show" 
-                    : "hide"}`}
-              >
-                {selectValue}
-              </span>
-              <div className="down">
-                <DownIcon 
-                  className={"down__icon"}
-                  strokeClassName={"down__stroke"}
-                />
-              </div>
-            </div>
-
-            {selectOptions.map(option => 
-              <div 
-                className={`customSelect__option ${showOptions && alreadySelected(option.id)
-                  ? "show disabled"
-                  : showOptions
-                  ? "show"
-                  : ""}`} 
-                key={option.id} onClick={() => handleUpdateSelectValue(option)}
-              >
-                {option.photographer_name || option.model_name || option.tag_name}
-                <div 
-                  className="customSelect__option--edit-icon"
-                  onClick={(e) => handleOptionClick(e, option, "Edit")}
-                >
-                  <EditIcon 
-                    className={"editSvg"}
-                    strokeClassName={"editStroke"}
-                  />
-                </div>
-                <div 
-                  className="customSelect__option--delete-icon"
-                  onClick={(e) => handleOptionClick(e, option, "Delete")}
-                >
-                  <DeleteIcon 
-                    className={"deleteSvg"}
-                    strokeClassName={"deleteStroke"}
-                  />
-                </div>
-              </div>
-            )}
-            
-            <div 
-              className="customSelect__option customSelect__option--addNew"
-              onClick={(e) => handleOptionClick(e, null, "Add", entryNameType)}
+              --Select {normalizeCasing(chooserType)}--
+            </span>
+            <span 
+              className={`customSelect__default-option 
+              ${
+                (showSelectOptions && !selectValue) || (!showSelectOptions && selectValue) 
+                ? "show" 
+                : "hide"}`}
             >
-              Add New Entry
+              {selectValue && selectValue}
+            </span>
+            <div 
+              className="customSelect__down"
+            >
+              <DownIcon 
+                className={"customSelect__down-icon"}
+                strokeClassName={"customSelect__down-stroke"}
+              />
             </div>
           </div>
+
+          {selectOptions.map(option => 
+            <div 
+              className="customSelect__option"
+              key={option.id} 
+              onClick={() => handleUpdateSelectValue(option)}
+            >
+              <button 
+                className="customSelect__inline-button customSelect__inline-button--delete"
+                onClick={(e) => handleDeleteEntry(e, option.id)}
+              >
+                <DeleteIcon 
+                  className={"customSelect__icon customSelect__icon--delete"}
+                  strokeClassName={"customSelect__icon-stroke"}
+                />
+              </button>
+              {`${option.tagName}`}
+              <button 
+                className="customSelect__inline-button customSelect__inline-button--edit"
+                onClick={(e) => handleEditEntry(e, option.id)}
+              >
+                <EditIcon 
+                  className={"customSelect__icon customSelect__icon--edit"}
+                  strokeClassName={"customSelect__icon-stroke"}
+                />
+              </button>
+            </div>
+          )}
         </div>
       </div>
-      <div 
-        className={`customSelect__touchOffDiv ${showOptions 
-          ? "show"
-          : ""}`}
-        onClick={handleTouchOff}
+    </div>
+    <div 
+      className={`customSelect__touchOffDiv ${showSelectOptions 
+        ? "show"
+        : ""}`}
+      onClick={handleTouchOff}
       ></div>
     </>
   );

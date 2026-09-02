@@ -25,9 +25,10 @@ import { ChooserEntry } from "@/typing/interfaces";
 // } from "@/actions/tagActions";
 
 // import { toast } from "react-toastify";
-import AddIcon from "@/assets/icons/AddIcon";
-import CustomSelect from "../CustomSelect/CustomSelect";
-import ShootDatePicker from "../ShootDatePicker/ShootDatePicker";
+import { useAppContext } from "@/hooks/hooks";
+// import AddIcon from "@/assets/icons/AddIcon";
+import CustomSelect from "@/components/CustomSelect/CustomSelect";
+// import ShootDatePicker from "../ShootDatePicker/ShootDatePicker";
 import "./AddEditShootForm.scss"
 
 const AddEditShootForm = () => {
@@ -35,10 +36,12 @@ const AddEditShootForm = () => {
   const isEditMode = Boolean(params?.id);
   const shootID = params?.id as string | undefined;
 
-  const [ shootDate, setShootDate ] = useState<Date | null>(new Date());
-  const [ rawDate, setRawDate ] = useState<Date | null>(null);
+  const { tags } = useAppContext()
 
-  const [ tagChooserIDs, setTagChooserIDs ] = useState<ChooserEntry[]>([{ chooserNo: 1, tagID: null, tagName: null}]);
+  // const [ shootDate, setShootDate ] = useState<Date | null>(new Date());
+  // const [ rawDate, setRawDate ] = useState<Date | null>(null);
+
+  // const [ tagChooserIDs, setTagChooserIDs ] = useState<ChooserEntry[]>([{ chooserNo: 1, tagID: null, tagName: null}]);
 
   const handleAddCustomSelect = (selectedEntry: EntryNameType) => {
     const selectedEntryType = selectedEntry === "photographer_name"
@@ -81,18 +84,39 @@ const AddEditShootForm = () => {
     // return toast.error(`Please select a ${selectedEntryType} before adding a new one`);
   };
 
+  // const selectOptions = [
+  //   {id: 1, tagName: "1st Option"},
+  //   {id: 2, tagName: "2nd Option"},
+  //   {id: 3, tagName: "3rd Option"},
+  //   {id: 4, tagName: "4th Option"},
+  //   {id: 5, tagName: "5th Option"},
+  //   {id: 6, tagName: "6th Option"},
+  //   {id: 7, tagName: "7th Option"},
+  //   {id: 8, tagName: "8th Option"},
+  //   {id: 9, tagName: "9th Option"},
+  //   {id: 10, tagName: "10th Option"},
+  //   {id: 11, tagName: "11th Option"},
+  //   {id: 12, tagName: "12th Option"},
+  //   {id: 13, tagName: "13th Option"},
+  //   {id: 14, tagName: "14th Option"},
+  //   {id: 15, tagName: "15th Option"},
+  // ]
 
   return (
     <form className="addEditShootForm">
 
-      <h1 className="addEditShootForm__heading">
-        {/* {isEditMode ? `Edit Shoot ${shootID} : "Add New Shoot`} */}
+      <CustomSelect 
+        // selectOptions={selectOptions}
+        selectOptions={tags}
+      />
+
+      {/* <h1 className="addEditShootForm__heading">
         {isEditMode ? `Edit Shoot ${shootID}` : "Add New Shoot"}
-      </h1>
+      </h1> */}
 
       <div className="addEditShootForm__date-container">
 
-        {isEditMode
+        {/* {isEditMode
 
           ? <label className="addEditShootForm__label addEditShootForm__label--datePicker">
               Edit Shoot Date
@@ -100,20 +124,20 @@ const AddEditShootForm = () => {
           : <label className="addEditShootForm__label addEditShootForm__label--datePicker">
               Enter Shoot Date
             </label>
-        }
+        } */}
 
-        <div className="addEditShootForm__icon-container">
+        {/* <div className="addEditShootForm__icon-container">
           <ShootDatePicker
             shootDate={shootDate}
             setShootDate={setShootDate}
             className={"addEditShootForm__calendarIcon"}
             rawDate={rawDate}
           />
-        </div>
+        </div> */}
       </div>
 
       <div className="addEditShootForm__tagChoosers">
-        <h3 className='addEditShootForm__label'>
+        {/* <h3 className='addEditShootForm__label'>
           Choose At Least One Tag
         </h3>
         <h4 
@@ -127,20 +151,9 @@ const AddEditShootForm = () => {
               strokeClassName={"addEditShootForm__add-stroke"}
             />
           </span>
-        </h4>
+        </h4> */}
 
-        <CustomSelect 
-          chooserType={"Tag"}
-          entryNameType={"tag_name"}
-          // chooserNo={chooser.chooserNo}
-          chooserNo={1}
-          // chooserName={chooser.tagName}
-          chooserName={"tag"}
-          // chooserIDs={tagChooserIDs}
-          chooserIDs={[]}
-          setChooserIDs={setTagChooserIDs}
-          selectOptions={[]}
-        />
+
 
       </div>
         
