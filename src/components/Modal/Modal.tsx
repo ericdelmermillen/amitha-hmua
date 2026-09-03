@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { deleteShootByID } from "@/actions/shootActions";
-import { scrollToTop } from "@/utils/utils";
+import { deleteTagByID } from "@/actions/tagActions";
+import { normalizeCasing, scrollToTop } from "@/utils/utils";
 import { toast } from "react-toastify";
 import "./Modal.scss";
 
@@ -15,7 +16,8 @@ const Modal = () => {
     setAppIsLoading,
     scrollYPos,
     handleRefreshShoots,
-    handleNavigateToEditShoot
+    handleNavigateToEditShoot,
+    setShouldRefreshTags
   } = useAppContext();
 
   const { 
@@ -24,6 +26,7 @@ const Modal = () => {
     modalEntityType,
     modalEntityID,
     handleClearModal,
+    modalEntityName
   } = useModalContext();
 
   const [ cancelling, setCancelling ] = useState(false);
@@ -74,6 +77,67 @@ const Modal = () => {
       return;
     }
   };
+
+
+  const handleEditTag = async () => {
+    if (modalEntityID === null || typeof modalEntityID !== "number") {
+      console.error("Invalid tag ID provided for deletion");
+      return;
+    }
+
+    console.log(`Edit tag ${normalizeCasing(modalEntityName ?? undefined)}`)
+
+    // try {
+    //   setAppIsLoading(true);
+    //   const response = await deleteTagByID(modalEntityID);
+
+    //   if (response.success) {
+    //     toast.success(`Tag ${normalizeCasing(modalEntityName ?? undefined)} deleted successfully`);
+    //     setShouldRefreshTags(true);
+
+    //   } else {
+    //     toast.error(response.message)
+    //     console.error(response.message);
+    //   }
+
+    // } catch (error: any) {
+    //   console.error("Error executing handleDeleteTag:", error);
+    //   toast.error(`Error deleting tag ${modalEntityName}: ${error?.message || "Unknown error"}`);
+    // } finally {
+    //   setTimeout(() => {
+    //     handleClearModal();
+    //   }, MIN_LOADING_INTERVAL * 2);
+    // }
+  }
+
+  const handleDeleteTag = async () => {
+    if (modalEntityID === null || typeof modalEntityID !== "number") {
+      console.error("Invalid tag ID provided for deletion");
+      return;
+    }
+
+    try {
+      setAppIsLoading(true);
+      const response = await deleteTagByID(modalEntityID);
+
+      if (response.success) {
+        toast.success(`Tag ${normalizeCasing(modalEntityName ?? undefined)} deleted successfully`);
+        setShouldRefreshTags(true);
+
+      } else {
+        toast.error(response.message)
+        console.error(response.message);
+      }
+
+    } catch (error: any) {
+      console.error("Error executing handleDeleteTag:", error);
+      toast.error(`Error deleting tag ${modalEntityName}: ${error?.message || "Unknown error"}`);
+    } finally {
+      setTimeout(() => {
+        handleClearModal();
+      }, MIN_LOADING_INTERVAL * 2);
+    }
+  }
 
 
   const handleEditShoot = () => {
@@ -185,6 +249,52 @@ const Modal = () => {
                     onClick={handleEditShoot}
                   >
                     Edit Shoot
+                  </button>
+                  <button
+                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )
+          : modalAction === "delete" && modalEntityType === "tag"
+          ? (
+              <>
+                <h3 className="modal__heading">
+                  Delete Tag {normalizeCasing(modalEntityName ?? undefined)}?
+                </h3>
+                <div className="modal__button-container">
+                  <button
+                    className="modal__button modal__button--delete"
+                    onClick={handleDeleteTag}
+                  >
+                    Delete Tag
+                  </button>
+                  <button
+                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )
+          : modalAction === "edit" && modalEntityType === "tag"
+          ? (
+              <>
+                <h3 className="modal__heading">
+                  Edit Tag {normalizeCasing(modalEntityName ?? undefined)}?
+                </h3>
+                <div className="modal__button-container">
+                  <button
+                    className="modal__button modal__button--delete"
+                    onClick={handleEditTag}
+                  >
+                    Update Tag
                   </button>
                   <button
                     className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}

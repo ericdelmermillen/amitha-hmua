@@ -2,8 +2,8 @@
 
 import { useSearchParams } from "next/navigation";
 import { type MouseEvent, type TransitionEvent, useEffect, useState } from "react";
-import { useAppContext } from "@/hooks/hooks";
-import { NavSelectProps, Tag } from "@/typing/interfaces";
+import { useAppContext, useModalContext } from "@/hooks/hooks";
+import { NavSelectProps, SelectOption, Tag } from "@/typing/interfaces";
 import { normalizeCasing } from "@/utils/utils";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
 import DownIcon from "@/assets/icons/DownIcon";
@@ -17,11 +17,11 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
     setSelectedTag,
     selectValue, 
     setSelectValue,
-    // setAppIsLoading,
+    setAppIsLoading,
     setShowTouchOffDiv
   } = useAppContext();
-  
-  console.log(selectValue)
+
+  const { handleOpenModal } = useModalContext()
   
   const searchParams = useSearchParams();
 
@@ -31,8 +31,6 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
 
   const handleTopRowClick = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
-
-    console.log("Down arrow click")
 
     setShowSelectOptions(prev => {
       const next = !prev
@@ -63,27 +61,43 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
       }
     })
   };
-
-
-  const handleDeleteEntry = (e: MouseEvent<HTMLElement>, id: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    console.log(`option.id ${id}`);
-    console.log(`Delete ${chooserType} ${id}?`);
-  };
   
-  const handleEditEntry = (e: MouseEvent<HTMLElement>, id: number) => {
+  const handleAddNewOption = (e: MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(`Edit ${chooserType} ${id}?`);
+    handleOpenModal({e, action: "add", entityType: "tag", entityName: null, entityID: null})
+    console.log(`Add new ${normalizeCasing(chooserType)} option?`);
+  };
+    
+  const handleEditEntry = (e: MouseEvent<HTMLElement>, option: SelectOption) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    console.log(option)
+    handleOpenModal({e, action: "edit", entityType: "tag", entityName: option.tagName, entityID: option.id})
+
+    console.log(`Edit ${normalizeCasing(chooserType)} ${option.id}?`);
+  };
+
+
+  const handleDeleteEntry = (e: MouseEvent<HTMLElement>, option: SelectOption) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    console.log(option)
+    
+    handleOpenModal({e, action: "delete", entityType: "tag", entityName: option.tagName, entityID: option.id})
+
+    console.log(`option.id ${option.id}`);
+    console.log(`Delete ${normalizeCasing(chooserType)} ${option.id}?`);
   };
 
   const handleTouchOff = () => {
     console.log("touch off")
     setShowSelectOptions(false);
-  }
+    setAppIsLoading(false)
+  };
   
 
   return (
@@ -135,7 +149,7 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
             >
               <button 
                 className="customSelect__inline-button customSelect__inline-button--delete"
-                onClick={(e) => handleDeleteEntry(e, option.id)}
+                onClick={(e) => handleDeleteEntry(e, option)}
               >
                 <DeleteIcon 
                   className={"customSelect__icon customSelect__icon--delete"}
@@ -145,7 +159,7 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
               {`${option.tagName}`}
               <button 
                 className="customSelect__inline-button customSelect__inline-button--edit"
-                onClick={(e) => handleEditEntry(e, option.id)}
+                onClick={(e) => handleEditEntry(e, option)}
               >
                 <EditIcon 
                   className={"customSelect__icon customSelect__icon--edit"}
@@ -154,15 +168,20 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
               </button>
             </div>
           )}
+                      
+          <div 
+            className="customSelect__option customSelect__option--add"
+            onClick={(e) => handleAddNewOption(e)}
+          >
+            Add New Entry
+          </div>
         </div>
       </div>
     </div>
     <div 
-      className={`customSelect__touchOffDiv ${showSelectOptions 
-        ? "show"
-        : ""}`}
+      className={`customSelect__touchOffDiv ${showSelectOptions ? "show" : ""}`} 
       onClick={handleTouchOff}
-      ></div>
+    ></div>
     </>
   );
 };

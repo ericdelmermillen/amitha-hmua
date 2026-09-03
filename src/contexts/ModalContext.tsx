@@ -18,7 +18,7 @@ const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY) 
 const ModalContext = createContext<ModalContextValue | undefined>(undefined);
 
 const ModalContextProvider = ({ children }: ContextProviderProps) => {
-  // const { handleSetShowIsLoadingTrue, handleSetShowIsLoadingFalse } = useAppContext();
+  const { setAppIsLoading } = useAppContext();
   
   const [ showModal, setShowModal ] = useState(false);
   const [ modalAction, setModalAction ] = useState<string | null>(null);
@@ -32,6 +32,8 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
     e?.preventDefault();
     e?.stopPropagation()
 
+    console.log(entityName)
+    
     setShowModal(true);
     setModalAction(action);
     setModalEntityType(entityType);
@@ -46,6 +48,8 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
     setModalAction(null);
     setModalEntityName(null);
     setModalEntityID(null);
+    setAppIsLoading(false);
+    setAppIsLoading(false);
   };
 
   const contextValues: ModalContextValue = {
@@ -65,7 +69,6 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
     // setModalTeam,
     // modalHref, 
     // setModalHref,
-    // handleOpenModal,
     handleClearModal,
     modalAction, 
     setModalAction,

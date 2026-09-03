@@ -218,6 +218,7 @@ img {
 
 		& {
 			border-radius: var(--border-radius-toast);
+			background: var(--background-color) !important;
 			color: var(--text-color) !important;
 			max-width: 16rem;
 			padding-block: 1rem !important;

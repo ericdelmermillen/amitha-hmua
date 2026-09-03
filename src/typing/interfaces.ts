@@ -231,8 +231,8 @@ interface ShootProps {
 }
 
 interface ModalData {
-    e?: MouseEvent<HTMLDivElement>;
-    action: "edit" | "delete";
+    e?: MouseEvent<HTMLElement>;
+    action: "add" | "edit" | "delete";
     entityType: "bio" | "shoot" | "tag" | "model" | "photographer";
     entityName?: string | null;
     entityID?: number | null;

@@ -83,6 +83,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setShowTouchOffDiv(false);
     setShowSideNav(false);
     setShowNavSelectOptions(false);
+    setAppIsLoading(false);
   };
 
   const handleNavigateHome = (tagObj?: Tag) => {   
