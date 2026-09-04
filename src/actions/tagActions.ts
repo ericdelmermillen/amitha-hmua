@@ -19,13 +19,13 @@ import { pool } from "@/db/dbClient";
 const getAllTags = async (): Promise<GetAllTagsResponse> => {
   try {
     const [rows] = await pool.query<TagRow[]>(
-      "SELECT id, tag_name FROM tags ORDER BY tag_name ASC"
+      "SELECT id, name FROM tags ORDER BY name ASC"
     );
 
     const formattedTags: Tag[] = rows.map((row) => {
       return {
         id: row.id,
-        tagName: row.tag_name,
+        name: row.name,
       };
     });
 
@@ -45,8 +45,8 @@ const getAllTags = async (): Promise<GetAllTagsResponse> => {
 };
 
 // addTag
-const addTag = async (tagName: string): Promise<AddTagResponse> => {
-  const trimmedName = tagName.trim();
+const addTag = async (name: string): Promise<AddTagResponse> => {
+  const trimmedName = name.trim();
 
   if (!trimmedName) {
     return {
@@ -57,7 +57,7 @@ const addTag = async (tagName: string): Promise<AddTagResponse> => {
 
   try {
     const [existing] = await pool.query<TagRow[]>(
-      "SELECT id, tag_name FROM tags WHERE tag_name = ? LIMIT 1",
+      "SELECT id, name FROM tags WHERE name = ? LIMIT 1",
       [trimmedName]
     );
 
@@ -69,18 +69,18 @@ const addTag = async (tagName: string): Promise<AddTagResponse> => {
     }
 
     await pool.query(
-      "INSERT INTO tags (tag_name) VALUES (?)",
+      "INSERT INTO tags (name) VALUES (?)",
       [trimmedName]
     );
 
     const [rows] = await pool.query<TagRow[]>(
-      "SELECT id, tag_name FROM tags ORDER BY tag_name ASC"
+      "SELECT id, name FROM tags ORDER BY name ASC"
     );
 
     const formattedTags: Tag[] = rows.map((row) => {
       return {
         id: row.id,
-        tagName: row.tag_name,
+        name: row.name,
       };
     });
 
@@ -99,9 +99,9 @@ const addTag = async (tagName: string): Promise<AddTagResponse> => {
 };
 
 // editTagByID
-const editTagByID = async (id: number, newTagName: string): Promise<EditTagResponse> => {
+const editTagByID = async (id: number, name: string): Promise<EditTagResponse> => {
   const parsedID = parseInt(String(id), 10);
-  const trimmedName = newTagName.trim();
+  const trimmedName = name.trim();
 
   if (isNaN(parsedID) || parsedID <= 0) {
     return {
@@ -119,7 +119,7 @@ const editTagByID = async (id: number, newTagName: string): Promise<EditTagRespo
 
   try {
     const [existing] = await pool.query<TagRow[]>(
-      "SELECT id, tag_name FROM tags WHERE id = ? LIMIT 1",
+      "SELECT id, name FROM tags WHERE id = ? LIMIT 1",
       [parsedID]
     );
 
@@ -131,7 +131,7 @@ const editTagByID = async (id: number, newTagName: string): Promise<EditTagRespo
     }
 
     const [duplicate] = await pool.query<TagRow[]>(
-      "SELECT id, tag_name FROM tags WHERE tag_name = ? AND id != ? LIMIT 1",
+      "SELECT id, name FROM tags WHERE name = ? AND id != ? LIMIT 1",
       [trimmedName, parsedID]
     );
 
@@ -143,18 +143,18 @@ const editTagByID = async (id: number, newTagName: string): Promise<EditTagRespo
     }
 
     await pool.query(
-      "UPDATE tags SET tag_name = ? WHERE id = ?",
+      "UPDATE tags SET name = ? WHERE id = ?",
       [trimmedName, parsedID]
     );
 
     const [updated] = await pool.query<TagRow[]>(
-      "SELECT id, tag_name FROM tags WHERE id = ? LIMIT 1",
+      "SELECT id, name FROM tags WHERE id = ? LIMIT 1",
       [parsedID]
     );
 
     const formattedTag: Tag = {
       id: updated[0].id,
-      tagName: updated[0].tag_name,
+      name: updated[0].name,
     };
 
     return {
@@ -170,6 +170,7 @@ const editTagByID = async (id: number, newTagName: string): Promise<EditTagRespo
     };
   }
 };
+
 
 // deleteTagByID
 const deleteTagByID = async (id: number): Promise<DeleteTagResponse> => {
@@ -212,7 +213,7 @@ const deleteTagByID = async (id: number): Promise<DeleteTagResponse> => {
     }
 
     const [existing] = await pool.query<TagRow[]>(
-      "SELECT id, tag_name FROM tags WHERE id = ? LIMIT 1",
+      "SELECT id, name FROM tags WHERE id = ? LIMIT 1",
       [parsedID]
     );
 
@@ -236,13 +237,13 @@ const deleteTagByID = async (id: number): Promise<DeleteTagResponse> => {
     }
 
     const [rows] = await pool.query<TagRow[]>(
-      "SELECT id, tag_name FROM tags ORDER BY tag_name ASC"
+      "SELECT id, name FROM tags ORDER BY name ASC"
     );
 
     const formattedTags: Tag[] = rows.map((row) => {
       return {
         id: row.id,
-        tagName: row.tag_name,
+        name: row.name,
       };
     });
 

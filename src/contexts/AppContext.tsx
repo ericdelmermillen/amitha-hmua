@@ -91,7 +91,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       router.push("/work");
       setSelectedTag(null);
     } else if (tagObj) {
-      router.push(`/work?tag=${normalizeCasing(tagObj.tagName)}`);
+      router.push(`/work?tag=${normalizeCasing(tagObj.name)}`);
     };
     setShootOrderIsEditable(false);
 
@@ -223,16 +223,19 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       try {
         const response = await getAllTags();
 
-        if (response.success) {
+        if (response?.success && Array.isArray(response.tags)) {
           const updatedTags = response.tags.map((tag) => (
             { ...tag,
-              tagName: tag.tagName.toUpperCase()
+              tagName: tag.name.toUpperCase()
           }));
 
           setTags(updatedTags);
+        } else {
+          throw new Error(response?.message || "Failed to retrieve tags");
         }
-      } catch (error) {
-        console.error("Error fetching tags in AppContext:", error);
+      } catch (error: any) {
+        console.error("Error fetching tags:", error);
+        toast.error(error.message)
       } finally {
         setShouldRefreshTags(false);
       }

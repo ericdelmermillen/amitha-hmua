@@ -17,13 +17,13 @@ import { ResultSetHeader } from "mysql2";
 const getAllPhotographers = async (): Promise<GetAllPhotographersResponse> => {
   try {
     const [rows] = await pool.query<PhotographerRow[]>(
-      "SELECT id, photographer_name FROM photographers ORDER BY photographer_name ASC"
+      "SELECT id, name FROM photographers ORDER BY name ASC"
     );
 
     const formattedPhotographers: Photographer[] = rows.map((row) => {
       return {
         id: row.id,
-        photographerName: row.photographer_name,
+        name: row.name,
       };
     });
 
@@ -43,8 +43,8 @@ const getAllPhotographers = async (): Promise<GetAllPhotographersResponse> => {
 };
 
 // addPhotographer
-const addPhotographer = async (photographerName: string): Promise<AddPhotographerResponse> => {
-  const trimmedName = photographerName.trim();
+const addPhotographer = async (name: string): Promise<AddPhotographerResponse> => {
+  const trimmedName = name.trim();
 
   if (!trimmedName) {
     return {
@@ -55,7 +55,7 @@ const addPhotographer = async (photographerName: string): Promise<AddPhotographe
 
   try {
     const [existing] = await pool.query<PhotographerRow[]>(
-      "SELECT id, photographer_name FROM photographers WHERE photographer_name = ? LIMIT 1",
+      "SELECT id, name FROM photographers WHERE name = ? LIMIT 1",
       [trimmedName]
     );
 
@@ -67,18 +67,18 @@ const addPhotographer = async (photographerName: string): Promise<AddPhotographe
     }
 
     await pool.query(
-      "INSERT INTO photographers (photographer_name) VALUES (?)",
+      "INSERT INTO photographers (name) VALUES (?)",
       [trimmedName]
     );
 
     const [rows] = await pool.query<PhotographerRow[]>(
-      "SELECT id, photographer_name FROM photographers ORDER BY photographer_name ASC"
+      "SELECT id, name FROM photographers ORDER BY name ASC"
     );
 
     const formattedPhotographers: Photographer[] = rows.map((row) => {
       return {
         id: row.id,
-        photographerName: row.photographer_name,
+        name: row.name,
       };
     });
 
@@ -97,9 +97,9 @@ const addPhotographer = async (photographerName: string): Promise<AddPhotographe
 };
 
 // editPhotographerByID
-const editPhotographerByID = async (id: number, newPhotographerName: string): Promise<EditPhotographerResponse> => {
+const editPhotographerByID = async (id: number, newname: string): Promise<EditPhotographerResponse> => {
   const parsedID = parseInt(String(id), 10);
-  const trimmedName = newPhotographerName.trim();
+  const trimmedName = newname.trim();
 
   if (isNaN(parsedID) || parsedID <= 0) {
     return {
@@ -117,7 +117,7 @@ const editPhotographerByID = async (id: number, newPhotographerName: string): Pr
 
   try {
     const [existing] = await pool.query<PhotographerRow[]>(
-      "SELECT id, photographer_name FROM photographers WHERE id = ? LIMIT 1",
+      "SELECT id, name FROM photographers WHERE id = ? LIMIT 1",
       [parsedID]
     );
 
@@ -129,7 +129,7 @@ const editPhotographerByID = async (id: number, newPhotographerName: string): Pr
     }
 
     const [duplicate] = await pool.query<PhotographerRow[]>(
-      "SELECT id, photographer_name FROM photographers WHERE id != ? AND photographer_name = ? LIMIT 1",
+      "SELECT id, name FROM photographers WHERE id != ? AND name = ? LIMIT 1",
       [parsedID, trimmedName]
     );
 
@@ -141,18 +141,18 @@ const editPhotographerByID = async (id: number, newPhotographerName: string): Pr
     }
 
     await pool.query(
-      "UPDATE photographers SET photographer_name = ? WHERE id = ?",
+      "UPDATE photographers SET name = ? WHERE id = ?",
       [trimmedName, parsedID]
     );
 
     const [updatedRows] = await pool.query<PhotographerRow[]>(
-      "SELECT id, photographer_name FROM photographers WHERE id = ? LIMIT 1",
+      "SELECT id, name FROM photographers WHERE id = ? LIMIT 1",
       [parsedID]
     );
 
     const formattedPhotographer: Photographer = {
       id: updatedRows[0].id,
-      photographerName: updatedRows[0].photographer_name,
+      name: updatedRows[0].name,
     };
 
     return {
@@ -201,7 +201,7 @@ const deletePhotographerByID = async (id: number): Promise<DeletePhotographerRes
     }
 
     const [existing] = await pool.query<PhotographerRow[]>(
-      "SELECT id, photographer_name FROM photographers WHERE id = ? LIMIT 1",
+      "SELECT id, name FROM photographers WHERE id = ? LIMIT 1",
       [parsedID]
     );
 
@@ -225,13 +225,13 @@ const deletePhotographerByID = async (id: number): Promise<DeletePhotographerRes
     }
 
     const [rows] = await pool.query<PhotographerRow[]>(
-      "SELECT id, photographer_name FROM photographers ORDER BY photographer_name ASC"
+      "SELECT id, name FROM photographers ORDER BY name ASC"
     );
 
     const formattedPhotographers: Photographer[] = rows.map((row) => {
       return {
         id: row.id,
-        photographerName: row.photographer_name,
+        name: row.name,
       };
     });
 

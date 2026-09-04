@@ -17,13 +17,13 @@ import {
 const getAllModels = async (): Promise<GetAllModelsResponse> => {
   try {
     const [rows] = await pool.query<ModelRow[]>(
-      "SELECT id, model_name FROM models ORDER BY model_name ASC"
+      "SELECT id, name FROM models ORDER BY name ASC"
     );
 
     const formattedModels: Model[] = rows.map((row) => {
       return {
         id: row.id,
-        modelName: row.model_name,
+        name: row.name,
       };
     });
 
@@ -43,8 +43,8 @@ const getAllModels = async (): Promise<GetAllModelsResponse> => {
 };
 
 // addModel
-const addModel = async (modelName: string): Promise<AddModelResponse> => {
-  const trimmedName = modelName.trim();
+const addModel = async (name: string): Promise<AddModelResponse> => {
+  const trimmedName = name.trim();
 
   if (!trimmedName) {
     return {
@@ -55,7 +55,7 @@ const addModel = async (modelName: string): Promise<AddModelResponse> => {
 
   try {
     const [existing] = await pool.query<ModelRow[]>(
-      "SELECT id, model_name FROM models WHERE model_name = ? LIMIT 1",
+      "SELECT id, name FROM models WHERE name = ? LIMIT 1",
       [trimmedName]
     );
 
@@ -67,18 +67,18 @@ const addModel = async (modelName: string): Promise<AddModelResponse> => {
     }
 
     await pool.query(
-      "INSERT INTO models (model_name) VALUES (?)",
+      "INSERT INTO models (name) VALUES (?)",
       [trimmedName]
     );
 
     const [rows] = await pool.query<ModelRow[]>(
-      "SELECT id, model_name FROM models ORDER BY model_name ASC"
+      "SELECT id, name FROM models ORDER BY name ASC"
     );
 
     const formattedModels: Model[] = rows.map((row) => {
       return {
         id: row.id,
-        modelName: row.model_name,
+        name: row.name,
       };
     });
 
@@ -97,9 +97,9 @@ const addModel = async (modelName: string): Promise<AddModelResponse> => {
 };
 
 // editModelByID
-const editModelByID = async (id: number, newModelName: string): Promise<EditModelResponse> => {
+const editModelByID = async (id: number, newname: string): Promise<EditModelResponse> => {
   const parsedID = parseInt(String(id), 10);
-  const trimmedName = newModelName.trim();
+  const trimmedName = newname.trim();
 
   if (isNaN(parsedID) || parsedID <= 0) {
     return {
@@ -117,7 +117,7 @@ const editModelByID = async (id: number, newModelName: string): Promise<EditMode
 
   try {
     const [existing] = await pool.query<ModelRow[]>(
-      "SELECT id, model_name FROM models WHERE id = ? LIMIT 1",
+      "SELECT id, name FROM models WHERE id = ? LIMIT 1",
       [parsedID]
     );
 
@@ -129,7 +129,7 @@ const editModelByID = async (id: number, newModelName: string): Promise<EditMode
     }
 
     const [duplicate] = await pool.query<ModelRow[]>(
-      "SELECT id, model_name FROM models WHERE model_name = ? AND id != ? LIMIT 1",
+      "SELECT id, name FROM models WHERE name = ? AND id != ? LIMIT 1",
       [trimmedName, parsedID]
     );
 
@@ -141,18 +141,18 @@ const editModelByID = async (id: number, newModelName: string): Promise<EditMode
     }
 
     await pool.query(
-      "UPDATE models SET model_name = ? WHERE id = ?",
+      "UPDATE models SET name = ? WHERE id = ?",
       [trimmedName, parsedID]
     );
 
     const [updatedRows] = await pool.query<ModelRow[]>(
-      "SELECT id, model_name FROM models WHERE id = ? LIMIT 1",
+      "SELECT id, name FROM models WHERE id = ? LIMIT 1",
       [parsedID]
     );
 
     const formattedModel: Model = {
       id: updatedRows[0].id,
-      modelName: updatedRows[0].model_name,
+      name: updatedRows[0].name,
     };
 
     return {
@@ -201,7 +201,7 @@ const deleteModelByID = async (id: number): Promise<DeleteModelResponse> => {
     }
 
     const [existing] = await pool.query<ModelRow[]>(
-      "SELECT id, model_name FROM models WHERE id = ? LIMIT 1",
+      "SELECT id, name FROM models WHERE id = ? LIMIT 1",
       [parsedID]
     );
 
@@ -225,13 +225,13 @@ const deleteModelByID = async (id: number): Promise<DeleteModelResponse> => {
     }
 
     const [rows] = await pool.query<ModelRow[]>(
-      "SELECT id, model_name FROM models ORDER BY model_name ASC"
+      "SELECT id, name FROM models ORDER BY name ASC"
     );
 
     const formattedModels: Model[] = rows.map((row) => {
       return {
         id: row.id,
-        modelName: row.model_name,
+        name: row.name,
       };
     });
 

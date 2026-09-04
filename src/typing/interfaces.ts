@@ -124,7 +124,7 @@ export interface IsLoadingProps {
 
 export interface Tag {
   id: number;
-  tagName: string;
+  name: string;
 }
 
 export interface NavPage {
@@ -302,29 +302,44 @@ interface ChooserEntry {
   photographerID?: number | null;
   photographerName?: string | null;
   modelID?: number | null;
-  modelName?: string | null;
+  name?: string | null;
   tagID?: number | null;
-  tagName?: string | null;
   [key: string]: unknown;
 }
 
 interface SelectOption {
   id: number;
-  photographer_name?: string;
-  model_name?: string;
-  tag_name?: string;
-  tagName?: string;
+  name: string;
 }
 
+// interface CustomSelectProps {
+//   chooserNo: number;
+//   chooserName?: string | null;
+//   chooserType: ChooserType;
+//   chooserIDs: ChooserEntry[];
+//   setChooserIDs: Dispatch<SetStateAction<ChooserEntry[]>>;
+//   selectOptions: SelectOption[];
+//   entryNameType: EntryNameType;
+// }
+
 interface CustomSelectProps {
-  chooserNo: number;
-  chooserName?: string | null;
-  chooserType: ChooserType;
-  chooserIDs: ChooserEntry[];
-  setChooserIDs: Dispatch<SetStateAction<ChooserEntry[]>>;
-  selectOptions: SelectOption[];
-  entryNameType: EntryNameType;
+  selectOptions: Tag[];
+  entityType: "tag" | "model" | "photographer";
 }
+
+// type CustomSelectProps =
+//   | {
+//       entityType: "tag";
+//       selectOptions: Tag[];
+//     }
+//   | {
+//       entityType: "model";
+//       selectOptions: Model[];
+//     }
+//   | {
+//       entityType: "photographer";
+//       selectOptions: Photographer[];
+//     };
 
 interface GetAllTagsResponse {
   success: boolean;
@@ -371,7 +386,7 @@ interface DeleteTagResponse {
 
 interface Model {
   id: number;
-  modelName: string;
+  name: string;
 }
 
 interface ModelRow extends RowDataPacket {
@@ -410,7 +425,7 @@ interface DeleteModelResponse {
 
 interface Photographer {
   id: number;
-  photographerName: string;
+  name: string;
 }
 
 interface PhotographerRow extends RowDataPacket {

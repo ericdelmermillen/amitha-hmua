@@ -1,9 +1,8 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { type MouseEvent, type TransitionEvent, useEffect, useState } from "react";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
-import { NavSelectProps, SelectOption, Tag } from "@/typing/interfaces";
+import { CustomSelectProps, SelectOption, Tag } from "@/typing/interfaces";
 import { normalizeCasing } from "@/utils/utils";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
 import DownIcon from "@/assets/icons/DownIcon";
@@ -12,7 +11,9 @@ import "./CustomSelect.scss";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
-const CustomSelect = ({ selectOptions }: NavSelectProps) => {
+// const CustomSelect = ({ selectOptions }: CustomSelectProps) => {
+// const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
+const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
   const {
     setSelectedTag,
     selectValue, 
@@ -22,8 +23,6 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
   } = useAppContext();
 
   const { handleOpenModal } = useModalContext()
-  
-  const searchParams = useSearchParams();
 
   const chooserType = "tag"
 
@@ -44,7 +43,7 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
   };
 
   const handleUpdateSelectValue = (option: Tag) => {
-    setSelectValue(option.tagName);
+    setSelectValue(option.name);
     setShowSelectOptions(false);
     setShowTouchOffDiv(false);    
     setSelectedTag(option);
@@ -66,7 +65,7 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    handleOpenModal({e, action: "add", entityType: "tag", entityName: null, entityID: null})
+    handleOpenModal({e, action: "add", entityType: entityType, entityName: null, entityID: null})
     console.log(`Add new ${normalizeCasing(chooserType)} option?`);
   };
     
@@ -75,7 +74,7 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
     e.stopPropagation();
 
     console.log(option)
-    handleOpenModal({e, action: "edit", entityType: "tag", entityName: option.tagName, entityID: option.id})
+    handleOpenModal({e, action: "edit", entityType: entityType, entityName: option.name, entityID: option.id})
 
     console.log(`Edit ${normalizeCasing(chooserType)} ${option.id}?`);
   };
@@ -85,12 +84,7 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(option)
-    
-    handleOpenModal({e, action: "delete", entityType: "tag", entityName: option.tagName, entityID: option.id})
-
-    console.log(`option.id ${option.id}`);
-    console.log(`Delete ${normalizeCasing(chooserType)} ${option.id}?`);
+    handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id})
   };
 
   const handleTouchOff = () => {
@@ -156,7 +150,7 @@ const CustomSelect = ({ selectOptions }: NavSelectProps) => {
                   strokeClassName={"customSelect__icon-stroke"}
                 />
               </button>
-              {`${option.tagName}`}
+              {`${option.name}`}
               <button 
                 className="customSelect__inline-button customSelect__inline-button--edit"
                 onClick={(e) => handleEditEntry(e, option)}
