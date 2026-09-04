@@ -48,6 +48,8 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const [ finalShootsPageLoaded, setFinalShootsPageLoaded ] = useState(false);
   
   const [ shouldRefreshTags, setShouldRefreshTags ] = useState(true);
+  const [ shouldRefreshModels, setShouldRefreshModels ] = useState(true);
+  const [ shouldRefreshPhotographers, setShouldRefreshPhotographers ] = useState(true);
 
   const [ shootOrderIsEditable, setShootOrderIsEditable ] = useState(false);
   
@@ -369,6 +371,10 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     handleClearAppState,
     shouldRefreshTags,
     setShouldRefreshTags,
+    shouldRefreshModels, 
+    setShouldRefreshModels,
+    shouldRefreshPhotographers, 
+    setShouldRefreshPhotographers,
     shoots, 
     setShoots,
     shouldUpdateShoots, 

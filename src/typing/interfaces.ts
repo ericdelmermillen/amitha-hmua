@@ -37,6 +37,10 @@ export interface AppContextValue {
   setTags: Dispatch<SetStateAction<Tag[]>>;
   shouldRefreshTags: boolean;
   setShouldRefreshTags: Dispatch<SetStateAction<boolean>>;
+  shouldRefreshModels: boolean;
+  setShouldRefreshModels: Dispatch<SetStateAction<boolean>>;
+  shouldRefreshPhotographers: boolean;
+  setShouldRefreshPhotographers: Dispatch<SetStateAction<boolean>>;
 
   shoots: ShootSummary[];
   setShoots: Dispatch<SetStateAction<ShootSummary[]>>;

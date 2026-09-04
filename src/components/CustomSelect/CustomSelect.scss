@@ -17,7 +17,7 @@
 			z-index: 1;
 		}
 
-		@media (min-width: vars.$small-phone) {
+		@media (min-width: vars.$small-tablet) {
 			max-width: 21rem;
 			min-width: 21rem;
 		}
@@ -107,6 +107,11 @@
 
 		&:nth-of-type(2) {
 			border-top: none;
+		}
+
+		&--add {
+			color: var(--button-link);
+			text-decoration: underline;
 		}
 	}
 

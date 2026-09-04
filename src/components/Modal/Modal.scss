@@ -73,11 +73,8 @@
 			margin-top: 2rem;
 			margin-top: auto;
 
-			@media (min-width: vars.$small-phone) {
-				flex-direction: row-reverse;
-			}
-
 			@media (min-width: vars.$small-tablet) {
+				flex-direction: row-reverse;
 				gap: 2rem;
 			}
 		}

@@ -3,7 +3,14 @@
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { EntryNameType } from "@/typing/types";
-import { ChooserEntry, Model } from "@/typing/interfaces";
+import { 
+  // ChooserEntry, 
+  Model, 
+  Photographer 
+} from "@/typing/interfaces";
+
+
+// *** define choosers and map through choosers for each of models, photographers and tags to return appropriate CustomSelects for each
 
 import { 
   getAllModels,
@@ -11,12 +18,12 @@ import {
   // deleteModelByID, 
   // editModelByID, 
 } from "@/actions/modelActions";
-// import { 
-//   addPhotographer, 
-//   deletePhotographerByID, 
-//   editPhotographerByID, 
-//   getAllPhotographers 
-// } from "@/actions/photographerActions";
+import { 
+  // addPhotographer, 
+  // deletePhotographerByID, 
+  // editPhotographerByID, 
+  getAllPhotographers 
+} from "@/actions/photographerActions";
 // import { 
 //   addTag, 
 //   deleteTagByID, 
@@ -37,18 +44,23 @@ const AddEditShootForm = () => {
   // const isEditMode = Boolean(params?.id);
   // const shootID = params?.id as string | undefined;
 
-  const { tags } = useAppContext()
+  const { 
+    tags,
+    shouldRefreshModels, 
+    setShouldRefreshModels,
+    shouldRefreshPhotographers, 
+    setShouldRefreshPhotographers
+   } = useAppContext()
 
   // const [ shootDate, setShootDate ] = useState<Date | null>(new Date());
   // const [ rawDate, setRawDate ] = useState<Date | null>(null);
 
   const [ modelChoosers, setModelChoosers ] = useState([{ chooserNo: 1, modelID: null, modelName: null}]);
   const [ models, setModels ] = useState<Model[]>([]);
-  const [ shouldRefreshModels, setShouldRefreshModels ] = useState(true);
 
-  // const models = await getAllModels();
+  const [ photographerChoosers, setphotographerChoosers ] = useState([{ chooserNo: 1, modelID: null, modelName: null}]);
+  const [ photographers, setPhotographers ] = useState<Photographer[]>([]);
 
-  // console.log(models)
 
   const handleAddCustomSelect = (selectedEntry: EntryNameType) => {
     const selectedEntryType = selectedEntry === "photographer_name"
@@ -116,8 +128,32 @@ const AddEditShootForm = () => {
       handleGetAllModels();
     }
   }, [shouldRefreshModels]);
+
+
+  // useEffect to fetch photographers
+  useEffect(() => {
+    const handleGetAllPhotographers = async () => {
+      try {
+        const response = await getAllPhotographers();
+
+        if (response?.success && Array.isArray(response.photographers)) {
+          setPhotographers(response.photographers);
+        } else {
+          throw new Error(response?.message || "Failed to retrieve photographers");
+        }
+      } catch (error: any) {
+        console.error("Error fetching photographers:", error);
+        toast.error(error?.message || "Failed to retrieve photographers");
+      } finally {
+        setShouldRefreshPhotographers(false);
+      }
+    };
+
+    if (shouldRefreshPhotographers) {
+      handleGetAllPhotographers();
+    }
+  }, [shouldRefreshPhotographers]);
   
-  console.log(models)
 
   return (
     <form className="addEditShootForm">
@@ -128,11 +164,17 @@ const AddEditShootForm = () => {
         entityType={"tag"}
       />
       
-      {/* <CustomSelect 
+      <CustomSelect 
         // selectOptions={selectOptions}
         selectOptions={models}
         entityType={"model"}
-      /> */}
+      />
+      
+      <CustomSelect 
+        // selectOptions={selectOptions}
+        selectOptions={photographers}
+        entityType={"photographer"}
+      />
 
       {/* <CustomSelect 
         // selectOptions={selectOptions}

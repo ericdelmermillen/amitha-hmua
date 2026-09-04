@@ -24,8 +24,6 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
 
   const { handleOpenModal } = useModalContext()
 
-  const chooserType = "tag"
-
   const [ showSelectOptions, setShowSelectOptions ] = useState(false);
 
   const handleTopRowClick = (e: MouseEvent<HTMLElement>) => {
@@ -43,10 +41,14 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
   };
 
   const handleUpdateSelectValue = (option: Tag) => {
+    console.log("first")
     setSelectValue(option.name);
     setShowSelectOptions(false);
-    setShowTouchOffDiv(false);    
-    setSelectedTag(option);
+    setShowTouchOffDiv(false);
+
+    if (entityType === "tag") {
+      setSelectedTag(option);
+    }
   };
 
   const handleTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
@@ -66,7 +68,7 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
     e.stopPropagation();
 
     handleOpenModal({e, action: "add", entityType: entityType, entityName: null, entityID: null})
-    console.log(`Add new ${normalizeCasing(chooserType)} option?`);
+    console.log(`Add new ${normalizeCasing(entityType)} option?`);
   };
     
   const handleEditEntry = (e: MouseEvent<HTMLElement>, option: SelectOption) => {
@@ -76,7 +78,7 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
     console.log(option)
     handleOpenModal({e, action: "edit", entityType: entityType, entityName: option.name, entityID: option.id})
 
-    console.log(`Edit ${normalizeCasing(chooserType)} ${option.id}?`);
+    console.log(`Edit ${normalizeCasing(entityType)} ${option.id}?`);
   };
 
 
@@ -84,7 +86,15 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id})
+    console.log(entityType)
+    if (entityType === "model") {
+      handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id})
+    } else if (entityType === "photographer") {
+      handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id})
+    } else if (entityType === "tag") {
+      handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id})
+    }  
+
   };
 
   const handleTouchOff = () => {
@@ -114,7 +124,7 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
                 ? "show" 
                 : "hide"}`}
             >
-              --Select {normalizeCasing(chooserType)}--
+              --Select {normalizeCasing(entityType)}--
             </span>
             <span 
               className={`customSelect__default-option 
