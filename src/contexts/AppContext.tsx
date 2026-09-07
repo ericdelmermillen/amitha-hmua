@@ -72,12 +72,16 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setAppIsLoading(true);
     setSelectedTag(null);
     setSelectValue(null);
+    setShouldRefreshModels(true);
+    setShouldRefreshPhotographers(true);
     router.push("/shoot/add");
   };
 
   const handleNavigateToEditShoot = (id: number | null) => {
     setSelectedTag(null);
     setSelectValue(null);
+    setShouldRefreshModels(true);
+    setShouldRefreshPhotographers(true);
     router.push(`/shoot/edit/${id}`);
   };
 

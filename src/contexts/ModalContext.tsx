@@ -32,7 +32,7 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
     e?.preventDefault();
     e?.stopPropagation()
 
-    console.log(entityName)
+    // console.log(entityName)
     
     setShowModal(true);
     setModalAction(action);
@@ -43,13 +43,15 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
 
 
 
-  const handleClearModal = () => {
+  const handleClearModal = (clearAppIsLoading: boolean = false) => {
     setShowModal(false);
     setModalAction(null);
     setModalEntityName(null);
     setModalEntityID(null);
-    setAppIsLoading(false);
-    setAppIsLoading(false);
+    
+    if (clearAppIsLoading) {
+      setAppIsLoading(false);
+    }
   };
 
   const contextValues: ModalContextValue = {

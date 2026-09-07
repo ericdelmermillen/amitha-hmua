@@ -82,7 +82,8 @@ export interface AppContextValue {
 export interface ModalContextValue {
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
-  handleClearModal: () => void;
+  // handleClearModal: () => void;
+  handleClearModal: (clearAppIsLoading?: boolean) => void;
   modalAction: string | null;
   setModalAction: Dispatch<SetStateAction<string | null>>;
   handleOpenModal: (data: ModalData) => void;

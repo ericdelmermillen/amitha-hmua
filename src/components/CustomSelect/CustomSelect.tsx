@@ -19,7 +19,8 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
     selectValue, 
     setSelectValue,
     setAppIsLoading,
-    setShowTouchOffDiv
+    setShowTouchOffDiv,
+    appIsLoading
   } = useAppContext();
 
   const { handleOpenModal } = useModalContext()
@@ -28,6 +29,10 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
 
   const handleTopRowClick = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
+
+    if (appIsLoading) {
+      return
+    }
 
     setShowSelectOptions(prev => {
       const next = !prev
@@ -75,10 +80,10 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(option)
+    // console.log(option)
     handleOpenModal({e, action: "edit", entityType: entityType, entityName: option.name, entityID: option.id})
 
-    console.log(`Edit ${normalizeCasing(entityType)} ${option.id}?`);
+    // console.log(`Edit ${normalizeCasing(entityType)} ${option.id}?`);
   };
 
 

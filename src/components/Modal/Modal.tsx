@@ -1,22 +1,22 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, ChangeEvent, SyntheticEvent } from "react";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { deleteShootByID } from "@/actions/shootActions";
-import { deleteTagByID } from "@/actions/tagActions";
+import { deleteTagByID, editTagByID } from "@/actions/tagActions";
 import { normalizeCasing, scrollToTop } from "@/utils/utils";
+import { deletePhotographerByID, editPhotographerByID } from "@/actions/photographerActions";
+import { deleteModelByID, editModelByID } from "@/actions/modelActions";
 import { toast } from "react-toastify";
-import { deleteModelByID } from "@/actions/modelActions";
-import { deletePhotographerByID } from "@/actions/photographerActions";
 import "./Modal.scss";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
 const Modal = () => {
   const { 
-    setAppIsLoading,
     scrollYPos,
+    setAppIsLoading,
     handleRefreshShoots,
     handleNavigateToEditShoot,
     setShouldRefreshTags,
@@ -34,17 +34,28 @@ const Modal = () => {
   } = useModalContext();
 
   const [ cancelling, setCancelling ] = useState(false);
+
+  const newEntryNameRef = useRef<HTMLInputElement>(null);
   
   const router = useRouter();
 
-  const handleEditBio = () => {
-    setAppIsLoading(true)
-    router.push("/bio/edit");
-    handleClearModal();
-  };
+  const isEditBioMode = modalAction === "edit"  && modalEntityType === "bio";
+  const isEditShootMode = modalAction === "edit" && modalEntityType === "shoot";
+
+  const isAddModelMode = modalAction === "add" && modalEntityType === "model";
+  const isAddPhotographerMode = modalAction === "add" && modalEntityType === "photographer";
+  const isAddTagMode = modalAction === "add" && modalEntityType === "tag";
+
+  const isEditModelMode = modalAction === "edit" && modalEntityType === "model";
+  const isEditPhotographerMode = modalAction === "edit" && modalEntityType === "photographer";
+  const isEditTagMode = modalAction === "edit" && modalEntityType === "tag";
   
+  const isDeleteModelMode = modalAction === "delete" && modalEntityType === "model";
+  const isDeletePhotographerMode = modalAction === "delete" && modalEntityType === "photographer";
+  const isDeleteTagMode = modalAction === "delete" && modalEntityType === "tag";
+  const isDeleteShootMode = modalAction === "delete" && modalEntityType === "shoot";
+
   const handleDeleteShoot = async () => {
-    console.log(`Deleting shoot ${modalEntityID}...`)
     
     if (!modalEntityID) {
       return;
@@ -75,120 +86,137 @@ const Modal = () => {
       setAppIsLoading(false);
       
       setTimeout(() => {
-        handleClearModal();
+        handleModalClearing();
         scrollToTop();
       }, MIN_LOADING_INTERVAL);
       return;
     }
   };
 
+  const handleAddEntry = async (e?: SyntheticEvent<HTMLFormElement>) => {
+    if (e) {
+      e.preventDefault();
+    }
 
-  const handleEditTag = async () => {
+    const newName = newEntryNameRef.current?.value.trim() ?? "";
+
+    console.log(`Adding ${modalEntityType}:`, newName);
+  };
+
+
+  const handleSubmit = async (e?: SyntheticEvent<HTMLFormElement>) => {
+    if (e) {
+      e.preventDefault();
+    }
+    
+    if (isDeleteShootMode) {
+      return handleDeleteShoot();
+    }
+    
+    if (isEditBioMode) {
+      setAppIsLoading(true)
+      router.push("/bio/edit"); 
+      return handleModalClearing();
+    }
+
+    if (isEditShootMode) {
+      console.log(`Editing shoot ${modalEntityID}...`)
+      setAppIsLoading(true);
+      handleNavigateToEditShoot(modalEntityID);
+      return handleModalClearing();
+    }
+
     if (modalEntityID === null || typeof modalEntityID !== "number") {
-      console.error("Invalid tag ID provided for deletion");
       return;
     }
 
-    console.log(`Edit tag ${normalizeCasing(modalEntityName ?? undefined)}`)
+    let newName = "";
 
-    // try {
-    //   setAppIsLoading(true);
-    //   const response = await deleteTagByID(modalEntityID);
+    if (modalAction === "edit" || modalAction === "add") {
+      newName = newEntryNameRef.current?.value.trim() ?? "";
 
-    //   if (response.success) {
-    //     toast.success(`Tag ${normalizeCasing(modalEntityName ?? undefined)} deleted successfully`);
-    //     setShouldRefreshTags(true);
+      if (!newName) {
+        toast.error("New name cannot be empty");
+        return;
+      }
 
-    //   } else {
-    //     toast.error(response.message)
-    //     console.error(response.message);
-    //   }
-
-    // } catch (error: any) {
-    //   console.error("Error executing handleDeleteTag:", error);
-    //   toast.error(`Error deleting tag ${modalEntityName}: ${error?.message || "Unknown error"}`);
-    // } finally {
-    //   setTimeout(() => {
-    //     handleClearModal();
-    //   }, MIN_LOADING_INTERVAL * 2);
-    // }
-  }
-
-  const handleDeleteOption = async () => {
-    if (modalEntityID === null || typeof modalEntityID !== "number") {
-      console.error("Invalid tag ID provided for deletion");
-      return;
+      if (newName === modalEntityName) {
+        toast.error("The new name is the same as the previous name");
+        return;
+      }
     }
 
     try {
       setAppIsLoading(true);
 
-      let response: { success: boolean; message: string } | null = null;
+      let response: any = null;
 
-      if (modalEntityType === "tag") {
-        response = await deleteTagByID(modalEntityID);
-      } else if (modalEntityType === "model") {
+      if (isEditTagMode) {
+        response = await editTagByID(modalEntityID, newName);
+      } else if (isEditModelMode) {
+        response = await editModelByID(modalEntityID, newName);
+      } else if (isEditPhotographerMode) {
+        response = await editPhotographerByID(modalEntityID, newName);
+      } else if (isDeleteModelMode) {
         response = await deleteModelByID(modalEntityID);
-      } else if (modalEntityType === "photographer") {
+      } else if (isDeletePhotographerMode) {
         response = await deletePhotographerByID(modalEntityID);
-      } else if (modalEntityType === "shoot") {
-        response = await deleteShootByID(modalEntityID);
-      }
-
-      if (!response) {
-        throw new Error(`Unsupported entity type: ${modalEntityType}`);
+      } else if (isDeleteTagMode) {
+        response = await deleteTagByID(modalEntityID);
       }
 
       if (response.success) {
-        toast.success(`Tag ${normalizeCasing(modalEntityName ?? undefined)} deleted successfully`);
+        const successMessage = modalAction === "add"
+            ? `${normalizeCasing(modalEntityType ?? "")} ${modalEntityName} successfully created` 
+            : modalAction === "edit"
+            ? `${normalizeCasing(modalEntityType ?? "")} "${modalEntityName}" updated to "${response.updatedTag?.name ?? newName}"`
+            : response.message || `${normalizeCasing(modalEntityType ?? "")} "${modalEntityName}" deleted successfully`;
+
+        toast.success(successMessage);
+        
+        if (modalEntityType === "model") {
+          setShouldRefreshModels(true);
+        }
+
+        if (modalEntityType === "photographer") {
+          setShouldRefreshPhotographers(true);
+        }
 
         if (modalEntityType === "tag") {
           setShouldRefreshTags(true);
         }
-        
-        if (modalEntityType === "model") {
-          setShouldRefreshModels(true);
-        }  
-        
-        if (modalEntityType === "photographer") {
-          console.log("should refresh photogs")
-          setShouldRefreshPhotographers(true);
-        }
 
       } else {
-        toast.error(response.message)
-        console.error(response.message);
+        throw new Error(response?.message || `Failed to ${modalAction} ${modalEntityType}`);
       }
-
     } catch (error: any) {
-      console.error("Error deleting item:", error);
-      toast.error(`Error deleting ${modalEntityType} ${modalEntityName}: ${error?.message || "Unknown error"}`);
+      console.error(`Error editing ${modalEntityType}:`, error);
+      toast.error(error?.message || "An unexpected error occurred");
     } finally {
       setTimeout(() => {
-        handleClearModal();
+        handleModalClearing(true);
       }, MIN_LOADING_INTERVAL * 2);
     }
-  }
+  };
 
-
-  const handleEditShoot = () => {
-    // can use function from context to refresh feed via new call
-    console.log(`Editing shoot ${modalEntityID}...`)
-    setAppIsLoading(true);
-    handleNavigateToEditShoot(modalEntityID);
-    handleClearModal();
+  const handleModalClearing = (clearAppIsLoading: boolean = false) => {
+    if (newEntryNameRef.current) {
+      newEntryNameRef.current.value = "";
+    }
+    handleClearModal(clearAppIsLoading);
   };
 
   const handleCancel = () => {
     setCancelling(true);
-    handleClearModal();
-  }
+    handleModalClearing();
+  };
+
 
     // useEffect to hide and clear modal on esc
   useEffect(() => {
     const handleKeyDown =  (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        handleClearModal();
+        handleModalClearing();
       };
     };
 
@@ -204,10 +232,17 @@ const Modal = () => {
   // useEffect to clear modal on scroll
   useEffect(() => {
     if (showModal) {
-      handleClearModal();
+      handleModalClearing();
     };
   }, [scrollYPos]);
 
+  // useEffect to clear newEntryNameRef on opening the modal
+  useEffect(() => {
+    if (showModal && newEntryNameRef.current) {
+      newEntryNameRef.current.value = modalAction === "edit" ? (modalEntityName ?? "") : "";
+    }
+  }, [showModal, modalAction, modalEntityName]);
+  
   // useEffect to reset cancelling when modal opens again
   useEffect(() => {
     if (showModal) {
@@ -215,295 +250,67 @@ const Modal = () => {
     }
   }, [showModal]);
 
-
   return (
     <div className={`modal ${showModal ? "show" : ""}`}>
-      <div className="modal__overlay" onClick={handleClearModal}></div>
+      <div className="modal__overlay" onClick={() => handleCancel()}></div>
       <div className="modal__card">
 
-        {modalAction === "edit"  && modalEntityType === "bio"
+        <form className="modal__form" onSubmit={handleSubmit}>
+          <h3 className="modal__heading">
+            {`${isEditBioMode
+              ? "Edit Your Bio Page?"
+              : isEditShootMode || isDeleteShootMode
+              ? `${normalizeCasing(modalAction)} Shoot ${modalEntityID}?`
+              : modalAction === "add"
+              ? `${normalizeCasing(modalAction ?? "")} New ${normalizeCasing(modalEntityType ?? "")}`
+              : `${normalizeCasing(modalAction ?? "")} ${normalizeCasing(modalEntityType ?? "")} "${modalEntityName}"?`
+            }`}
+          </h3>
 
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Edit Your Bio Page?
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--edit"
-                    onClick={handleEditBio}
-                  >
-                    Edit Bio
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          : modalAction === "edit" && modalEntityType === "shoot"
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Edit Shoot {modalEntityID}?
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--edit"
-                    onClick={handleEditShoot}
-                  >
-                    Edit Shoot
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          :  modalAction === "delete" && modalEntityType === "shoot"
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Delete Shoot {modalEntityID}?
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--edit"
-                    onClick={handleDeleteShoot}
-                  >
-                    Delete Shoot
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          : modalAction === "add" && modalEntityType === "tag"
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Add New Tag
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--edit"
-                    onClick={handleEditShoot}
-                  >
-                    Add Tag
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          : modalAction === "edit" && modalEntityType === "tag"
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Edit Tag {normalizeCasing(modalEntityName ?? undefined)}?
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--delete"
-                    onClick={handleDeleteOption}
-                  >
-                    Edit Tag
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          : modalAction === "delete" && modalEntityType === "tag"
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Delete Tag {normalizeCasing(modalEntityName ?? undefined)}?
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--delete"
-                    onClick={handleDeleteOption}
-                  >
-                    Delete Tag
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          :   modalAction === "add" && modalEntityType === "model"
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Add Model
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--delete"
-                    onClick={handleEditTag}
-                  >
-                    Add Model
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          : modalAction === "edit" && modalEntityType === "model"
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Edit Model {normalizeCasing(modalEntityName ?? undefined)}?
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--delete"
-                    onClick={handleEditTag}
-                  >
-                    Update Model
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          : modalAction === "delete" && modalEntityType === "model"
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Delete Model {normalizeCasing(modalEntityName ?? undefined)}?
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--delete"
-                    onClick={handleDeleteOption}
-                  >
-                    Delete Model
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          : modalAction === "add" && modalEntityType === "photographer"
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Add Photographer
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--delete"
-                    onClick={handleEditTag}
-                  >
-                    Add Photographer
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          :  modalAction === "edit" && modalEntityType === "photographer"
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Edit Photographer {normalizeCasing(modalEntityName ?? undefined)}?
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--delete"
-                    onClick={handleEditTag}
-                  >
-                    Update Photographer
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          :  modalAction === "delete" && modalEntityType === "photographer"
-          ? (
-              <>
-                <h3 className="modal__heading">
-                  Delete Photographer {normalizeCasing(modalEntityName ?? undefined)}?
-                </h3>
-                <div className="modal__button-container">
-                  <button
-                    className="modal__button modal__button--delete"
-                    onClick={handleDeleteOption}
-                  >
-                    Delete Photographer
-                  </button>
-                  <button
-                    className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
-                    onClick={handleCancel}
-                    disabled={cancelling}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )
-          :
-          null
-        }
+          {(modalAction === "add" || modalAction === "edit" && !isEditShootMode && !isEditBioMode) && 
+
+            <input 
+              className='modal__input'
+              placeholder={`Enter new ${modalEntityType} name`}
+              type="text"
+              defaultValue={modalEntityName ?? ""}
+              ref={newEntryNameRef}
+              autoFocus
+            />
+              
+          }
+
+          {modalAction === "delete" && !isDeleteShootMode &&
+              
+            <p className="modal__explainer">
+              You will have to add {modalEntityType === "tag" ? `it` : "them"} back if you want to use {modalEntityType === "tag" ? "it" : "them"} in a new Shoot. 
+            </p>
+              
+          }
+
+          <div className="modal__button-container">
+            <button
+              className="modal__button modal__button--edit"
+              type="submit"
+            >
+              {isEditBioMode
+                ? "Edit Bio"
+                : isEditShootMode
+                ? "Edit Shoot"
+                : `${normalizeCasing(modalAction ?? "")}`
+              }
+            </button>
+            <button
+              className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
+              onClick={handleCancel}
+              disabled={cancelling}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
 
       </div>
-
     </div>
   );
 };
