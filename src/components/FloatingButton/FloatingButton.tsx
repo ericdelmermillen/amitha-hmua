@@ -26,15 +26,8 @@ const FloatingButton = () => {
     >
       {isLoggedIn 
 
-        ? <AddIcon
-            className={"floatingButton__add"}
-            strokeClassName={"floatingButton__add-stroke"}
-          />
-        
-        : <UpIcon 
-            className={"floatingButton__up"}
-            strokeClassName={"floatingButton__up-stroke"}
-          />
+        ? <AddIcon className={"floatingButton__add"} strokeClassName={"floatingButton__add-stroke"}/>
+        : <UpIcon className={"floatingButton__up"} strokeClassName={"floatingButton__up-stroke"}/>
           
       }
     </div>

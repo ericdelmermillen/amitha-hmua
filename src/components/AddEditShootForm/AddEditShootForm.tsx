@@ -5,8 +5,7 @@ import { useState, useEffect } from "react";
 import { EntryNameType } from "@/typing/types";
 import { 
   // ChooserEntry, 
-  Model, 
-  Photographer 
+  ShootEntity, 
 } from "@/typing/interfaces";
 
 
@@ -55,11 +54,11 @@ const AddEditShootForm = () => {
   // const [ shootDate, setShootDate ] = useState<Date | null>(new Date());
   // const [ rawDate, setRawDate ] = useState<Date | null>(null);
 
-  const [ modelChoosers, setModelChoosers ] = useState([{ chooserNo: 1, modelID: null, modelName: null}]);
-  const [ models, setModels ] = useState<Model[]>([]);
+  const [ modelChoosers, setModelChoosers ] = useState([{ chooserNo: 1, id: null, name: null}]);
+  const [ models, setModels ] = useState<ShootEntity[]>([]);
 
-  const [ photographerChoosers, setphotographerChoosers ] = useState([{ chooserNo: 1, modelID: null, modelName: null}]);
-  const [ photographers, setPhotographers ] = useState<Photographer[]>([]);
+  const [ photographerChoosers, setphotographerChoosers ] = useState([{ chooserNo: 1, id: null, name: null}]);
+  const [ photographers, setPhotographers ] = useState<ShootEntity[]>([]);
 
 
   const handleAddCustomSelect = (selectedEntry: EntryNameType) => {

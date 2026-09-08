@@ -190,6 +190,4 @@ const notificationEmailTemplate = (
   </html>
 `;
 
-export {
-  notificationEmailTemplate
-};
+export { notificationEmailTemplate };

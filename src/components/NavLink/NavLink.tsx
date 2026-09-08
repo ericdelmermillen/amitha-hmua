@@ -1,7 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
-// import { usePathname } from "next/navigation";
+import { type ReactNode } from "react";
 import Link from "next/link";
 import "./NavLink.scss";
 
@@ -11,12 +10,9 @@ interface NavLinkProps {
 }
 
 const NavLink = ({ href, children }: NavLinkProps) => {
-  // const path = usePathname();
   
   return (
-    <Link
-      href={href}
-    >
+    <Link href={href}>
       {children}
     </Link>
   );

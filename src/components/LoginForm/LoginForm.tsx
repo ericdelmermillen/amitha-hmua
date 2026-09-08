@@ -110,7 +110,6 @@ const LoginForm = () => {
     }
   };
 
-
   const handleCancel = () => {
     toast.info("Cancelling...");
     setAppIsLoading(true);
@@ -169,11 +168,7 @@ const LoginForm = () => {
               placeholder="Email"
               onChange={handleEmailChange}
             />
-            <div 
-              className={`loginForm__error ${!emailIsValid && initialFormCheck 
-                ? "email-error"
-                : ""}`}
-            >
+            <div className={`loginForm__error ${!emailIsValid && initialFormCheck ? "email-error" : ""}`}>
               Invalid Email
             </div>
           </div>
@@ -202,9 +197,7 @@ const LoginForm = () => {
                 }
               </div>
             </div>
-            <div 
-              className={`loginForm__error ${!passwordIsValid && initialFormCheck && "password-error"}`}
-            >
+            <div className={`loginForm__error ${!passwordIsValid && initialFormCheck && "password-error"}`}>
               Invalid Password
             </div>
           </div>

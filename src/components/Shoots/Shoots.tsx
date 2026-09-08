@@ -197,7 +197,7 @@ const Shoots = () => {
     }
 
     // Guard: Ensure selectedTag in state matches tagParam in URL to avoid stale tag fetches
-    if (tagParam && selectedTag && selectedTag.tagName.toLowerCase() !== tagParam.toLowerCase()) {
+    if (tagParam && selectedTag && selectedTag.name.toLowerCase() !== tagParam.toLowerCase()) {
       return;
     }
 
@@ -276,7 +276,7 @@ const Shoots = () => {
 
     if (tagParam) {
       const matchedTag = tags.find(
-        (tag) => tag.tagName.toLowerCase() === tagParam.toLowerCase()
+        (tag) => tag.name.toLowerCase() === tagParam.toLowerCase()
       );
 
       if (matchedTag) {
@@ -308,7 +308,7 @@ const Shoots = () => {
       {isOnShootDetails 
         ? (  
             <h3 className="shoots__shootDetailsHeading">
-              Other {selectedTag ? normalizeCasing(selectedTag.tagName) : null} Shoots
+              Other {selectedTag ? normalizeCasing(selectedTag.name) : null} Shoots
             </h3>
           )
         : null

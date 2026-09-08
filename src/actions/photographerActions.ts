@@ -6,7 +6,7 @@ import {
   DeletePhotographerResponse, 
   EditPhotographerResponse, 
   GetAllPhotographersResponse, 
-  Photographer, 
+  ShootEntity, 
   PhotographerRow, 
   PhotographerShoot, 
   ShootLinkRow
@@ -20,7 +20,7 @@ const getAllPhotographers = async (): Promise<GetAllPhotographersResponse> => {
       "SELECT id, name FROM photographers ORDER BY name ASC"
     );
 
-    const formattedPhotographers: Photographer[] = rows.map((row) => {
+    const formattedPhotographers: ShootEntity[] = rows.map((row) => {
       return {
         id: row.id,
         name: row.name,
@@ -75,7 +75,7 @@ const addPhotographer = async (name: string): Promise<AddPhotographerResponse> =
       "SELECT id, name FROM photographers ORDER BY name ASC"
     );
 
-    const formattedPhotographers: Photographer[] = rows.map((row) => {
+    const formattedPhotographers: ShootEntity[] = rows.map((row) => {
       return {
         id: row.id,
         name: row.name,
@@ -150,7 +150,7 @@ const editPhotographerByID = async (id: number, newname: string): Promise<EditPh
       [parsedID]
     );
 
-    const formattedPhotographer: Photographer = {
+    const formattedPhotographer: ShootEntity = {
       id: updatedRows[0].id,
       name: updatedRows[0].name,
     };
@@ -228,7 +228,7 @@ const deletePhotographerByID = async (id: number): Promise<DeletePhotographerRes
       "SELECT id, name FROM photographers ORDER BY name ASC"
     );
 
-    const formattedPhotographers: Photographer[] = rows.map((row) => {
+    const formattedPhotographers: ShootEntity[] = rows.map((row) => {
       return {
         id: row.id,
         name: row.name,

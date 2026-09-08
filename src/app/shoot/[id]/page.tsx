@@ -6,7 +6,6 @@ import Image from "next/image";
 import Shoots from "@/components/Shoots/Shoots";
 import "./ShootDetailsPage.scss";
 
-
 const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
   const { id } = await params;
   const shootIdNum = parseInt(id, 10);

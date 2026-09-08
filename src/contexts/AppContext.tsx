@@ -10,7 +10,7 @@ import {
 import { usePathname, useSearchParams,useRouter } from "next/navigation";
 import { AppContextValue, ContextProviderProps, ShootSummary } from "@/typing/interfaces";
 import { isModifiedClick, normalizeCasing, scrollToTop } from "@/utils/utils";
-import { Tag } from "@/typing/interfaces";
+import { ShootEntity } from "@/typing/interfaces";
 import { type TypeOptions, toast } from "react-toastify";
 import { checkUserSession, logoutUser } from "@/actions/authActions";
 import { getAllTags } from "@/actions/tagActions";
@@ -33,14 +33,14 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const [ showSideNav, setShowSideNav ] = useState(false);
   const [ showTouchOffDiv, setShowTouchOffDiv ] = useState(false);
   
-  const [ selectedTag, setSelectedTag ] = useState<Tag | null>(null);
+  const [ selectedTag, setSelectedTag ] = useState<ShootEntity | null>(null);
   
   const [ selectValue, setSelectValue ] = useState<string | null>(null);
   const [ showNavSelectOptions, setShowNavSelectOptions ] = useState(false);
   
   const [ isLoggedIn, setIsLoggedIn ] = useState(false);
 
-  const [ tags, setTags ] = useState<Tag[]>([]);
+  const [ tags, setTags ] = useState<ShootEntity[]>([]);
   
   const [ shoots, setShoots ] = useState<ShootSummary[]>([]);
   const [ shouldUpdateShoots, setShouldUpdateShoots ] = useState(false);
@@ -92,7 +92,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setAppIsLoading(false);
   };
 
-  const handleNavigateHome = (tagObj?: Tag) => {   
+  const handleNavigateHome = (tagObj?: ShootEntity) => {   
     if (!tagObj) {
       router.push("/work");
       setSelectedTag(null);

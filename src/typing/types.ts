@@ -18,4 +18,4 @@ export {
   type ChooserType,
   type EntryNameType,
   type ModalActionType
-}
+};

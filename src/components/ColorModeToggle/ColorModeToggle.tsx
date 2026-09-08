@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { ColorModetoggleProps } from "@/typing/interfaces";
+import { useEffect, useState } from "react";
 import { useColorThemeContext } from "@/hooks/hooks";
 import "./ColorModeToggle.scss";
 

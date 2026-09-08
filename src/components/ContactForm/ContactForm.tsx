@@ -174,150 +174,121 @@ const ContactForm = () => {
   };
 
   return (
-    <>
-      <div className="contactForm">
-        <div className="contactForm__modal">
-          <h1 className="contactForm__title">
-            Contact Amitha
-          </h1>
-          <form 
-            className="contactForm__form"
-            onSubmit={handleSubmit}
-          >
-            <div className="contactForm__nameContainer">
-              <div className="contactForm__field">
-                <label htmlFor="contactFormFirstName" className="contactForm__label">
-                  First Name
-                </label>
-
-                <input 
-                  id="contactFormFirstName"
-                  type="text" 
-                  className="contactForm__input contactForm__input--firstName"
-                  value={firstName}
-                  placeholder="First Name"
-                  onChange={handleFirstNameChange}
-                />
-                <p className={`contactForm__errorMessage ${!firstNameIsValid && initialFormCheck
-                    ? "visible" 
-                    : ""}`
-                  }
-                >
-                  First Name is invalid
-                </p>
-              </div>
-              <div className="contactForm__field">
-                <label htmlFor="contactFormLastName" className="contactForm__label">
-                  Last Name
-                </label>
-                <input 
-                  id="contactFormLastName"
-                  type="text" 
-                  className="contactForm__input contactForm__input--lastName"
-                  value={lastName}
-                  placeholder="Last Name"
-                  onChange={handleLastNameChange}
-                />
-                <p className={`contactForm__errorMessage ${!lastNameIsValid && initialFormCheck 
-                    ? "visible" 
-                    : ""}`
-                  }
-                >
-                  Last Name is invalid
-                </p>
-              </div>
-
-            </div>
-
+    <div className="contactForm">
+      <div className="contactForm__modal">
+        <h1 className="contactForm__title">
+          Contact Amitha
+        </h1>
+        <form className="contactForm__form" onSubmit={handleSubmit}>
+          <div className="contactForm__nameContainer">
             <div className="contactForm__field">
-              <label htmlFor="contactFormEmail" className="contactForm__label">
-                Email Address
+              <label htmlFor="contactFormFirstName" className="contactForm__label">
+                First Name
+              </label>
+
+              <input 
+                id="contactFormFirstName"
+                type="text" 
+                className="contactForm__input contactForm__input--firstName"
+                value={firstName}
+                placeholder="First Name"
+                onChange={handleFirstNameChange}
+              />
+              <p className={`contactForm__errorMessage ${!firstNameIsValid && initialFormCheck ? "visible" : ""}`}>
+                First Name is invalid
+              </p>
+            </div>
+            <div className="contactForm__field">
+              <label htmlFor="contactFormLastName" className="contactForm__label">
+                Last Name
               </label>
               <input 
-                id="contactFormEmail"
+                id="contactFormLastName"
                 type="text" 
-                className="contactForm__input contactForm__input--email"
-                value={email}
-                placeholder="Email Address"
-                onChange={handleEmailChange}
+                className="contactForm__input contactForm__input--lastName"
+                value={lastName}
+                placeholder="Last Name"
+                onChange={handleLastNameChange}
               />
-              <p className={`contactForm__errorMessage ${!emailIsValid && initialFormCheck 
-                  ? "visible" 
-                  : ""}`
-                }
-              >
-                Invalid Email
+              <p className={`contactForm__errorMessage ${!lastNameIsValid && initialFormCheck ? "visible" : ""}`}>
+                Last Name is invalid
               </p>
             </div>
 
-            <div className="contactForm__field">
-              <label htmlFor="contactFormSubject" className="contactForm__label">
-                Subject
-              </label>
-              <input 
-                id="contactFormSubject"
-                type="text" 
-                className="contactForm__input contactForm__input--subject"
-                value={subject}
-                placeholder="Subject"
-                onChange={handleSubjectChange}
-              />
-              <p className={`contactForm__errorMessage ${!subjectIsValid && initialFormCheck 
-                  ? "visible" 
-                  : ""}`
-                }
-              >
-                Subject too short
-              </p>
-            </div>
+          </div>
 
-            <div className="contactForm__field contactForm__field--message">
-              <label 
-                htmlFor="contactFormMessage"
-                className="contactForm__label"
-              >
-                Message
-              </label>
-              <textarea 
-                className="contactForm__input contactForm__input--message"
-                id="contactFormMessage"
-                value={message}
-                placeholder="Message"
-                onChange={handleMessageChange}
-              ></textarea>
-              <p 
-                className={`contactForm__errorMessage ${!messageIsValid && initialFormCheck
-                  ? "visible" 
-                  : ""}`
-                }
-              >
-                Message too short
-              </p>
-            </div>
-            <div className="contactForm__button-container">
-              <button 
-                type="button" 
-                className="contactForm__button contactForm__button--cancel"
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-              <button 
-                type="submit" 
-                className={`contactForm__button contactForm__button--send ${isSubmitting 
-                  ? "disabled" 
-                  : ""}`
-                }
-                disabled={isSubmitting}
-              >
-                Send
-              </button>
-            </div>
+          <div className="contactForm__field">
+            <label htmlFor="contactFormEmail" className="contactForm__label">
+              Email Address
+            </label>
+            <input 
+              id="contactFormEmail"
+              type="text" 
+              className="contactForm__input contactForm__input--email"
+              value={email}
+              placeholder="Email Address"
+              onChange={handleEmailChange}
+            />
+            <p className={`contactForm__errorMessage ${!emailIsValid && initialFormCheck ? "visible" : ""}`}>
+              Invalid Email
+            </p>
+          </div>
 
-          </form>
-        </div>
+          <div className="contactForm__field">
+            <label htmlFor="contactFormSubject" className="contactForm__label">
+              Subject
+            </label>
+            <input 
+              id="contactFormSubject"
+              type="text" 
+              className="contactForm__input contactForm__input--subject"
+              value={subject}
+              placeholder="Subject"
+              onChange={handleSubjectChange}
+            />
+            <p className={`contactForm__errorMessage ${!subjectIsValid && initialFormCheck ? "visible" : ""}`}>
+              Subject too short
+            </p>
+          </div>
+
+          <div className="contactForm__field contactForm__field--message">
+            <label htmlFor="contactFormMessage" className="contactForm__label">
+              Message
+            </label>
+            <textarea 
+              className="contactForm__input contactForm__input--message"
+              id="contactFormMessage"
+              value={message}
+              placeholder="Message"
+              onChange={handleMessageChange}
+            />
+            <p className={`contactForm__errorMessage ${!messageIsValid && initialFormCheck ? "visible" : ""}`}>
+              Message too short
+            </p>
+          </div>
+          <div className="contactForm__button-container">
+            <button 
+              type="button" 
+              className="contactForm__button contactForm__button--cancel"
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className={`contactForm__button contactForm__button--send ${isSubmitting 
+                ? "disabled" 
+                : ""}`
+              }
+              disabled={isSubmitting}
+            >
+              Send
+            </button>
+          </div>
+
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 

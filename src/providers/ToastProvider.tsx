@@ -18,7 +18,7 @@ const ToastProvider = () => {
       pauseOnHover
       theme={colorMode === "dark" ? "dark" : "light" } 
     />
-  )
-}
+  );
+};
 
 export { ToastProvider };

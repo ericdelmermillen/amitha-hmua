@@ -1,16 +1,15 @@
 "use client";
 
-import { useState, DragEvent, MouseEvent } from "react";
+import Image from "next/image";
+import { useState, DragEvent } from "react";
 import { ShootProps } from "@/typing/interfaces";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { checkIfIsFirefox } from "@/utils/utils";
 import DeleteIcon from "@/assets/icons/DeleteIcon"
 import EditIcon from "@/assets/icons/EditIcon";
-import Image from "next/image";
 import "./Shoot.scss";
 
 const isFirefox = checkIfIsFirefox();
-
 
 const Shoot = ({ 
   shootID, 
@@ -139,6 +138,7 @@ const Shoot = ({
       </div>
 
     </div>
-  )};
+  );
+};
 
 export default Shoot;

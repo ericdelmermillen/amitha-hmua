@@ -5,7 +5,6 @@ import { useAppContext } from "@/hooks/hooks";
 import { isModifiedClick } from "@/utils/utils";
 import Link from "next/link";
 
-
 interface ClientLinkProps {
   href: string;
   className?: string;
@@ -39,7 +38,7 @@ const ClientLink = ({
       href={href}
       className={className}
       onClick={handleLinkClick}
-      scroll={false}
+      scroll={scroll}
     >
       {children}
     </Link>

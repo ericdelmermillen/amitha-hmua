@@ -3,13 +3,11 @@ import "./ContactPage.scss";
 
 const ContactPage = () => {
   return (
-    <>
-      <div className="contactPage">
-        <div className="contactPage__inner">
-          <ContactForm />
-        </div>
+    <div className="contactPage">
+      <div className="contactPage__inner">
+        <ContactForm />
       </div>
-    </>
+    </div>
   );
 };
 

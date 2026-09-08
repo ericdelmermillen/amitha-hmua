@@ -29,12 +29,12 @@ export interface AppContextValue {
   setScrollYPos: Dispatch<SetStateAction<number>>;
   selectValue: string | null;
   setSelectValue: Dispatch<SetStateAction<string | null>>;
-  selectedTag: Tag | null;
-  setSelectedTag: Dispatch<SetStateAction<Tag | null>>;
+  selectedTag: ShootEntity | null;
+  setSelectedTag: Dispatch<SetStateAction<ShootEntity | null>>;
   showNavSelectOptions: boolean;
   setShowNavSelectOptions: Dispatch<SetStateAction<boolean>>;
-  tags: Tag[];
-  setTags: Dispatch<SetStateAction<Tag[]>>;
+  tags: ShootEntity[];
+  setTags: Dispatch<SetStateAction<ShootEntity[]>>;
   shouldRefreshTags: boolean;
   setShouldRefreshTags: Dispatch<SetStateAction<boolean>>;
   shouldRefreshModels: boolean;
@@ -62,7 +62,7 @@ export interface AppContextValue {
   handleIsOnSamePage: () => void;
   handleSideNavLinkClick: (e: MouseEvent<HTMLAnchorElement>) => void;
   handleLogoutUser: () => void;
-  handleNavigateHome: (tagObj?: Tag) => void;
+  handleNavigateHome: (tagObj?: ShootEntity) => void;
   handleSetShowSideNavFalse: () => void;
   handleIsOnCurrentPage: (e: MouseEvent<HTMLAnchorElement>) => void;
   shootOrderIsEditable: boolean;
@@ -127,11 +127,6 @@ export interface IsLoadingProps {
   initiallyShowing: boolean;
 }
 
-export interface Tag {
-  id: number;
-  name: string;
-}
-
 export interface NavPage {
   pageName: string;
   href: string;
@@ -140,7 +135,7 @@ export interface NavPage {
 }
 
 export interface NavSelectProps {
-  selectOptions: Tag[];
+  selectOptions: ShootEntity[];
   modifierClass?: string;
 }
 
@@ -265,7 +260,6 @@ interface ShootDetailsPageProps {
   params: Promise<{ id: string }>;
 }
 
-
 interface AuthCredentials {
   email?: string;
   password?: string;
@@ -328,7 +322,7 @@ interface SelectOption {
 // }
 
 interface CustomSelectProps {
-  selectOptions: Tag[];
+  selectOptions: ShootEntity[];
   entityType: "tag" | "model" | "photographer";
 }
 
@@ -349,7 +343,7 @@ interface CustomSelectProps {
 interface GetAllTagsResponse {
   success: boolean;
   message: string;
-  tags: Tag[];
+  tags: ShootEntity[];
 }
 
 
@@ -361,13 +355,13 @@ interface TagRow extends RowDataPacket {
 interface AddTagResponse {
   success: boolean;
   message: string;
-  tags?: Tag[];
+  tags?: ShootEntity[];
 }
 
 interface EditTagResponse {
   success: boolean;
   message: string;
-  updatedTag?: Tag;
+  updatedTag?: ShootEntity;
 }
 
 interface ShootLinkRow extends RowDataPacket {
@@ -385,14 +379,10 @@ interface TagShoot {
 interface DeleteTagResponse {
   success: boolean;
   message: string;
-  tags?: Tag[];
+  tags?: ShootEntity[];
   tagShoots?: TagShoot[];
 }
 
-interface Model {
-  id: number;
-  name: string;
-}
 
 interface ModelRow extends RowDataPacket {
   id: number;
@@ -402,19 +392,19 @@ interface ModelRow extends RowDataPacket {
 interface GetAllModelsResponse {
   success: boolean;
   message: string;
-  models: Model[];
+  models: ShootEntity[];
 }
 
 interface AddModelResponse {
   success: boolean;
   message: string;
-  models?: Model[];
+  models?: ShootEntity[];
 }
 
 interface EditModelResponse {
   success: boolean;
   message: string;
-  updatedModel?: Model;
+  updatedModel?: ShootEntity;
 }
 
 interface ModelShoot {
@@ -424,13 +414,8 @@ interface ModelShoot {
 interface DeleteModelResponse {
   success: boolean;
   message: string;
-  models?: Model[];
+  models?: ShootEntity[];
   modelShoots?: ModelShoot[];
-}
-
-interface Photographer {
-  id: number;
-  name: string;
 }
 
 interface PhotographerRow extends RowDataPacket {
@@ -441,19 +426,19 @@ interface PhotographerRow extends RowDataPacket {
 interface GetAllPhotographersResponse {
   success: boolean;
   message: string;
-  photographers: Photographer[];
+  photographers: ShootEntity[];
 }
 
 interface AddPhotographerResponse {
   success: boolean;
   message: string;
-  photographers?: Photographer[];
+  photographers?: ShootEntity[];
 }
 
 interface EditPhotographerResponse {
   success: boolean;
   message: string;
-  updatedPhotographer?: Photographer;
+  updatedPhotographer?: ShootEntity;
 }
 
 interface PhotographerShoot {
@@ -463,9 +448,15 @@ interface PhotographerShoot {
 interface DeletePhotographerResponse {
   success: boolean;
   message: string;
-  photographers?: Photographer[];
+  photographers?: ShootEntity[];
   photographerShoots?: PhotographerShoot[];
 }
+
+interface ShootEntity {
+  id: number;
+  name: string;
+}
+
 
 export {
   type BioResponse,
@@ -500,14 +491,13 @@ export {
   type ShootRow,
   type DeleteTagResponse,
   type TagShoot,
-  type Model,
+  type ShootEntity,
   type ModelRow,
   type GetAllModelsResponse,
   type AddModelResponse,
   type EditModelResponse,
   type ModelShoot,
   type DeleteModelResponse,
-  type Photographer,
   type PhotographerRow,
   type GetAllPhotographersResponse,
   type AddPhotographerResponse,

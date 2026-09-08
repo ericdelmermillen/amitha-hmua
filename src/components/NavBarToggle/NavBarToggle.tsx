@@ -16,20 +16,17 @@ const NavBarToggle = () => {
   };
 
   return (
-    <>
-      <button 
-        type="button"
-        className={`navBarToggle ${showSideNav ? "open" : ""}`}
-        aria-label="Toggle Menu"
-        onClick={handleToggle}
-      >
-        <div className="navBarToggle__icon"></div>
-        <div className="navBarToggle__icon"></div>
-        <div className="navBarToggle__icon"></div>
-      </button>
-    </>
+    <button 
+      type="button"
+      className={`navBarToggle ${showSideNav ? "open" : ""}`}
+      aria-label="Toggle Menu"
+      onClick={handleToggle}
+    >
+      <div className="navBarToggle__icon"></div>
+      <div className="navBarToggle__icon"></div>
+      <div className="navBarToggle__icon"></div>
+    </button>
   );
 };
 
 export default NavBarToggle;
-  

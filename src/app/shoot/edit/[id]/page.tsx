@@ -6,7 +6,6 @@ const EditShootPage = () => {
     <div className="editShootPage">
       <div className="editShootPage__inner">
         <AddEditShootForm />
-        
       </div>
     </div>
   );

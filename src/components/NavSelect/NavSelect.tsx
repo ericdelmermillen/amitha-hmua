@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { type MouseEvent, type TransitionEvent, useEffect } from "react";
 import { useAppContext } from "@/hooks/hooks";
-import { NavSelectProps, Tag } from "@/typing/interfaces";
+import { NavSelectProps, ShootEntity } from "@/typing/interfaces";
 import { scrollToTop } from "@/utils/utils";
 import DownIcon from "@/assets/icons/DownIcon";
 import "./NavSelect.scss";
@@ -55,9 +55,9 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     });
   };
 
-  const handleUpdateSelectValue = (option: Tag) => {
+  const handleUpdateSelectValue = (option: ShootEntity) => {
     setAppIsLoading(true);
-    setSelectValue(option.tagName);
+    setSelectValue(option.name);
     setShowNavSelectOptions(false);
     setShowTouchOffDiv(false);    
     setSelectedTag(option);
@@ -84,7 +84,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     } 
 
     if (selectValue) {
-      const foundOption = selectOptions.find(tag => tag.tagName === selectValue);
+      const foundOption = selectOptions.find(({ name }) => name === selectValue);
       setTimeout(() => {
         if (foundOption) {
           setSelectedTag(foundOption);
@@ -154,7 +154,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
               key={option.id} 
               onClick={() => handleUpdateSelectValue(option)}
             >
-              {`# ${option.tagName}`}
+              {`# ${option.name}`}
             </div>
           )}
         </div>

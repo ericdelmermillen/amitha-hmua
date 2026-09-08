@@ -24,7 +24,7 @@ const Nav = () => {
     setShowNavSelectOptions,
     setShowSideNav,
     tags
-     } = useAppContext();
+    } = useAppContext();
 
   const pathname = usePathname();
   const isOnHome = pathname === "/work";
@@ -58,32 +58,32 @@ const Nav = () => {
 
           <NavSelect selectOptions={tags} />
 
-          {navPages.map((page) => page.href.startsWith("/") 
+          {navPages.map(({ href, modifierClass, pageName, icon: Icon }) => href.startsWith("/") 
             
             ? (
-              <li key={page.href} className={`nav__link nav__link${page.modifierClass}`}>
+              <li key={href} className={`nav__link nav__link${modifierClass}`}>
                 <ClientLink 
-                  href={page.href}
-                  onClick={pathname !== page.href
+                  href={href}
+                  onClick={pathname !== href
                     ? handleNavLinkClick
                     : handleIsOnSamePage}
                 >
-                  {page.pageName}
+                  {pageName}
                 </ClientLink>
               </li>
               ) 
             : (
               <li
-                key={page.href}
+                key={href}
                 className="nav__link nav__link--instagram"
               >
                 <a
-                  href={page.href}
+                  href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`nav__link nav__link${page.modifierClass}`}
+                  className={`nav__link nav__link${modifierClass}`}
                 >
-                  {page.icon && <page.icon className="nav__link--instagram" />}
+                  {Icon && <Icon className="nav__link--instagram" />}
                 </a>
               </li>
               )

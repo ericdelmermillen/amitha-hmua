@@ -52,17 +52,6 @@ const ClientButton = ({
       </button>
     );
   };
-
-  // return (
-  //   <>
-  //     <button
-  //       className="bioPage__edit-button"
-  //       // onClick={handleEditBioClick}
-  //       >
-  //       {text}
-  //     </button>
-  //   </>
-  // );
 };
 
 export default ClientButton;

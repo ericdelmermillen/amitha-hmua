@@ -3,12 +3,9 @@ import "./LoginPage.scss";
 
 const LoginPage = () => {
   return (
-    <>
-      <div className="loginPage">
-        <LoginForm />
-      </div>
-      
-    </>
+    <div className="loginPage">
+      <LoginForm />
+    </div>
   );
 };
 

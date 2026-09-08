@@ -7,7 +7,7 @@ import {
   GetAllTagsResponse, 
   ShootLinkRow, 
   ShootRow, 
-  Tag, 
+  ShootEntity, 
   TagRow, 
   TagShoot
 } from "@/typing/interfaces";
@@ -22,7 +22,7 @@ const getAllTags = async (): Promise<GetAllTagsResponse> => {
       "SELECT id, name FROM tags ORDER BY name ASC"
     );
 
-    const formattedTags: Tag[] = rows.map((row) => {
+    const formattedTags: ShootEntity[] = rows.map((row) => {
       return {
         id: row.id,
         name: row.name,
@@ -77,7 +77,7 @@ const addTag = async (name: string): Promise<AddTagResponse> => {
       "SELECT id, name FROM tags ORDER BY name ASC"
     );
 
-    const formattedTags: Tag[] = rows.map((row) => {
+    const formattedTags: ShootEntity[] = rows.map((row) => {
       return {
         id: row.id,
         name: row.name,
@@ -152,7 +152,7 @@ const editTagByID = async (id: number, name: string): Promise<EditTagResponse> =
       [parsedID]
     );
 
-    const formattedTag: Tag = {
+    const formattedTag: ShootEntity = {
       id: updated[0].id,
       name: updated[0].name,
     };
@@ -240,7 +240,7 @@ const deleteTagByID = async (id: number): Promise<DeleteTagResponse> => {
       "SELECT id, name FROM tags ORDER BY name ASC"
     );
 
-    const formattedTags: Tag[] = rows.map((row) => {
+    const formattedTags: ShootEntity[] = rows.map((row) => {
       return {
         id: row.id,
         name: row.name,

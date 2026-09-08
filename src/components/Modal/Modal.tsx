@@ -1,13 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef, ChangeEvent, SyntheticEvent } from "react";
+import { useState, useRef, useEffect, SyntheticEvent } from "react";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { deleteShootByID } from "@/actions/shootActions";
-import { deleteTagByID, editTagByID } from "@/actions/tagActions";
+import { addTag, editTagByID, deleteTagByID } from "@/actions/tagActions";
 import { normalizeCasing, scrollToTop } from "@/utils/utils";
-import { deletePhotographerByID, editPhotographerByID } from "@/actions/photographerActions";
-import { deleteModelByID, editModelByID } from "@/actions/modelActions";
+import { addPhotographer, editPhotographerByID, deletePhotographerByID } from "@/actions/photographerActions";
+import { addModel, editModelByID, deleteModelByID } from "@/actions/modelActions";
 import { toast } from "react-toastify";
 import "./Modal.scss";
 
@@ -26,6 +26,7 @@ const Modal = () => {
 
   const { 
     showModal,
+    setShowModal,
     modalAction,
     modalEntityType,
     modalEntityID,
@@ -56,7 +57,6 @@ const Modal = () => {
   const isDeleteShootMode = modalAction === "delete" && modalEntityType === "shoot";
 
   const handleDeleteShoot = async () => {
-    
     if (!modalEntityID) {
       return;
     }
@@ -93,17 +93,6 @@ const Modal = () => {
     }
   };
 
-  const handleAddEntry = async (e?: SyntheticEvent<HTMLFormElement>) => {
-    if (e) {
-      e.preventDefault();
-    }
-
-    const newName = newEntryNameRef.current?.value.trim() ?? "";
-
-    console.log(`Adding ${modalEntityType}:`, newName);
-  };
-
-
   const handleSubmit = async (e?: SyntheticEvent<HTMLFormElement>) => {
     if (e) {
       e.preventDefault();
@@ -114,19 +103,18 @@ const Modal = () => {
     }
     
     if (isEditBioMode) {
-      setAppIsLoading(true)
+      setAppIsLoading(true);
       router.push("/bio/edit"); 
       return handleModalClearing();
     }
 
     if (isEditShootMode) {
-      console.log(`Editing shoot ${modalEntityID}...`)
       setAppIsLoading(true);
       handleNavigateToEditShoot(modalEntityID);
       return handleModalClearing();
     }
 
-    if (modalEntityID === null || typeof modalEntityID !== "number") {
+    if (modalAction !== "add" && (modalEntityID === null || typeof modalEntityID !== "number")) {
       return;
     }
 
@@ -140,7 +128,7 @@ const Modal = () => {
         return;
       }
 
-      if (newName === modalEntityName) {
+      if (modalAction === "edit" && newName === modalEntityName) {
         toast.error("The new name is the same as the previous name");
         return;
       }
@@ -151,48 +139,51 @@ const Modal = () => {
 
       let response: any = null;
 
-      if (isEditTagMode) {
-        response = await editTagByID(modalEntityID, newName);
+      if (isAddModelMode) {
+        response = await addModel(newName);
+      } else if (isAddPhotographerMode) {
+        response = await addPhotographer(newName);
+      } if (isAddTagMode) {
+        response = await addTag(newName);
+      } else if (isEditTagMode) {
+        response = await editTagByID(modalEntityID as number, newName);
       } else if (isEditModelMode) {
-        response = await editModelByID(modalEntityID, newName);
+        response = await editModelByID(modalEntityID as number, newName);
       } else if (isEditPhotographerMode) {
-        response = await editPhotographerByID(modalEntityID, newName);
+        response = await editPhotographerByID(modalEntityID as number, newName);
       } else if (isDeleteModelMode) {
-        response = await deleteModelByID(modalEntityID);
+        response = await deleteModelByID(modalEntityID as number);
       } else if (isDeletePhotographerMode) {
-        response = await deletePhotographerByID(modalEntityID);
+        response = await deletePhotographerByID(modalEntityID as number);
       } else if (isDeleteTagMode) {
-        response = await deleteTagByID(modalEntityID);
+        response = await deleteTagByID(modalEntityID as number);
       }
 
-      if (response.success) {
+      if (response && response.success) {
         const successMessage = modalAction === "add"
-            ? `${normalizeCasing(modalEntityType ?? "")} ${modalEntityName} successfully created` 
-            : modalAction === "edit"
-            ? `${normalizeCasing(modalEntityType ?? "")} "${modalEntityName}" updated to "${response.updatedTag?.name ?? newName}"`
-            : response.message || `${normalizeCasing(modalEntityType ?? "")} "${modalEntityName}" deleted successfully`;
+          ? `${normalizeCasing(modalEntityType ?? "")} "${newName}" successfully created` 
+          : modalAction === "edit"
+          ? `${normalizeCasing(modalEntityType ?? "")} "${modalEntityName}" updated to "${response.updatedTag?.name ?? newName}"`
+          : response.message || `${normalizeCasing(modalEntityType ?? "")} "${modalEntityName}" deleted successfully`;
 
         toast.success(successMessage);
         
         if (modalEntityType === "model") {
           setShouldRefreshModels(true);
-        }
-
-        if (modalEntityType === "photographer") {
+        } else if (modalEntityType === "photographer") {
           setShouldRefreshPhotographers(true);
-        }
-
-        if (modalEntityType === "tag") {
+        } else if (modalEntityType === "tag") {
           setShouldRefreshTags(true);
         }
-
+        
       } else {
         throw new Error(response?.message || `Failed to ${modalAction} ${modalEntityType}`);
       }
     } catch (error: any) {
-      console.error(`Error editing ${modalEntityType}:`, error);
+      console.error(`Error processing ${modalAction} for ${modalEntityType}:`, error);
       toast.error(error?.message || "An unexpected error occurred");
     } finally {
+      setShowModal(false);
       setTimeout(() => {
         handleModalClearing(true);
       }, MIN_LOADING_INTERVAL * 2);
@@ -208,9 +199,11 @@ const Modal = () => {
 
   const handleCancel = () => {
     setCancelling(true);
-    handleModalClearing();
+    setShowModal(false);
+    setTimeout(() => {
+      handleModalClearing(true);
+    }, MIN_LOADING_INTERVAL * 2);
   };
-
 
     // useEffect to hide and clear modal on esc
   useEffect(() => {

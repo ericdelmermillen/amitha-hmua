@@ -7,7 +7,7 @@ import {
   DeleteModelResponse, 
   EditModelResponse, 
   GetAllModelsResponse, 
-  Model, 
+  ShootEntity, 
   ModelRow, 
   ModelShoot, 
   ShootLinkRow 
@@ -20,7 +20,7 @@ const getAllModels = async (): Promise<GetAllModelsResponse> => {
       "SELECT id, name FROM models ORDER BY name ASC"
     );
 
-    const formattedModels: Model[] = rows.map((row) => {
+    const formattedModels: ShootEntity[] = rows.map((row) => {
       return {
         id: row.id,
         name: row.name,
@@ -75,7 +75,7 @@ const addModel = async (name: string): Promise<AddModelResponse> => {
       "SELECT id, name FROM models ORDER BY name ASC"
     );
 
-    const formattedModels: Model[] = rows.map((row) => {
+    const formattedModels: ShootEntity[] = rows.map((row) => {
       return {
         id: row.id,
         name: row.name,
@@ -150,7 +150,7 @@ const editModelByID = async (id: number, newname: string): Promise<EditModelResp
       [parsedID]
     );
 
-    const formattedModel: Model = {
+    const formattedModel: ShootEntity = {
       id: updatedRows[0].id,
       name: updatedRows[0].name,
     };
@@ -228,7 +228,7 @@ const deleteModelByID = async (id: number): Promise<DeleteModelResponse> => {
       "SELECT id, name FROM models ORDER BY name ASC"
     );
 
-    const formattedModels: Model[] = rows.map((row) => {
+    const formattedModels: ShootEntity[] = rows.map((row) => {
       return {
         id: row.id,
         name: row.name,

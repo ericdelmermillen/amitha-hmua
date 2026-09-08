@@ -1,8 +1,8 @@
 "use client";
 
-import { type MouseEvent, type TransitionEvent, useEffect, useState } from "react";
+import { type MouseEvent, type TransitionEvent, useState } from "react";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
-import { CustomSelectProps, SelectOption, Tag } from "@/typing/interfaces";
+import { CustomSelectProps, SelectOption, ShootEntity } from "@/typing/interfaces";
 import { normalizeCasing } from "@/utils/utils";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
 import DownIcon from "@/assets/icons/DownIcon";
@@ -11,8 +11,6 @@ import "./CustomSelect.scss";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
-// const CustomSelect = ({ selectOptions }: CustomSelectProps) => {
-// const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
 const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
   const {
     setSelectedTag,
@@ -45,7 +43,7 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
     });
   };
 
-  const handleUpdateSelectValue = (option: Tag) => {
+  const handleUpdateSelectValue = (option: ShootEntity) => {
     console.log("first")
     setSelectValue(option.name);
     setShowSelectOptions(false);

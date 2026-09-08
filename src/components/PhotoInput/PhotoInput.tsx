@@ -39,7 +39,6 @@ const PhotoInput = ({
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-
       await handleImageChange(e, shootPhoto.photoNo);
       
       setTimeout(() => {
@@ -105,12 +104,7 @@ const PhotoInput = ({
         : undefined}
       draggable
     >
-      <div 
-        className={`photoInput__box ${showImage 
-          ? "disabled" 
-          : ""}`}
-        draggable
-      >
+      <div className={`photoInput__box ${showImage ? "disabled" : ""}`} draggable>
 
         {shootPhoto.photoPreview && shootPhoto.photoPreview.startsWith("blob:") 
         

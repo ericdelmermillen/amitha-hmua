@@ -74,29 +74,29 @@ const SideNav = () => {
               />
             </li>
 
-            {navPages.map((page) => page.href.startsWith("/") 
+            {navPages.map(({ href, modifierClass, pageName }) => href.startsWith("/") 
             
               ? (
                 <li 
-                  key={page.href} 
-                  className={`sideNav__link sideNav__link"${page.modifierClass}`}
-                  onClick={pathname !== page.href
+                  key={href} 
+                  className={`sideNav__link sideNav__link"${modifierClass}`}
+                  onClick={pathname !== href
                     ? handleSideNavLinkClick
                     : handleIsOnSamePage
                   }
                 >
-                  <ClientLink href={page.href}>
-                    {page.pageName}
+                  <ClientLink href={href}>
+                    {pageName}
                   </ClientLink>
                 </li>
                 ) 
               : (
                   <li 
-                    className={`sideNav__link sideNav__link${page.modifierClass}`}
-                    key={page.href}
+                    className={`sideNav__link sideNav__link${modifierClass}`}
+                    key={href}
                   >
-                    <a href={page.href} target="_blank" rel="noopener noreferrer">
-                      {page.pageName}
+                    <a href={href} target="_blank" rel="noopener noreferrer">
+                      {pageName}
                     </a>
                   </li>
                 )
@@ -117,6 +117,7 @@ const SideNav = () => {
         </div>
       </div>
     </div>
-  )};
+  );
+};
 
 export default SideNav;
