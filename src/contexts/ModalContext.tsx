@@ -4,7 +4,6 @@ import { useState, useRef, createContext } from "react";
 import { useAppContext } from "@/hooks/hooks";
 import { ContextProviderProps, ModalContextValue, ModalData } from "@/typing/interfaces";
 
-
 const ModalContext = createContext<ModalContextValue | undefined>(undefined);
 
 const ModalContextProvider = ({ children }: ContextProviderProps) => {

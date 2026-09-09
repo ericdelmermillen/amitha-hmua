@@ -4,12 +4,11 @@ import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { EntryNameType } from "@/typing/types";
 import { 
+  ChooserItem,
   // ChooserEntry, 
   ShootEntity, 
 } from "@/typing/interfaces";
 
-
-// *** define choosers and map through choosers for each of models, photographers and tags to return appropriate CustomSelects for each
 
 import { 
   getAllModels,
@@ -32,78 +31,80 @@ import {
 
 // import { toast } from "react-toastify";
 import { useAppContext } from "@/hooks/hooks";
-// import AddIcon from "@/assets/icons/AddIcon";
+import AddIcon from "@/assets/icons/AddIcon";
 import CustomSelect from "@/components/CustomSelect/CustomSelect";
-// import ShootDatePicker from "../ShootDatePicker/ShootDatePicker";
+import ShootDatePicker from "../ShootDatePicker/ShootDatePicker";
 import { toast } from "react-toastify";
+import { normalizeCasing } from "@/utils/utils";
 import "./AddEditShootForm.scss"
+import MinusIcon from "@/assets/icons/MinusIcon";
 
 const AddEditShootForm = () => {
   const params = useParams();
-  // const isEditMode = Boolean(params?.id);
-  // const shootID = params?.id as string | undefined;
+  const isEditMode = Boolean(params?.id);
+  const shootID = params?.id as string | undefined;
 
   const { 
     tags,
+    tagChoosers,
+    setTagChoosers,
     shouldRefreshModels, 
     setShouldRefreshModels,
     shouldRefreshPhotographers, 
     setShouldRefreshPhotographers
    } = useAppContext()
 
-  // const [ shootDate, setShootDate ] = useState<Date | null>(new Date());
-  // const [ rawDate, setRawDate ] = useState<Date | null>(null);
+  const [ shootDate, setShootDate ] = useState<Date | null>(new Date());
+  const [ rawDate, setRawDate ] = useState<Date | null>(null);
 
-  const [ modelChoosers, setModelChoosers ] = useState([{ chooserNo: 1, id: null, name: null}]);
+
+  // number to grab the chooser on updating value in select
+  // id to access the model/tag/photographer via actions to update or delete
+  const [ modelChoosers, setModelChoosers ] = useState<ChooserItem[]>([{ number: 1, id: null, name: null}]);
   const [ models, setModels ] = useState<ShootEntity[]>([]);
 
-  const [ photographerChoosers, setphotographerChoosers ] = useState([{ chooserNo: 1, id: null, name: null}]);
+  const [ photographerChoosers, setPhotographerChoosers ] = useState<ChooserItem[]>([{ number: 1, id: null, name: null}]);
   const [ photographers, setPhotographers ] = useState<ShootEntity[]>([]);
 
 
-  const handleAddCustomSelect = (selectedEntry: EntryNameType) => {
-    const selectedEntryType = selectedEntry === "photographer_name"
-      ? "photographer"
-      : selectedEntry === "model_name"
-      ? "model"
-      : "tag";
+  const handleAddCustomSelect = (entryType: EntryNameType, choosers: ChooserItem[]) => {
+    const hasNullChooser = choosers.some(chooser => chooser.id === null);
 
-      
+    if (hasNullChooser) {
+      return toast.error(`Select a ${normalizeCasing(entryType ?? "")} before adding another one`)
+    }
 
-    // const hasNullPhotographerChooser = photographerChooserIDs.some(chooser => chooser.photographerID === null);
+    const maxChooserNo = Math.max(...choosers.map(chooser => chooser.number));    
 
-    // const hasNullModelChooser = modelChooserIDs.some(chooser => chooser.modelID === null);
-
-    // const hasNullTagChooser = tagChooserIDs.some(chooser => chooser.tagID === null);
-      
-    // if(selectedEntryType === "photographer" && !hasNullPhotographerChooser) {
-
-    //   const maxChooserNo = Math.max(...photographerChooserIDs.map(chooser => chooser.chooserNo));
-
-    //   const newChooser = { chooserNo: maxChooserNo + 1, photographerID: null, photographerName: null};
-
-    //   return setPhotographerChooserIDs(prevChooserIDs => [...prevChooserIDs, newChooser]);
-      
-    // } else if(selectedEntryType === "model" && !hasNullModelChooser) {
-
-    //   const maxChooserNo = Math.max(...modelChooserIDs.map(chooser => chooser.chooserNo));
-
-    //   const newChooser = { chooserNo: maxChooserNo + 1, modelID: null, modelName: null};
-
-    //   return setModelChooserIDs(prevChooserIDs => [...prevChooserIDs, newChooser]);
-
-    // } else if(selectedEntryType === "tag" && !hasNullTagChooser) {
-
-    //   const maxChooserNo = Math.max(...tagChooserIDs.map(chooser => chooser.chooserNo));
-
-    //   const newChooser = { chooserNo: maxChooserNo + 1, tagID: null, tagName: null};
-
-    //   return setTagChooserIDs(prevChooserIDs => [...prevChooserIDs, newChooser]);
-    // };
-
-    // return toast.error(`Please select a ${selectedEntryType} before adding a new one`);
+    if (entryType === "tag") {
+      const newChooser = { number: maxChooserNo + 1, id: null, name: null }
+      setTagChoosers(prev => [...prev, newChooser]);
+    }
   };
 
+  const handleRemoveSelect = (chooserType: EntryNameType, number: number) => {
+    const resetChooser = [{ number: 1, id: null, name: null }];
+
+    if (chooserType === "tag") {
+      setTagChoosers((prev) => 
+      prev.filter((chooser) => chooser.number !== number).length > 0
+        ? prev.filter((chooser) => chooser.number !== number)
+        : resetChooser
+      );
+    } else if (chooserType === "model") {
+      setModelChoosers((prev) => 
+      prev.filter((chooser) => chooser.number !== number).length > 0
+        ? prev.filter((chooser) => chooser.number !== number)
+        : resetChooser
+      );
+    } else if (chooserType === "photographer") {
+      setPhotographerChoosers((prev) => 
+      prev.filter((chooser) => chooser.number !== number).length > 0
+        ? prev.filter((chooser) => chooser.number !== number)
+        : resetChooser
+      );
+    }
+  };
   // useEffect to fetch models
   useEffect(() => {
     const handleGetAllModels = async () => {
@@ -157,36 +158,13 @@ const AddEditShootForm = () => {
   return (
     <form className="addEditShootForm">
 
-      <CustomSelect 
-        // selectOptions={selectOptions}
-        selectOptions={tags}
-        entityType={"tag"}
-      />
-      
-      <CustomSelect 
-        // selectOptions={selectOptions}
-        selectOptions={models}
-        entityType={"model"}
-      />
-      
-      <CustomSelect 
-        // selectOptions={selectOptions}
-        selectOptions={photographers}
-        entityType={"photographer"}
-      />
-
-      {/* <CustomSelect 
-        // selectOptions={selectOptions}
-        selectOptions={models}
-      /> */}
-
-      {/* <h1 className="addEditShootForm__heading">
+      <h1 className="addEditShootForm__heading">
         {isEditMode ? `Edit Shoot ${shootID}` : "Add New Shoot"}
-      </h1> */}
+      </h1>
 
       <div className="addEditShootForm__date-container">
 
-        {/* {isEditMode
+        {isEditMode
 
           ? <label className="addEditShootForm__label addEditShootForm__label--datePicker">
               Edit Shoot Date
@@ -194,25 +172,25 @@ const AddEditShootForm = () => {
           : <label className="addEditShootForm__label addEditShootForm__label--datePicker">
               Enter Shoot Date
             </label>
-        } */}
+        }
 
-        {/* <div className="addEditShootForm__icon-container">
+        <div className="addEditShootForm__icon-container">
           <ShootDatePicker
             shootDate={shootDate}
             setShootDate={setShootDate}
             className={"addEditShootForm__calendarIcon"}
             rawDate={rawDate}
           />
-        </div> */}
+        </div>
       </div>
 
-      <div className="addEditShootForm__tagChoosers">
-        {/* <h3 className='addEditShootForm__label'>
+      <div className="addEditShootForm__choosers addEditShootForm__choosers--tags">
+        <h3 className='addEditShootForm__label'>
           Choose At Least One Tag
         </h3>
         <h4 
           className="addEditShootForm__textButton"
-          onClick={() => handleAddCustomSelect("tag_name")}
+          onClick={() => handleAddCustomSelect("tag", tagChoosers)}
         >
           Add Tag 
           <span className='addEditShootForm__textButton-icon'>
@@ -221,12 +199,34 @@ const AddEditShootForm = () => {
               strokeClassName={"addEditShootForm__add-stroke"}
             />
           </span>
-        </h4> */}
+        </h4>
 
+      {tagChoosers.map(({ number, name }) => 
+        
+        <div key={number} className="addEditShootForm__selector addEditShootForm__selector--tags" >
+          <CustomSelect 
+            entityType={"tag"}
+            selectOptions={tags}
+            selectValue={name}
+            chooserNumber={number}
+            selectChoosers={tagChoosers}
+            setSelectChoosers={setTagChoosers}
+          />
 
+          <span 
+            className={`addEditShootForm__selector-removeIcon ${tagChoosers.length > 1 ? "show" : ""}`}
+            onClick={tagChoosers.length > 1
+              ? () => handleRemoveSelect("tag", number)
+              : undefined
+            }
+          >
+            <MinusIcon className={"addEditShootForm__minus-icon"} />
+          </span>  
+        </div>
+      
+      )}
 
       </div>
-        
     </form>
   );
 };

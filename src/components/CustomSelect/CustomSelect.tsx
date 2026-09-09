@@ -11,11 +11,9 @@ import "./CustomSelect.scss";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
-const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
+const CustomSelect = ({ selectOptions, entityType, selectValue, chooserNumber, selectChoosers, setSelectChoosers }: CustomSelectProps) => {
   const {
-    setSelectedTag,
-    selectValue, 
-    setSelectValue,
+    // 
     setAppIsLoading,
     setShowTouchOffDiv,
     appIsLoading
@@ -44,14 +42,21 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
   };
 
   const handleUpdateSelectValue = (option: ShootEntity) => {
-    console.log("first")
-    setSelectValue(option.name);
+    setSelectChoosers((prevChoosers) => {
+      return prevChoosers.map((chooser) => {
+        if (chooser.number === chooserNumber) {
+          return {
+            ...chooser,
+            id: option.id,
+            name: option.name,
+          };
+        }
+        return chooser;
+      });
+    });
     setShowSelectOptions(false);
     setShowTouchOffDiv(false);
 
-    if (entityType === "tag") {
-      setSelectedTag(option);
-    }
   };
 
   const handleTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
@@ -136,7 +141,7 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
                 ? "show" 
                 : "hide"}`}
             >
-              {selectValue && selectValue}
+              {selectValue && normalizeCasing(selectValue ?? "")}
             </span>
             <div 
               className="customSelect__down"
@@ -148,34 +153,43 @@ const CustomSelect = ({ selectOptions, entityType }: CustomSelectProps) => {
             </div>
           </div>
 
-          {selectOptions.map(option => 
-            <div 
-              className="customSelect__option"
-              key={option.id} 
-              onClick={() => handleUpdateSelectValue(option)}
-            >
-              <button 
-                className="customSelect__inline-button customSelect__inline-button--delete"
-                onClick={(e) => handleDeleteEntry(e, option)}
+          {selectOptions.map((option) => {
+          
+            const isOptionSelected = selectChoosers?.some(
+              (chooser) => chooser.name?.toLowerCase() === option.name?.toLowerCase()
+            );
+
+            return (
+              <div 
+                className={`customSelect__option`}
+                key={option.id} 
+                onClick={isOptionSelected ? undefined : () => handleUpdateSelectValue(option)}
               >
-                <DeleteIcon 
-                  className={"customSelect__icon customSelect__icon--delete"}
-                  strokeClassName={"customSelect__icon-stroke"}
-                />
-              </button>
-              {`${option.name}`}
-              <button 
-                className="customSelect__inline-button customSelect__inline-button--edit"
-                onClick={(e) => handleEditEntry(e, option)}
-              >
-                <EditIcon 
-                  className={"customSelect__icon customSelect__icon--edit"}
-                  strokeClassName={"customSelect__icon-stroke"}
-                />
-              </button>
-            </div>
-          )}
-                      
+                <button 
+                  className="customSelect__inline-button customSelect__inline-button--delete"
+                  onClick={(e) => handleDeleteEntry(e, option)}
+                >
+                  <DeleteIcon 
+                    className={"customSelect__icon customSelect__icon--delete"}
+                    strokeClassName={"customSelect__icon-stroke"}
+                  />
+                </button>
+                <span className={`customSelect__option-value ${isOptionSelected ? "disabled" : ""}`}>
+                  {normalizeCasing(option.name ?? "")}
+                </span>
+                <button 
+                  className="customSelect__inline-button customSelect__inline-button--edit"
+                  onClick={(e) => handleEditEntry(e, option)}
+                >
+                  <EditIcon 
+                    className={"customSelect__icon customSelect__icon--edit"}
+                    strokeClassName={"customSelect__icon-stroke"}
+                  />
+                </button>
+              </div>
+            );
+          })}     
+
           <div 
             className="customSelect__option customSelect__option--add"
             onClick={(e) => handleAddNewOption(e)}

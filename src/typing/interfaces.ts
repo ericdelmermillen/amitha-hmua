@@ -8,7 +8,7 @@ import {
   type SVGProps,
   DragEvent
 } from "react";
-import { ChooserType, ColorMode, EntryNameType } from "./types";
+import { ColorMode } from "./types";
 import { RowDataPacket } from "mysql2";
 
 export interface ContextProviderProps {
@@ -27,13 +27,15 @@ export interface AppContextValue {
   setShowTouchOffDiv: Dispatch<SetStateAction<boolean>>;
   scrollYPos: number;
   setScrollYPos: Dispatch<SetStateAction<number>>;
-  selectValue: string | null;
-  setSelectValue: Dispatch<SetStateAction<string | null>>;
+  navSelectValue: string | null;
+  setNavSelectValue: Dispatch<SetStateAction<string | null>>;
   selectedTag: ShootEntity | null;
   setSelectedTag: Dispatch<SetStateAction<ShootEntity | null>>;
   showNavSelectOptions: boolean;
   setShowNavSelectOptions: Dispatch<SetStateAction<boolean>>;
   tags: ShootEntity[];
+  tagChoosers: ChooserItem[];
+  setTagChoosers: Dispatch<SetStateAction<ChooserItem[]>>;
   setTags: Dispatch<SetStateAction<ShootEntity[]>>;
   shouldRefreshTags: boolean;
   setShouldRefreshTags: Dispatch<SetStateAction<boolean>>;
@@ -306,6 +308,12 @@ interface ChooserEntry {
   [key: string]: unknown;
 }
 
+interface ChooserItem {
+  number: number;
+  id: number | null;
+  name: string | null;
+}
+
 interface SelectOption {
   id: number;
   name: string;
@@ -324,6 +332,10 @@ interface SelectOption {
 interface CustomSelectProps {
   selectOptions: ShootEntity[];
   entityType: "tag" | "model" | "photographer";
+  selectValue: string | null;
+  chooserNumber: number;
+  selectChoosers: ChooserItem[];
+  setSelectChoosers: Dispatch<SetStateAction<ChooserItem[]>>;
 }
 
 // type CustomSelectProps =
@@ -457,7 +469,6 @@ interface ShootEntity {
   name: string;
 }
 
-
 export {
   type BioResponse,
   type ClientButtonProps,
@@ -492,6 +503,7 @@ export {
   type DeleteTagResponse,
   type TagShoot,
   type ShootEntity,
+  type ChooserItem,
   type ModelRow,
   type GetAllModelsResponse,
   type AddModelResponse,

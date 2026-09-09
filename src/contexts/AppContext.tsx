@@ -8,7 +8,7 @@ import {
   createContext 
 } from "react";
 import { usePathname, useSearchParams,useRouter } from "next/navigation";
-import { AppContextValue, ContextProviderProps, ShootSummary } from "@/typing/interfaces";
+import { AppContextValue, ChooserItem, ContextProviderProps, ShootSummary } from "@/typing/interfaces";
 import { isModifiedClick, normalizeCasing, scrollToTop } from "@/utils/utils";
 import { ShootEntity } from "@/typing/interfaces";
 import { type TypeOptions, toast } from "react-toastify";
@@ -18,7 +18,6 @@ import { getAllTags } from "@/actions/tagActions";
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
 const NAV_CLICK_DELAY = Number(process.env.NEXT_PUBLIC_NAV_CLICK_DELAY);
-
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
@@ -34,13 +33,17 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const [ showTouchOffDiv, setShowTouchOffDiv ] = useState(false);
   
   const [ selectedTag, setSelectedTag ] = useState<ShootEntity | null>(null);
-  
-  const [ selectValue, setSelectValue ] = useState<string | null>(null);
+  const [ navSelectValue, setNavSelectValue ] = useState<string | null>(null);
   const [ showNavSelectOptions, setShowNavSelectOptions ] = useState(false);
   
   const [ isLoggedIn, setIsLoggedIn ] = useState(false);
-
+  
   const [ tags, setTags ] = useState<ShootEntity[]>([]);
+  const [ tagChoosers, setTagChoosers ] = useState<ChooserItem[]>([{ number: 1, id: null, name: null}]);
+  // const [ tagChoosers, setTagChoosers ] = useState<ChooserItem[]>([
+  //   { number: 1, id: null, name: "Beauty"},
+  //   { number: 2, id: null, name: "Bridal"},
+  // ]);
   
   const [ shoots, setShoots ] = useState<ShootSummary[]>([]);
   const [ shouldUpdateShoots, setShouldUpdateShoots ] = useState(false);
@@ -71,7 +74,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const handleNavigateToAddShoot = () => {
     setAppIsLoading(true);
     setSelectedTag(null);
-    setSelectValue(null);
+    setNavSelectValue(null);
     setShouldRefreshModels(true);
     setShouldRefreshPhotographers(true);
     router.push("/shoot/add");
@@ -79,7 +82,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
   const handleNavigateToEditShoot = (id: number | null) => {
     setSelectedTag(null);
-    setSelectValue(null);
+    setNavSelectValue(null);
     setShouldRefreshModels(true);
     setShouldRefreshPhotographers(true);
     router.push(`/shoot/edit/${id}`);
@@ -210,7 +213,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setShowSideNav(false);
     setShowTouchOffDiv(false);
     setSelectedTag(null);
-    setSelectValue(null);
+    setNavSelectValue(null);
     setShowNavSelectOptions(false);
     setShootOrderIsEditable(false);
     setShouldUpdateShoots(true);
@@ -232,7 +235,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
         if (response?.success && Array.isArray(response.tags)) {
           const updatedTags = response.tags.map((tag) => (
             { ...tag,
-              tagName: tag.name.toUpperCase()
+              name: tag.name
           }));
 
           setTags(updatedTags);
@@ -354,8 +357,8 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     handleIsOnCurrentPage,
     handleNavigateHome,
     handleIsOnSamePage,
-    selectValue, 
-    setSelectValue,
+    navSelectValue, 
+    setNavSelectValue,
     selectedTag, 
     setSelectedTag,
     handleTouchOffDiv,
@@ -364,6 +367,8 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     showNavSelectOptions, 
     setShowNavSelectOptions,
     tags, 
+    tagChoosers, 
+    setTagChoosers,
     setTags,
     handleLogoutUser,
     shootOrderIsEditable, 

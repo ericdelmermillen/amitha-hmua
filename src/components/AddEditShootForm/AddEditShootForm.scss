@@ -8,7 +8,6 @@
 		padding-block: 2rem;
 		padding-inline: 1rem;
 		width: 90%;
-		max-height: 20rem;
 
 		@media (min-width: vars.$tablet) {
 			margin-top: 4rem;
@@ -61,10 +60,13 @@
 		fill: var(--text-color);
 	}
 
-	&__tagChoosers {
+	&__choosers {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 		margin-inline: auto;
-		width: 100%;
 		max-width: 25rem;
+		width: 100%;
 	}
 
 	&__textButton {
@@ -89,5 +91,34 @@
 
 	&__add-stroke {
 		stroke: var(--button-link);
+	}
+
+	&__selector {
+		position: relative;
+	}
+
+	&__selector-removeIcon {
+		cursor: pointer;
+		height: 0;
+		opacity: 0;
+		position: absolute;
+		bottom: 0;
+		width: 0;
+
+		&.show {
+			align-items: center;
+			display: flex;
+			height: 3rem;
+			justify-content: center;
+			opacity: 1;
+			transition: opacity 0.25s ease;
+			width: 3rem;
+			z-index: 1;
+			border: 2px solid red;
+		}
+	}
+
+	&__minus-icon {
+		stroke: var(--text-color);
 	}
 }

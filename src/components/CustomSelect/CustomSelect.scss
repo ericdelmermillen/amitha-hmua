@@ -7,6 +7,8 @@
 		& {
 			border-radius: var(--border-radius);
 			display: flex;
+			// margin-inline: auto;
+			margin-top: 1rem;
 			justify-content: center;
 			margin-inline-end: 0;
 			max-width: 100%;
@@ -112,6 +114,12 @@
 		&--add {
 			color: var(--button-link);
 			text-decoration: underline;
+		}
+	}
+
+	&__option-value {
+		&.disabled {
+			opacity: 0.5;
 		}
 	}
 

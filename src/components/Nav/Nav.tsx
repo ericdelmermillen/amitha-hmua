@@ -20,7 +20,7 @@ const Nav = () => {
     handleIsOnCurrentPage,
     handleIsOnSamePage,
     setSelectedTag,
-    setSelectValue,
+    setNavSelectValue,
     setShowNavSelectOptions,
     setShowSideNav,
     tags
@@ -31,7 +31,7 @@ const Nav = () => {
 
   const handleIsOnHome = (e: MouseEvent<HTMLAnchorElement>) => {
     setSelectedTag(null);
-    setSelectValue(null);
+    setNavSelectValue(null);
     setShowNavSelectOptions(false);
     handleIsOnCurrentPage(e);
     setShowSideNav(false);

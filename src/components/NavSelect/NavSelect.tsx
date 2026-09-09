@@ -15,8 +15,8 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     setSelectedTag,
     handleNavigateHome,
     setShowSideNav,
-    selectValue, 
-    setSelectValue,
+    navSelectValue, 
+    setNavSelectValue,
     setAppIsLoading,
     setShowTouchOffDiv,
     showNavSelectOptions, 
@@ -57,7 +57,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
 
   const handleUpdateSelectValue = (option: ShootEntity) => {
     setAppIsLoading(true);
-    setSelectValue(option.name);
+    setNavSelectValue(option.name);
     setShowNavSelectOptions(false);
     setShowTouchOffDiv(false);    
     setSelectedTag(option);
@@ -76,15 +76,15 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     setShowNavSelectOptions(false);
 
     if (showNavSelectOptions) {
-      setSelectValue(null);
+      setNavSelectValue(null);
       setTimeout(() => {
         handleNavigateHome();
       }, MIN_LOADING_INTERVAL);
       return 
     } 
 
-    if (selectValue) {
-      const foundOption = selectOptions.find(({ name }) => name === selectValue);
+    if (navSelectValue) {
+      const foundOption = selectOptions.find(({ name }) => name === navSelectValue);
       setTimeout(() => {
         if (foundOption) {
           setSelectedTag(foundOption);
@@ -92,7 +92,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
         handleNavigateHome(foundOption);
       }, MIN_LOADING_INTERVAL);
     } 
-    else if (!selectValue) {
+    else if (!navSelectValue) {
       setTimeout(() => {
         handleNavigateHome();
       }, MIN_LOADING_INTERVAL);
@@ -102,9 +102,8 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
 // useEffect to keep select display value in sync with the active URL tag query param
   useEffect(() => {
     const locationTagName = searchParams.get("tag");
-    setSelectValue(locationTagName ? locationTagName.toUpperCase() : null);
-  }, [searchParams, setSelectValue]);
-    
+    setNavSelectValue(locationTagName ? locationTagName.toUpperCase() : null);
+  }, [searchParams, setNavSelectValue]);
 
   return (
     <div className={`navSelect ${showNavSelectOptions ? "tall" : "short"}`}>
@@ -120,9 +119,9 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
           >
             <span 
               className={`navSelect__default-option 
-              ${(!showNavSelectOptions && !selectValue) 
-                || (showNavSelectOptions && !selectValue) 
-                || (showNavSelectOptions && selectValue)
+              ${(!showNavSelectOptions && !navSelectValue) 
+                || (showNavSelectOptions && !navSelectValue) 
+                || (showNavSelectOptions && navSelectValue)
                 ? "show" 
                 : "hide"}`}
             >
@@ -131,11 +130,11 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
             <span 
               className={`navSelect__default-option 
               ${
-                (showNavSelectOptions && !selectValue) || (!showNavSelectOptions && selectValue) 
+                (showNavSelectOptions && !navSelectValue) || (!showNavSelectOptions && navSelectValue) 
                 ? "show" 
                 : "hide"}`}
             >
-              {selectValue ? `# ${selectValue}` : null}
+              {navSelectValue ? `# ${navSelectValue.toUpperCase()}` : null}
             </span>
             <div 
               className="navSelect__down"
@@ -154,7 +153,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
               key={option.id} 
               onClick={() => handleUpdateSelectValue(option)}
             >
-              {`# ${option.name}`}
+              {`# ${option.name?.toUpperCase()}`}
             </div>
           )}
         </div>
