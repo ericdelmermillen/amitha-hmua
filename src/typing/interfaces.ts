@@ -246,7 +246,7 @@ interface ShootDetailPhoto {
   photo_url: string;
 }
 
-interface ShootDetailResponse {
+interface ShootDetailData {
   shoot_id: number;
   shoot_date: string | null;
   photographer_ids: number[];
@@ -256,6 +256,12 @@ interface ShootDetailResponse {
   tag_ids: number[];
   tags: string[];
   photo_urls: ShootDetailPhoto[];
+}
+
+interface ShootDetailResponse {
+  success: boolean;
+  message: string;
+  data: ShootDetailData | null;
 }
 
 interface ShootDetailsPageProps {
@@ -452,13 +458,6 @@ interface ShootEntity {
   name: string;
 }
 
-interface ShootPhoto {
-  number: number;
-  photoPreview: string | null;
-  photoData: File | Blob | null;
-  displayOrder: number;
-}
-
 export {
   type BioResponse,
   type ClientButtonProps,
@@ -494,7 +493,6 @@ export {
   type DeleteTagResponse,
   type TagShoot,
   type ShootEntity,
-  type ShootPhoto,
   type ChooserItem,
   type ModelRow,
   type GetAllModelsResponse,

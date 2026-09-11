@@ -18,14 +18,20 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
   let data;
 
   try {
-    data = await getShootByID(shootIdNum);
+    const response = await getShootByID(shootIdNum);
+
+    if (!response.success) {
+      throw new Error(response.message || "Failed to load shoot details");
+    }
+    
+    data = response?.data;
 
   } catch (error) {
     console.error(`Error fetching shoot details for ID ${shootIdNum}:`, error);
     throw error;
   }
 
-  // refactor to use notFound() after implementing Text Themes
+  // refactor to use notFound() after implementing Next Themes
   if (!data) {
     redirect("/not-found");
   }
@@ -38,8 +44,11 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
     shoot_date: date
   } = data;
 
-  const formattedDate = date 
-    ? new Date(date).toLocaleString("en-US", { month: "short", year: "numeric" }) 
+  const formattedDate = date
+    ? new Date(`${date}T00:00:00`).toLocaleString("en-US", {
+        month: "short",
+        year: "numeric",
+      })
     : "";
 
   return (
@@ -117,19 +126,20 @@ const generateMetadata = async ( {params }: ShootDetailsPageProps): Promise<Meta
   }
 
   try {
-    const shoot = await getShootByID(shootIdNum);
+    const response = await getShootByID(shootIdNum);
+    const shootData = response.data;
 
-    if (!shoot) {
+    if (!response?.success || !shootData) {
       return {
         title: "Shoot Not Found | Amitha HMUA",
       };
     }
 
-    const modelNames = shoot.models.join(", ");
-    const photographerNames = shoot.photographers.join(", ");
-    const primaryImage = shoot.photo_urls[0]?.photo_url || "";
+    const modelNames = shootData?.models.join(", ");
+    const photographerNames = shootData?.photographers.join(", ");
+    const primaryImage = shootData?.photo_urls[0]?.photo_url || "";
 
-    const title = `Shoot #${shoot.shoot_id}${modelNames ? ` - ${modelNames}` : ""} | Amitha HMUA`;
+    const title = `Shoot #${shootData?.shoot_id}${modelNames ? ` - ${modelNames}` : ""} | Amitha HMUA`;
     const description = `Hair and Makeup by Amitha Millen-Suwanta.${photographerNames ? ` Photography by ${photographerNames}.` : ""}`;
 
     return {

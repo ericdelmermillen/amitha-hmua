@@ -1,20 +1,22 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { ChooserItem, ShootEntity, ShootPhoto } from "@/typing/interfaces";
+import { ChooserItem, InputPhoto, ShootEntity } from "@/typing/interfaces";
 import { EntryNameType } from "@/typing/types";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { useAppContext } from "@/hooks/hooks";
 import { getAllModels } from "@/actions/modelActions";
 import { getAllPhotographers } from "@/actions/photographerActions";
+import { getShootByID } from "@/actions/shootActions";
 import { normalizeCasing, syncChoosers } from "@/utils/utils";
 import { toast } from "react-toastify";
 import AddIcon from "@/assets/icons/AddIcon";
+import Compressor from "compressorjs";
 import CustomSelect from "@/components/CustomSelect/CustomSelect";
 import MinusIcon from "@/assets/icons/MinusIcon";
-import ShootDatePicker from "../ShootDatePicker/ShootDatePicker";
+import ShootDatePicker from "@/components/ShootDatePicker/ShootDatePicker";
+import PhotoInput from "@/components/PhotoInput/PhotoInput";
 import "./AddEditShootForm.scss"
-import PhotoInput from "../PhotoInput/PhotoInput";
 
 const numberOfPhotoUploads = 10;
 
@@ -36,23 +38,20 @@ const AddEditShootForm = () => {
   const [ shootDate, setShootDate ] = useState<Date | null>(new Date());
   const [ rawDate, setRawDate ] = useState<Date | null>(null);
 
-  // number to grab the chooser on updating value in select
-  // id to access the model/tag/photographer via actions to update or delete
   const [ models, setModels ] = useState<ShootEntity[]>([]);
   const [ modelChoosers, setModelChoosers ] = useState<ChooserItem[]>([{ number: 1, id: null, name: null}]);
 
   const [ photographers, setPhotographers ] = useState<ShootEntity[]>([]);
   const [ photographerChoosers, setPhotographerChoosers ] = useState<ChooserItem[]>([{ number: 1, id: null, name: null}]);
 
-
-  // const [ shootPhotos, setShootPhotos ] = useState<ShootPhoto[]>(
-  //   Array.from({ length: numberOfPhotoUploads }, (_, idx) => ({
-  //     number: idx + 1,
-  //     photoPreview: null,
-  //     photoData: null,
-  //     displayOrder: idx + 1
-  //   }))
-  // );
+  const [ shootPhotos, setShootPhotos ] = useState<InputPhoto[]>(
+    Array.from({ length: numberOfPhotoUploads }, (_, idx) => ({
+      photoNo: idx + 1,
+      photoPreview: null,
+      photoData: null,
+      displayOrder: idx + 1
+    }))
+  );
   
   const handleAddCustomSelect = (entryType: EntryNameType, choosers: ChooserItem[]) => {
     const hasNullChooser = choosers.some(chooser => chooser.id === null);
@@ -98,6 +97,54 @@ const AddEditShootForm = () => {
       );
     }
   };
+
+    const handleImageChange = async (
+      e: ChangeEvent<HTMLInputElement>,
+      inputNo: number
+    ) => {
+      const file = e.target.files?.[0];
+  
+      if (!file) {
+        return;
+      }
+  
+      try {
+        const compressedImage = await new Promise<File>((resolve, reject) => {
+          new Compressor(file, {
+            quality: 0.8,
+            maxWidth: 1200,
+            maxHeight: 900,
+  
+            success(result) {
+              resolve(result as File);
+            },
+  
+            error(error) {
+              reject(error);
+            }
+          });
+        });
+  
+        const compressedImageUrl = URL.createObjectURL(compressedImage);
+  
+        setShootPhotos(prev =>
+          prev.map(photo =>
+            photo.photoNo === inputNo
+              ? {
+                  ...photo,
+                  photoPreview: compressedImageUrl,
+                  photoData: compressedImage
+                }
+              : photo
+          )
+        );
+      } catch (error) {
+        console.error("Image compression failed:", error);
+        toast.error("Unable to process image");
+      } finally {
+        e.target.value = "";
+      }
+    };
 
   // useEffect to fetch models
   useEffect(() => {
@@ -149,6 +196,91 @@ const AddEditShootForm = () => {
       handleGetAllPhotographers();
     }
   }, [shouldRefreshPhotographers]);
+
+    // useEffect to fetch shoot data and populate form in edit mode
+  useEffect(() => {
+    if (!isEditMode || !shootID) {
+      return;
+    }
+
+    const fetchShoot = async () => {
+      try {
+        const parsedShootID = parseInt(shootID, 10);
+
+        if (isNaN(parsedShootID)) {
+          throw new Error("Invalid shoot ID");
+        }
+
+        const response = await getShootByID(parsedShootID);
+
+        if (!response?.success || !response.data) {
+          throw new Error(response?.message ?? "Failed to load shoot");
+        }
+
+        const data = response.data;
+
+        if (data.shoot_date) {
+          // probably broken. Fix after getting shoot publishing working
+          const [year, month, day] = data.shoot_date.split("-").map(Number);
+          // Note: month index is 0-based (month - 1)
+          const parsedDate = new Date(year, month - 1, day);
+          
+          setShootDate(parsedDate);
+          setRawDate(parsedDate);
+        }
+
+        if (data.tag_ids?.length > 0) {
+          setTagChoosers(
+            data.tag_ids.map((id, idx) => ({
+              number: idx + 1,
+              id,
+              name: data.tags[idx] ?? null,
+            }))
+          );
+        }
+
+        if (data.model_ids?.length > 0) {
+          setModelChoosers(
+            data.model_ids.map((id, idx) => ({
+              number: idx + 1,
+              id,
+              name: data.models[idx] ?? null,
+            }))
+          );
+        }
+
+        if (data.photographer_ids?.length > 0) {
+          setPhotographerChoosers(
+            data.photographer_ids.map((id, idx) => ({
+              number: idx + 1,
+              id,
+              name: data.photographers[idx] ?? null,
+            }))
+          );
+        }
+
+        setShootPhotos(
+          Array.from({ length: numberOfPhotoUploads }, (_, idx) => {
+            const existingPhoto = data.photo_urls?.find(
+              (p) => p.display_order === idx + 1
+            ) ?? data.photo_urls?.[idx];
+
+            return {
+              photoNo: idx + 1,
+              photoPreview: existingPhoto?.photo_url ?? null,
+              photoData: null,
+              displayOrder: idx + 1,
+            };
+          })
+        );
+      } catch (error: any) {
+        console.error("Error loading shoot:", error);
+        toast.error(error?.message || "Failed to load shoot details");
+      }
+    };
+
+    fetchShoot();
+  }, [isEditMode, shootID]);
 
 
   return (
@@ -229,24 +361,17 @@ const AddEditShootForm = () => {
         
         <div className="addEditShootForm__photoInputs">
 
-          {/* {shootPhotos.map(shootPhoto =>
-          
-            <div 
-              className="addOrEditShoot__photoInput"
-              key={shootPhoto.number}
-            >                  
-              <PhotoInput 
-                key={shootPhoto.number}
-                shootPhoto={shootPhoto}
+          {shootPhotos.map(photo => 
+
+            <div key={photo.photoNo} className="addEditShootForm__photoInput">
+              <PhotoInput
+                shootPhoto={photo}
                 setShootPhotos={setShootPhotos}
-                // handleImageChange={handleImageChange}
-                // handleInputDragStart={handleInputDragStart}
-                // handleDropInputTarget={handleDropInputTarget}
+                handleImageChange={handleImageChange}
               />
             </div>
-
-          )} */}
-          
+            
+          )}
 
         </div>
         <p className="addEditShootForm__photos-explainer">

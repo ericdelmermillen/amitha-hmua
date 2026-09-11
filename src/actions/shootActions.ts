@@ -102,7 +102,88 @@ const getShootSummaries = async ({
   }
 };
 
-const getShootByID = async (id: number): Promise<ShootDetailResponse | null> => {
+// const getShootByID = async (id: number): Promise<ShootDetailResponse | null> => {
+//   try {
+//     const [shoots] = await pool.query<RowDataPacket[]>(
+//       "SELECT id AS shoot_id, shoot_date FROM shoots WHERE id = ? LIMIT 1",
+//       [id]
+//     );
+
+//     if (!shoots.length) {
+//       return null;
+//     }
+
+//     const shoot = shoots[0];
+
+//     const [
+//       [photographers],
+//       [models],
+//       [tags],
+//       [photos]
+//     ] = await Promise.all([
+//       pool.query<RowDataPacket[]>(
+//         `SELECT p.id, p.name 
+//          FROM photographers p
+//          JOIN shoot_photographers sp ON p.id = sp.photographer_id
+//          WHERE sp.shoot_id = ?`,
+//         [id]
+//       ),
+//       pool.query<RowDataPacket[]>(
+//         `SELECT m.id, m.name 
+//          FROM models m
+//          JOIN shoot_models sm ON m.id = sm.model_id
+//          WHERE sm.shoot_id = ?`,
+//         [id]
+//       ),
+//       pool.query<RowDataPacket[]>(
+//         `SELECT t.id, t.name 
+//          FROM tags t
+//          JOIN shoot_tags st ON t.id = st.tag_id
+//          WHERE st.shoot_id = ?`,
+//         [id]
+//       ),
+//       pool.query<RowDataPacket[]>(
+//         `SELECT id, display_order, photo_url 
+//          FROM photos 
+//          WHERE shoot_id = ? 
+//          ORDER BY display_order ASC 
+//          LIMIT 10`,
+//         [id]
+//       ),
+//     ]);
+
+//     return {
+//       success: true,
+//       message: `Shoot ${id} retrieved successfully`,
+//       shoot_id: shoot.shoot_id,
+//       shoot_date: shoot.shoot_date
+//         ? new Date(shoot.shoot_date).toISOString().split("T")[0]
+//         : null,
+
+//       photographer_ids: photographers.map((p) => p.id),
+//       photographers: photographers.map((p) => p.name),
+
+//       model_ids: models.map((m) => m.id),
+//       models: models.map((m) => m.name),
+
+//       tag_ids: tags.map((t) => t.id),
+//       tags: tags.map((t) => t.name),
+
+//       photo_urls: photos.map((photo) => ({
+//         id: photo.id,
+//         display_order: photo.display_order,
+//         photo_url: photo.photo_url?.startsWith("http")
+//           ? photo.photo_url
+//           : `${BUCKET_PATH}${DIRNAME}/${photo.photo_url}`,
+//       })),
+//     };
+//   } catch (error) {
+//     console.error("getShootByID error:", error);
+//     throw new Error("Failed to fetch shoot details");
+//   }
+// };
+
+const getShootByID = async (id: number): Promise<ShootDetailResponse> => {
   try {
     const [shoots] = await pool.query<RowDataPacket[]>(
       "SELECT id AS shoot_id, shoot_date FROM shoots WHERE id = ? LIMIT 1",
@@ -110,7 +191,11 @@ const getShootByID = async (id: number): Promise<ShootDetailResponse | null> => 
     );
 
     if (!shoots.length) {
-      return null;
+      return {
+        success: false,
+        message: "Shoot not found",
+        data: null,
+      };
     }
 
     const shoot = shoots[0];
@@ -119,7 +204,7 @@ const getShootByID = async (id: number): Promise<ShootDetailResponse | null> => 
       [photographers],
       [models],
       [tags],
-      [photos]
+      [photos],
     ] = await Promise.all([
       pool.query<RowDataPacket[]>(
         `SELECT p.id, p.name 
@@ -153,33 +238,42 @@ const getShootByID = async (id: number): Promise<ShootDetailResponse | null> => 
     ]);
 
     return {
-      shoot_id: shoot.shoot_id,
-      shoot_date: shoot.shoot_date
-        ? new Date(shoot.shoot_date).toISOString().split("T")[0]
-        : null,
+      success: true,
+      message: "Shoot details retrieved successfully",
+      data: {
+        shoot_id: shoot.shoot_id,
+        shoot_date: shoot.shoot_date
+          ? new Date(shoot.shoot_date).toISOString().split("T")[0]
+          : null,
 
-      photographer_ids: photographers.map((p) => p.id),
-      photographers: photographers.map((p) => p.name),
+        photographer_ids: photographers.map((p) => p.id),
+        photographers: photographers.map((p) => p.name),
 
-      model_ids: models.map((m) => m.id),
-      models: models.map((m) => m.name),
+        model_ids: models.map((m) => m.id),
+        models: models.map((m) => m.name),
 
-      tag_ids: tags.map((t) => t.id),
-      tags: tags.map((t) => t.name),
+        tag_ids: tags.map((t) => t.id),
+        tags: tags.map((t) => t.name),
 
-      photo_urls: photos.map((photo) => ({
-        id: photo.id,
-        display_order: photo.display_order,
-        photo_url: photo.photo_url?.startsWith("http")
-          ? photo.photo_url
-          : `${BUCKET_PATH}${DIRNAME}/${photo.photo_url}`,
-      })),
+        photo_urls: photos.map((photo) => ({
+          id: photo.id,
+          display_order: photo.display_order,
+          photo_url: photo.photo_url?.startsWith("http")
+            ? photo.photo_url
+            : `${BUCKET_PATH}${DIRNAME}/${photo.photo_url}`,
+        })),
+      },
     };
   } catch (error) {
     console.error("getShootByID error:", error);
-    throw new Error("Failed to fetch shoot details");
+    return {
+      success: false,
+      message: "Failed to retrieve shoot details. Please try again.",
+      data: null,
+    };
   }
 };
+
 
 const addShoot = () => {
   console.log("Adding your shoot");
