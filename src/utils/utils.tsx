@@ -1,5 +1,6 @@
-import type { MouseEvent } from "react";
+import { ChooserItem, ShootEntity } from "@/typing/interfaces";
 import { ToastType } from "@/typing/types";
+import type { MouseEvent } from "react";
 import { toast } from "react-toastify";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
@@ -51,7 +52,6 @@ const isValidPassword = (password: string) => {
   return password.trim().length >= 8;
 };
 
-
 const isValidSubject = (subject: string) => {
   return subject.trim().length >= 10;
 };
@@ -85,10 +85,27 @@ const normalizeCasing = (string: string | undefined): string => {
     : ""
 };
 
-
 const checkIfIsFirefox = () => {
   return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 };
+
+const syncChoosers = (prevChoosers: ChooserItem[], freshEntities: ShootEntity[]): ChooserItem[] => {
+  const updated = prevChoosers.reduce<ChooserItem[]>((acc, chooser) => {
+    if (chooser.id === null) {
+      acc.push(chooser);
+      return acc;
+    }
+
+    const match = freshEntities.find((e) => e.id === chooser.id);
+    if (match) {
+      acc.push({ ...chooser, name: match.name });
+    }
+    return acc;
+  }, []);
+
+  return updated.length > 0 ? updated : [{ number: 1, id: null, name: null }];
+};
+
 
 export {
   scrollToTop,
@@ -104,5 +121,6 @@ export {
   staggerToastsByN,
   splitOnNewLine,
   normalizeCasing,
-  checkIfIsFirefox
+  checkIfIsFirefox,
+  syncChoosers
 };

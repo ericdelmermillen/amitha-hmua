@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname, useSearchParams,useRouter } from "next/navigation";
 import { 
   type MouseEvent, 
   useState,  
@@ -7,11 +8,10 @@ import {
   useEffect, 
   createContext 
 } from "react";
-import { usePathname, useSearchParams,useRouter } from "next/navigation";
-import { AppContextValue, ChooserItem, ContextProviderProps, ShootSummary } from "@/typing/interfaces";
-import { isModifiedClick, normalizeCasing, scrollToTop } from "@/utils/utils";
-import { ShootEntity } from "@/typing/interfaces";
 import { type TypeOptions, toast } from "react-toastify";
+import { AppContextValue, ChooserItem, ContextProviderProps, ShootSummary } from "@/typing/interfaces";
+import { isModifiedClick, normalizeCasing, scrollToTop, syncChoosers } from "@/utils/utils";
+import { ShootEntity } from "@/typing/interfaces";
 import { checkUserSession, logoutUser } from "@/actions/authActions";
 import { getAllTags } from "@/actions/tagActions";
 
@@ -40,10 +40,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   
   const [ tags, setTags ] = useState<ShootEntity[]>([]);
   const [ tagChoosers, setTagChoosers ] = useState<ChooserItem[]>([{ number: 1, id: null, name: null}]);
-  // const [ tagChoosers, setTagChoosers ] = useState<ChooserItem[]>([
-  //   { number: 1, id: null, name: "Beauty"},
-  //   { number: 2, id: null, name: "Bridal"},
-  // ]);
   
   const [ shoots, setShoots ] = useState<ShootSummary[]>([]);
   const [ shouldUpdateShoots, setShouldUpdateShoots ] = useState(false);
@@ -233,12 +229,8 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
         const response = await getAllTags();
 
         if (response?.success && Array.isArray(response.tags)) {
-          const updatedTags = response.tags.map((tag) => (
-            { ...tag,
-              name: tag.name
-          }));
-
-          setTags(updatedTags);
+          setTags(response.tags);
+          setTagChoosers((prev) => syncChoosers(prev, response.tags));
         } else {
           throw new Error(response?.message || "Failed to retrieve tags");
         }
@@ -261,7 +253,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
     if (authStatus === "false") {
       handleLogoutUser("Authentication failed. Logging you out...", "error");
-      // window.history.replaceState(null, "", pathname);
     }
   }, [searchParams, pathname]);
 

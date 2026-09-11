@@ -48,13 +48,13 @@
 
 		&--datePicker {
 			display: block;
-			margin-bottom: 0.5rem;
+			z-index: 10;
 		}
 	}
 
-	&__icon-container {
-		position: absolute;
-	}
+	// &__icon-container {
+	// 	// position: absolute;
+	// }
 
 	&__calendarIcon {
 		fill: var(--text-color);
@@ -67,6 +67,17 @@
 		margin-inline: auto;
 		max-width: 25rem;
 		width: 100%;
+
+		// &--tags {
+		// 	border: 2px solid red;
+		// }
+
+		// &--models {
+		// }
+
+		// &--photographers {
+		// 	border: 2px solid green;
+		// }
 	}
 
 	&__textButton {
@@ -114,11 +125,76 @@
 			transition: opacity 0.25s ease;
 			width: 3rem;
 			z-index: 1;
-			border: 2px solid red;
 		}
 	}
 
 	&__minus-icon {
 		stroke: var(--text-color);
+	}
+
+	&__photoUploads {
+		display: grid;
+		font-size: 1.5rem;
+		justify-content: center;
+		padding-block: 1rem;
+	}
+
+	&__photos-heading {
+		font-size: 1.5rem;
+		text-align: center;
+		width: 100%;
+
+		@media (min-width: vars.$tablet) {
+			font-size: 1.75rem;
+		}
+	}
+
+	&__photoInputs {
+		display: grid;
+		gap: 2rem;
+		grid-template-columns: repeat(auto-fit, 1fr);
+		justify-content: center;
+		padding-block: 1rem;
+		margin-block: 1rem;
+		width: 100%;
+		border: 2px dashed #333;
+
+		@media (min-width: 500px) {
+			gap: 3rem;
+			grid-template-columns: repeat(2, 1fr);
+			min-width: 20rem;
+		}
+
+		@media (min-width: vars.$tablet) {
+			margin-block: 2rem;
+			min-width: 30rem;
+			padding-inline: 25%;
+		}
+
+		@media (min-width: vars.$large-tablet) {
+			gap: 2rem;
+			grid-template-columns: repeat(5, 1fr);
+		}
+	}
+
+	&__photos-explainer {
+		font-size: 1.25rem;
+		text-align: center;
+		width: 100%;
+	}
+	&__modelsAndphotographers-container {
+		display: grid;
+		gap: 1rem;
+
+		@media (min-width: vars.$large-tablet) {
+			grid-template-columns: repeat(2, 1fr);
+			margin-inline: auto;
+			min-width: 100%;
+		}
+
+		@media (min-width: vars.$desktop) {
+			min-width: min(100%, 900px);
+			width: 200px !important;
+		}
 	}
 }

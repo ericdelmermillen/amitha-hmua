@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, createContext } from "react";
+import { useState, createContext } from "react";
 import { useAppContext } from "@/hooks/hooks";
 import { ContextProviderProps, ModalContextValue, ModalData } from "@/typing/interfaces";
 
@@ -50,15 +50,6 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
     setModalEntityName,
     modalEntityID, 
     setModalEntityID
-    // modalNameRef,
-    // modalEmailRef,
-    // modalPhoneRef,
-    // modalFormInitialCheckRef,
-    // handleSubmitModalForm,
-    // modalIsLoading, 
-    // setModalIsLoading,
-    // modalTextRef,
-    // isSubmittingRef
   };
 
   return (

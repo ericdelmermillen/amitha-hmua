@@ -1,14 +1,8 @@
+import { ShootDatePickerProps } from "@/typing/interfaces";
 import DatePicker from "react-datepicker";
 import CalendarIcon from "@/assets/icons/CalendarIcon";
 import "react-datepicker/dist/react-datepicker.css";
 import "./ShootDatePicker.scss";
-
-interface ShootDatePickerProps {
-  shootDate: Date | null;
-  setShootDate: (date: Date | null) => void;
-  className?: string;
-  rawDate?: Date | null;
-};
 
 const ShootDatePicker = ({ shootDate, setShootDate, className, rawDate }: ShootDatePickerProps) => {
   

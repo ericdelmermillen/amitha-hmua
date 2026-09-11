@@ -319,16 +319,13 @@ interface SelectOption {
   name: string;
 }
 
-// interface CustomSelectProps {
-//   chooserNo: number;
-//   chooserName?: string | null;
-//   chooserType: ChooserType;
-//   chooserIDs: ChooserEntry[];
-//   setChooserIDs: Dispatch<SetStateAction<ChooserEntry[]>>;
-//   selectOptions: SelectOption[];
-//   entryNameType: EntryNameType;
-// }
-
+interface ShootDatePickerProps {
+  id: string;
+  shootDate: Date | null;
+  setShootDate: (date: Date | null) => void;
+  className?: string;
+  rawDate?: Date | null;
+};
 interface CustomSelectProps {
   selectOptions: ShootEntity[];
   entityType: "tag" | "model" | "photographer";
@@ -337,20 +334,6 @@ interface CustomSelectProps {
   selectChoosers: ChooserItem[];
   setSelectChoosers: Dispatch<SetStateAction<ChooserItem[]>>;
 }
-
-// type CustomSelectProps =
-//   | {
-//       entityType: "tag";
-//       selectOptions: Tag[];
-//     }
-//   | {
-//       entityType: "model";
-//       selectOptions: Model[];
-//     }
-//   | {
-//       entityType: "photographer";
-//       selectOptions: Photographer[];
-//     };
 
 interface GetAllTagsResponse {
   success: boolean;
@@ -469,6 +452,13 @@ interface ShootEntity {
   name: string;
 }
 
+interface ShootPhoto {
+  number: number;
+  photoPreview: string | null;
+  photoData: File | Blob | null;
+  displayOrder: number;
+}
+
 export {
   type BioResponse,
   type ClientButtonProps,
@@ -493,6 +483,7 @@ export {
   type ActionResponse,
   type ChooserEntry, 
   type SelectOption, 
+  type ShootDatePickerProps, 
   type CustomSelectProps, 
   type AddTagResponse,
   type EditTagResponse,
@@ -503,6 +494,7 @@ export {
   type DeleteTagResponse,
   type TagShoot,
   type ShootEntity,
+  type ShootPhoto,
   type ChooserItem,
   type ModelRow,
   type GetAllModelsResponse,

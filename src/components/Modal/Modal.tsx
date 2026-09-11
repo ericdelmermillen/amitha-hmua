@@ -16,6 +16,7 @@ const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL
 const Modal = () => {
   const { 
     scrollYPos,
+    appIsLoading,
     setAppIsLoading,
     handleRefreshShoots,
     handleNavigateToEditShoot,
@@ -285,6 +286,7 @@ const Modal = () => {
             <button
               className="modal__button modal__button--edit"
               type="submit"
+              disabled={cancelling || appIsLoading}
             >
               {isEditBioMode
                 ? "Edit Bio"
