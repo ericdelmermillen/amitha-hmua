@@ -7,17 +7,11 @@ import { useAppContext } from "@/hooks/hooks";
 import { getShootSummaries } from "@/actions/shootActions";
 import { normalizeCasing } from "@/utils/utils";
 import { toast } from "react-toastify";
-import Link from "next/link";
+import ClientLink from "@/components/ClientLink/ClientLink";
 import Shoot from "@/components/Shoot/Shoot";
 import "./Shoots.scss";
 
-// const itemsPerPage = 1;
-// const itemsPerPage = 2;
-// const itemsPerPage = 4;
-// const itemsPerPage = 6;
-// const itemsPerPage = 10;
 const itemsPerPage = 12;
-// const itemsPerPage = 100;
 
 
 const Shoots = () => {
@@ -57,8 +51,6 @@ const Shoots = () => {
   
   const router = useRouter();
 
-  const [ currentShootId, setCurrentShootId ] = useState<number | null>(null);
-
   const [ activeDragShoot, setActiveDragShoot ] = useState<ShootSummary | null>(null);
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -69,10 +61,6 @@ const Shoots = () => {
     setActiveDragShoot(selectedShoot || null);
   };
   
-  const handleNewShootID = (shootId: number) => {
-    setCurrentShootId(shootId);
-  };
-
   const makeOrderEditable = () => {
     setShootOrderIsEditable(true);
     setActiveDragShoot(null);
@@ -291,7 +279,7 @@ const Shoots = () => {
       }
     } else if (selectedTag !== null && !isOnShootDetails) {
       // Navigating from /work?tag=... back to /work
-      setSelectedTag(null);
+      // setSelectedTag(null);
       handleRefreshShoots();
     }
   }, [tagParam, tags, selectedTag, isOnShootDetails, router]);
@@ -318,7 +306,14 @@ const Shoots = () => {
 
         {shoots.map(shoot => (
 
-          <Link key={shoot.shootID} href={`/shoot/${shoot.shootID}`}>
+          <ClientLink 
+            key={shoot.shootID} 
+            href={tagParam 
+              ? `/shoot/${shoot.shootID}?tag=${tagParam}` 
+              : `/shoot/${shoot.shootID}`
+            }
+          >
+            
             <Shoot
               shootID={shoot.shootID}
               displayOrder={shoot.displayOrder}
@@ -326,12 +321,11 @@ const Shoots = () => {
               models={shoot.models}
               photographers={shoot.photographers}
               isOnShootDetails={isOnShootDetails}
-              handleNewShootID={handleNewShootID}
               shootOrderIsEditable={shootOrderIsEditable}
               handleShootDragStart={handleShootDragStart}
               handleDropShootTarget={handleDropShootTarget}
             />
-          </Link>
+          </ClientLink>
 
         ))}
 

@@ -37,6 +37,7 @@ const PhotoInput = ({
   };
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    console.log("change")
     const file = e.target.files?.[0];
     if (file) {
       await handleImageChange(e, shootPhoto.photoNo);
@@ -50,8 +51,12 @@ const PhotoInput = ({
   const handleClearInput = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
 
-    setShootPhotos(prevShootPhotos => {
-      const updatedPhotos = prevShootPhotos.map(shootPhoto => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    setShootPhotos(prevPhotos => {
+      const updatedPhotos = prevPhotos.map(shootPhoto => {
         if (shootPhoto.photoNo === inputNo) {
           return {
             ...shootPhoto,
@@ -104,7 +109,9 @@ const PhotoInput = ({
         : undefined}
       draggable
     >
-      <div className={`photoInput__box ${showImage ? "disabled" : ""}`} draggable>
+      <div className={`photoInput__box ${showImage ? "disabled" : ""}`} 
+      // draggable
+      >
 
         {shootPhoto.photoPreview && shootPhoto.photoPreview.startsWith("blob:") 
         
@@ -137,6 +144,9 @@ const PhotoInput = ({
         <div
           className={`photoInput__clearButton ${showImage ? "show" : ""}`}
           onClick={handleClearInput}
+          // onMouseDown is attempt to prevent click hijacking
+          onMouseDown={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}
+          draggable={false}
         >
           <div className="photoInput__clear">
             <div className="photoInput__close-icon"></div>

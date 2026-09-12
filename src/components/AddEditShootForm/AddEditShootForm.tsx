@@ -3,12 +3,13 @@
 import { useParams } from "next/navigation";
 import { ChooserItem, InputPhoto, ShootEntity } from "@/typing/interfaces";
 import { EntryNameType } from "@/typing/types";
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent, SubmitEvent } from "react";
 import { useAppContext } from "@/hooks/hooks";
 import { getAllModels } from "@/actions/modelActions";
 import { getAllPhotographers } from "@/actions/photographerActions";
-import { getShootByID } from "@/actions/shootActions";
-import { normalizeCasing, syncChoosers } from "@/utils/utils";
+import { getShootByID, addShoot, editShootByID } from "@/actions/shootActions";
+import { getSignedURL } from "@/actions/s3Actions";
+import { normalizeCasing, staggerToastsByN, syncChoosers } from "@/utils/utils";
 import { toast } from "react-toastify";
 import AddIcon from "@/assets/icons/AddIcon";
 import Compressor from "compressorjs";
@@ -18,6 +19,7 @@ import ShootDatePicker from "@/components/ShootDatePicker/ShootDatePicker";
 import PhotoInput from "@/components/PhotoInput/PhotoInput";
 import "./AddEditShootForm.scss"
 
+const SHOOTS_DIRNAME = process.env.NEXT_PUBLIC_AWS_SHOOTS_DIRNAME || "shootimages";
 const numberOfPhotoUploads = 10;
 
 const AddEditShootForm = () => {
@@ -26,13 +28,15 @@ const AddEditShootForm = () => {
   const shootID = params?.id as string | undefined;
 
   const { 
+    setAppIsLoading,
     tags,
     tagChoosers,
     setTagChoosers,
     shouldRefreshModels, 
     setShouldRefreshModels,
     shouldRefreshPhotographers, 
-    setShouldRefreshPhotographers
+    setShouldRefreshPhotographers,
+    handleNavigateHome
    } = useAppContext();
 
   const [ shootDate, setShootDate ] = useState<Date | null>(new Date());
@@ -98,53 +102,191 @@ const AddEditShootForm = () => {
     }
   };
 
-    const handleImageChange = async (
-      e: ChangeEvent<HTMLInputElement>,
-      inputNo: number
-    ) => {
-      const file = e.target.files?.[0];
-  
-      if (!file) {
-        return;
-      }
-  
-      try {
-        const compressedImage = await new Promise<File>((resolve, reject) => {
-          new Compressor(file, {
-            quality: 0.8,
-            maxWidth: 1200,
-            maxHeight: 900,
-  
-            success(result) {
-              resolve(result as File);
-            },
-  
-            error(error) {
-              reject(error);
-            }
-          });
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>, inputNo: number) => {
+    const file = e.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      const compressedImage = await new Promise<File>((resolve, reject) => {
+        new Compressor(file, {
+          quality: 0.8,
+          maxWidth: 1200,
+          maxHeight: 900,
+
+          success(result) {
+            resolve(result as File);
+          },
+
+          error(error) {
+            reject(error);
+          }
         });
-  
-        const compressedImageUrl = URL.createObjectURL(compressedImage);
-  
-        setShootPhotos(prev =>
-          prev.map(photo =>
-            photo.photoNo === inputNo
-              ? {
-                  ...photo,
-                  photoPreview: compressedImageUrl,
-                  photoData: compressedImage
-                }
-              : photo
-          )
-        );
-      } catch (error) {
-        console.error("Image compression failed:", error);
-        toast.error("Unable to process image");
-      } finally {
-        e.target.value = "";
+      });
+
+      const compressedImageUrl = URL.createObjectURL(compressedImage);
+
+      setShootPhotos(prev =>
+        prev.map(photo =>
+          photo.photoNo === inputNo
+            ? {
+                ...photo,
+                photoPreview: compressedImageUrl,
+                photoData: compressedImage
+              }
+            : photo
+        )
+      );
+    } catch (error) {
+      console.error("Image compression failed:", error);
+      toast.error("Unable to process image");
+    } finally {
+      e.target.value = "";
+    }
+  };
+
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    let errors = 0;
+    
+    if (!shootDate) {
+      staggerToastsByN("Please select a shoot date", "error", errors);
+      errors++;
+    }
+
+    const selectedTagIDs = tagChoosers
+      .filter((chooser) => chooser.id !== null)
+      .map((chooser) => chooser.id as number);
+
+    if (selectedTagIDs.length === 0) {
+      staggerToastsByN("Select at least one tag", "error", errors);
+      errors++;
+    }
+
+    const selectedModelIDs = modelChoosers
+      .filter((chooser) => chooser.id !== null)
+      .map((chooser) => chooser.id as number);
+
+    if (selectedModelIDs.length === 0) {
+      staggerToastsByN("Select at least one model", "error", errors);
+      errors++;
+    }
+
+    const selectedPhotographerIDs = photographerChoosers
+      .filter((chooser) => chooser.id !== null)
+      .map((chooser) => chooser.id as number);
+
+    if (selectedPhotographerIDs.length === 0) {
+      staggerToastsByN("Select at least one photographer", "error", errors);
+      errors++;
+    }
+
+    const photos = shootPhotos.filter((photo) => photo.photoPreview !== null || photo.photoData !== null);
+
+    if (photos.length === 0) {
+      staggerToastsByN("Upload at least one photo", "error", errors);
+      errors++;
+    }
+    
+    if (errors > 0 || !shootDate) {
+      return;
+    }
+
+    try {
+      const photoUrls: string[] = [];
+
+      for (const photo of photos) {
+        if (photo.photoData) {
+          // Case 1: Newly uploaded file
+          const signedUrlRes = await getSignedURL(SHOOTS_DIRNAME);
+
+          if (!signedUrlRes?.success || !signedUrlRes?.url) {
+            throw new Error(signedUrlRes?.error || "Failed to generate upload URL");
+          }
+
+          const response = await fetch(signedUrlRes.url, {
+            method: "PUT",
+            headers: {
+              "Content-Type": photo.photoData.type || "image/jpeg",
+            },
+            body: photo.photoData,
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to upload photo #${photo.photoNo} to S3`);
+          }
+
+          const cleanUrl = signedUrlRes.url.split("?")[0];
+          const objectName = cleanUrl.split(`${SHOOTS_DIRNAME}/`)[1] || "";
+
+          if (!objectName) {
+            throw new Error("Unable to parse uploaded image key");
+          }
+
+          photoUrls.push(objectName);
+        } else if (photo.photoPreview) {
+          // Case 2: Retained existing photo
+          const cleanUrl = photo.photoPreview.split("?")[0];
+          let objectName = cleanUrl;
+
+          if (cleanUrl.includes(`${SHOOTS_DIRNAME}/`)) {
+            objectName = cleanUrl.split(`${SHOOTS_DIRNAME}/`)[1] || "";
+          }
+
+          if (!objectName) {
+            throw new Error("Unable to parse retained image filename");
+          }
+
+          photoUrls.push(objectName);
+        }
       }
-    };
+
+      const year = shootDate.getFullYear();
+      const month = String(shootDate.getMonth() + 1).padStart(2, "0");
+      const day = String(shootDate.getDate()).padStart(2, "0");
+      const formattedDate = `${year}-${month}-${day}`;
+
+      const payload = {
+        shoot_date: formattedDate,
+        tag_ids: selectedTagIDs,
+        photographer_ids: selectedPhotographerIDs,
+        model_ids: selectedModelIDs,
+        photo_urls: photoUrls,
+      };
+
+      let response;
+
+      if (isEditMode) {
+        const parsedShootID = parseInt(shootID as string, 10);
+
+        if (isNaN(parsedShootID)) {
+          throw new Error("Invalid shoot ID");
+        }
+
+        response = await editShootByID(parsedShootID, payload);
+      } else {
+        response = await addShoot(payload);
+      }
+
+      if (!response?.success) {
+        throw new Error(response?.message || `Failed to ${isEditMode ? "update" : "add"} shoot`);
+      }
+
+      toast.success(`Shoot ${isEditMode ? "updated" : "added"} successfully`);
+      handleNavigateHome();
+    } catch (error: any) {
+      console.error(`Shoot ${isEditMode ? "update" : "submit"} failed:`, error);
+      toast.error(error?.message || `Error ${isEditMode ? "updating" : "submitting"} shoot`);
+    }
+  };
+
+  const handleCancel = () => {
+    handleNavigateHome();
+    toast.info("Cancelling...");
+  };
 
   // useEffect to fetch models
   useEffect(() => {
@@ -170,7 +312,6 @@ const AddEditShootForm = () => {
       handleGetAllModels();
     }
   }, [shouldRefreshModels]);
-
 
   // useEffect to fetch photographers
   useEffect(() => {
@@ -204,6 +345,7 @@ const AddEditShootForm = () => {
     }
 
     const fetchShoot = async () => {
+      setAppIsLoading(true);
       try {
         const parsedShootID = parseInt(shootID, 10);
 
@@ -276,15 +418,19 @@ const AddEditShootForm = () => {
       } catch (error: any) {
         console.error("Error loading shoot:", error);
         toast.error(error?.message || "Failed to load shoot details");
+      } finally {
+        setAppIsLoading(false);
       }
     };
 
     fetchShoot();
   }, [isEditMode, shootID]);
 
-
   return (
-    <form className="addEditShootForm">
+    <form 
+      className="addEditShootForm"
+      onSubmit={handleSubmit}
+    >
       <h1 className="addEditShootForm__heading">
         {isEditMode ? `Edit Shoot ${shootID}` : "Add New Shoot"}
       </h1>
@@ -378,7 +524,6 @@ const AddEditShootForm = () => {
           *All shoots need at least one photo
         </p>
       </div>
-      
 
       <div className="addEditShootForm__modelsAndphotographers-container">
 
@@ -400,7 +545,6 @@ const AddEditShootForm = () => {
               />
             </span>
           </button>
-
 
           {modelChoosers.map(({ number, name }) => 
             
@@ -474,6 +618,25 @@ const AddEditShootForm = () => {
           )}
 
         </div>
+
+        
+      </div>
+
+      <div className="addEditShootForm__button-container">
+
+        <button
+          className="addEditShootForm__button addEditShootForm__button--submit" 
+          type="submit"
+        >
+          {isEditMode ? "Update" : "Submit"}      
+        </button>
+        <button
+          className="addEditShootForm__button addEditShootForm__button--cancel" 
+          onClick={handleCancel}
+          type="button"
+        >
+          Cancel
+        </button>
       </div>
 
     </form>

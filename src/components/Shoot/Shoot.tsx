@@ -18,7 +18,6 @@ const Shoot = ({
   models, 
   photographers, 
   isOnShootDetails,
-  handleNewShootID,
   shootOrderIsEditable, 
   handleShootDragStart,
   handleDropShootTarget
@@ -60,10 +59,6 @@ const Shoot = ({
       onDrop={shootOrderIsEditable && handleDropShootTarget && shootID !== undefined && displayOrder !== undefined
         ? (e) => handleDropShootTarget(shootID, displayOrder)
         : undefined}
-      onClick={handleNewShootID && shootID !== undefined
-        ? () => handleNewShootID(shootID)
-        : undefined
-      }
     >
       
       <div className="shoot__overlay"></div>

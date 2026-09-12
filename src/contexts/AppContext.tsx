@@ -68,11 +68,9 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   };
 
   const handleNavigateToAddShoot = () => {
-    setAppIsLoading(true);
-    setSelectedTag(null);
-    setNavSelectValue(null);
     setShouldRefreshModels(true);
     setShouldRefreshPhotographers(true);
+    handleClearAppState();
     router.push("/shoot/add");
   };
 
@@ -99,6 +97,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       router.push(`/work?tag=${normalizeCasing(tagObj.name)}`);
     };
     setShootOrderIsEditable(false);
+    handleClearAppState();
 
     // won't need this; will be set to false when page content loads
     setTimeout(() => {
@@ -209,6 +208,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setShowSideNav(false);
     setShowTouchOffDiv(false);
     setSelectedTag(null);
+    setTagChoosers([{ number: 1, id: null, name: null }]);
     setNavSelectValue(null);
     setShowNavSelectOptions(false);
     setShootOrderIsEditable(false);

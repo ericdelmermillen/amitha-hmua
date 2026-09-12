@@ -226,7 +226,6 @@ interface ShootProps {
   models?: string[];
   photographers?: string[];
   isOnShootDetails?: boolean;
-  handleNewShootID?: (shootId: number) => void;
   shootOrderIsEditable?: boolean;
   handleShootDragStart?: (e: DragEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>, shootID: number) => void;
   handleDropShootTarget?: (shootID: number, displayOrder: number) => void;
@@ -458,6 +457,15 @@ interface ShootEntity {
   name: string;
 }
 
+interface ShootData {
+  shoot_date: string;
+  tag_ids: number[];
+  photographer_ids: number[];
+  model_ids: number[];
+  photo_urls: string[];
+}
+
+
 export {
   type BioResponse,
   type ClientButtonProps,
@@ -506,4 +514,5 @@ export {
   type EditPhotographerResponse,
   type PhotographerShoot,
   type DeletePhotographerResponse,
+  type ShootData,
 }
