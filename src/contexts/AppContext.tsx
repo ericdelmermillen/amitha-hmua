@@ -60,7 +60,40 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     
   const getPrevScrollYPosValue = () => prevScrollYPosRef.current ?? 0;
 
+  const handleToggleSideNav = () => setShowSideNav(prev => !prev);
+
+
+  // ***
+
+  const handleNavLinkClick = () => handleClearAppState();
+
+  const handleSideNavLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (isModifiedClick(e)) {
+      return;
+    };
+    
+    handleClearAppState();
+
+    setTimeout(() => {
+     requestAnimationFrame(() => handleSetShowSideNavFalse());
+    }, MIN_LOADING_INTERVAL * 1.5);
+  };
+
+
+
+
+  const handleSetShowSideNavFalse = () => {
+    setShowSideNav((prev) => {
+      if (prev === false) {
+        return prev;
+      }
+      
+      return false;
+    });
+  };
+
   const handleRefreshShoots = () => {
+    // ***reset to empty attempted here
     setShoots([]);
     setFinalShootsPageLoaded(false);
     setCurrentShootsPage(1);
@@ -92,65 +125,19 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const handleNavigateHome = (tagObj?: ShootEntity) => {   
     if (!tagObj) {
       router.push("/work");
-      setSelectedTag(null);
     } else if (tagObj) {
       router.push(`/work?tag=${normalizeCasing(tagObj.name)}`);
     };
-    setShootOrderIsEditable(false);
-    handleClearAppState();
-
-    // won't need this; will be set to false when page content loads
-    setTimeout(() => {
-      setAppIsLoading(false);
-    }, MIN_LOADING_INTERVAL);
   };
   
-  const handleToggleSideNav = () => setShowSideNav(prev => !prev);
-
-  const handleSetShowSideNavFalse = () => {
-    setShowSideNav((prev) => {
-      if (prev === false) {
-        return prev;
-      }
-      
-      return false;
-    });
-  };
-  
-  const handleNavLinkClick = () => {
-    // setShowTouchOffDiv(false);
-    // setAppIsLoading(true);
-    // setSelectedTag(null);
-    // setSelectValue(null);
-    // setShowNavSelectOptions(false);
-    // setShowTouchOffDiv(false);
-    // setShowSideNav(false);
-    // setShouldUpdateShoots(true);
-    handleClearAppState();
-};
-
-  const handleSideNavLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (isModifiedClick(e)) {
-      return;
-    };
-    
-    handleClearAppState();
-
-    setTimeout(() => {
-     requestAnimationFrame(() => handleSetShowSideNavFalse());
-    }, MIN_LOADING_INTERVAL * 1.5);
-  };
-  
+  // do I need both handleIsOnCurrentPage and handleIsOnSamePage?
   const handleIsOnCurrentPage = (e: MouseEvent<HTMLAnchorElement>) => {
     if (isModifiedClick(e)) {
       return;
     };
-
-    setTimeout(() => {
-      scrollToTop();
-    }, MIN_LOADING_INTERVAL);
-
+    
     setAppIsLoading(true);
+    scrollToTop();
 
     setTimeout(() => {
       setAppIsLoading(false);
@@ -160,22 +147,15 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const handleIsOnSamePage = () => {
     setShowTouchOffDiv(false);
     setShowNavSelectOptions(false);
+    scrollToTop();
 
     setTimeout(() => {
       setShowSideNav(false);
       setAppIsLoading(false);
     }, NAV_CLICK_DELAY);
-
-    setTimeout(() => {
-      scrollToTop();
-    }, MIN_LOADING_INTERVAL);
   };
 
-
-  const handleLogoutUser = async (
-    messageOrEvent?: unknown,
-    messageType: TypeOptions = "success"
-  ) => {
+  const handleLogoutUser = async (messageOrEvent?: unknown, messageType: TypeOptions = "success") => {
     const finalMessage =
       typeof messageOrEvent === "string" && messageOrEvent.length > 0
         ? messageOrEvent
@@ -207,12 +187,13 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     
     setShowSideNav(false);
     setShowTouchOffDiv(false);
-    setSelectedTag(null);
     setTagChoosers([{ number: 1, id: null, name: null }]);
     setNavSelectValue(null);
     setShowNavSelectOptions(false);
     setShootOrderIsEditable(false);
+
     setShouldUpdateShoots(true);
+    
     setFinalShootsPageLoaded(false);
     setCurrentShootsPage(1);
 
@@ -230,7 +211,8 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
         if (response?.success && Array.isArray(response.tags)) {
           setTags(response.tags);
-          setTagChoosers((prev) => syncChoosers(prev, response.tags));
+          // not sure how this works: why prev and response.tags?
+          setTagChoosers(prev => syncChoosers(prev, response.tags));
         } else {
           throw new Error(response?.message || "Failed to retrieve tags");
         }
@@ -320,7 +302,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       try {
         const { isAuthenticated } = await checkUserSession();
         setIsLoggedIn(isAuthenticated);
-        console.log(`isAuthenticated: ${isAuthenticated}`)
       } catch (error) {
         console.error("Session check failed:", error);
         setIsLoggedIn(false);
@@ -330,7 +311,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     verifySession();
   }, []);
 
-  
+
   const contextValues = {
     appIsLoading, 
     setAppIsLoading,

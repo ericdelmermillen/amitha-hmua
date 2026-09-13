@@ -2,8 +2,8 @@
 
 import { useSearchParams } from "next/navigation";
 import { type MouseEvent, type TransitionEvent, useEffect } from "react";
-import { useAppContext } from "@/hooks/hooks";
 import { NavSelectProps, ShootEntity } from "@/typing/interfaces";
+import { useAppContext } from "@/hooks/hooks";
 import { scrollToTop } from "@/utils/utils";
 import DownIcon from "@/assets/icons/DownIcon";
 import "./NavSelect.scss";
@@ -42,8 +42,6 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
   const handleDownArrowClick = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
 
-    console.log("Down arrow click")
-
     setShowNavSelectOptions(prev => {
       const next = !prev
       
@@ -56,17 +54,23 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
   };
 
   const handleUpdateSelectValue = (option: ShootEntity) => {
+    const isSamePageClick = option.name.toLowerCase() === searchParams.get("tag")?.toLowerCase()
+
     setAppIsLoading(true);
     setNavSelectValue(option.name);
     setShowNavSelectOptions(false);
     setShowTouchOffDiv(false);    
-    setSelectedTag(option);
     handleNavigateHome(option);
     
     setTimeout(() => {
       requestAnimationFrame(() => {
         setShowSideNav(false);
         scrollToTop();
+        
+        if (isSamePageClick) {
+          setAppIsLoading(false);
+        }
+
       })
     }, MIN_LOADING_INTERVAL);
   };
@@ -85,6 +89,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
 
     if (navSelectValue) {
       const foundOption = selectOptions.find(({ name }) => name === navSelectValue);
+      
       setTimeout(() => {
         if (foundOption) {
           setSelectedTag(foundOption);

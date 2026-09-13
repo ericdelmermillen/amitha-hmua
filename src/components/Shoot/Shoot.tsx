@@ -23,19 +23,13 @@ const Shoot = ({
   handleDropShootTarget
 }: ShootProps) => {
 
-  const { 
-    isLoggedIn, 
-  } = useAppContext();
+  const { isLoggedIn } = useAppContext();
   
-  const {  
-    handleOpenModal
-  } = useModalContext();
+  const {  handleOpenModal } = useModalContext();
 
   const [ imageIsLoaded, setIsImagedLoaded ] = useState(false);
 
-  const handleUpdateImageIsLoaded = () => {
-    setIsImagedLoaded(true);
-  }
+  const handleUpdateImageIsLoaded = () => setIsImagedLoaded(true);
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -109,6 +103,7 @@ const Shoot = ({
               />
             ) 
         : null}
+        
       </div>
 
       <div className={`shoot__info ${!isOnShootDetails ? "show" : ""}`}>

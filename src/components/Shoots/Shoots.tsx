@@ -13,22 +13,14 @@ import "./Shoots.scss";
 
 const itemsPerPage = 12;
 
-
 const Shoots = () => {
   const { 
     isLoggedIn,
-    // setIsLoggedIn,
-    // scrollYPos, 
     tags,
     selectedTag, 
     setSelectedTag, 
-    // prevURL, 
-    // showDeleteOrEditModal,
-    // setShowDeleteOrEditModal,
-    // setShootDetails,
     shootOrderIsEditable, 
     setShootOrderIsEditable,
-    // appIsLoading,
     setAppIsLoading,
     shoots, 
     setShoots,
@@ -278,16 +270,16 @@ const Shoots = () => {
         router.push("/notfound");
       }
     } else if (selectedTag !== null && !isOnShootDetails) {
-      // Navigating from /work?tag=... back to /work
-      // setSelectedTag(null);
+      setSelectedTag(null);
+      // refreshes here
       handleRefreshShoots();
     }
   }, [tagParam, tags, selectedTag, isOnShootDetails, router]);
 
-  // useEffect to clear shoots state and trigger load when navigating or changing tags
+  // useEffect to clear shoots state on mounting /shoots
   useEffect(() => {
     handleRefreshShoots()
-  }, [pathname]);
+  }, []);
 
   
   return (
@@ -308,12 +300,8 @@ const Shoots = () => {
 
           <ClientLink 
             key={shoot.shootID} 
-            href={tagParam 
-              ? `/shoot/${shoot.shootID}?tag=${tagParam}` 
-              : `/shoot/${shoot.shootID}`
-            }
+            href={tagParam ? `/shoot/${shoot.shootID}?tag=${tagParam}` : `/shoot/${shoot.shootID}`}
           >
-            
             <Shoot
               shootID={shoot.shootID}
               displayOrder={shoot.displayOrder}

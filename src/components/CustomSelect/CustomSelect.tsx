@@ -9,8 +9,6 @@ import DownIcon from "@/assets/icons/DownIcon";
 import EditIcon from "@/assets/icons/EditIcon";
 import "./CustomSelect.scss";
 
-// const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
-
 const CustomSelect = ({ 
   selectOptions, 
   entityType, 
@@ -88,7 +86,6 @@ const CustomSelect = ({
 
     if (entityType === "model") {
       handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id})
-      console.log(selectChoosers)
     } else if (entityType === "photographer") {
       handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id})
     } else if (entityType === "tag") {

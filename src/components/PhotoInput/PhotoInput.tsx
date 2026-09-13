@@ -37,7 +37,6 @@ const PhotoInput = ({
   };
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    console.log("change")
     const file = e.target.files?.[0];
     if (file) {
       await handleImageChange(e, shootPhoto.photoNo);
