@@ -5,9 +5,9 @@ import { useState, useRef, useEffect, SyntheticEvent } from "react";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { deleteShootByID } from "@/actions/shootActions";
 import { addTag, editTagByID, deleteTagByID } from "@/actions/tagActions";
-import { normalizeCasing, scrollToTop } from "@/utils/utils";
-import { addPhotographer, editPhotographerByID, deletePhotographerByID } from "@/actions/photographerActions";
 import { addModel, editModelByID, deleteModelByID } from "@/actions/modelActions";
+import { addPhotographer, editPhotographerByID, deletePhotographerByID } from "@/actions/photographerActions";
+import { normalizeCasing, scrollToTop } from "@/utils/utils";
 import { toast } from "react-toastify";
 import "./Modal.scss";
 
@@ -85,14 +85,19 @@ const Modal = () => {
       console.error("Error executing handleDeleteShoot:", error);
     } finally {
       setAppIsLoading(false);
-      
-      setTimeout(() => {
-        handleModalClearing();
-        scrollToTop();
-      }, MIN_LOADING_INTERVAL);
-      return;
+      scrollToTop();
     }
   };
+
+  const transitionModalClose = (handleFinishIsLoading = false) => {
+    setShowModal(false);
+    setTimeout(() => {
+      handleModalClearing();
+      if (handleFinishIsLoading) {
+        setAppIsLoading(false)
+      }
+    }, MIN_LOADING_INTERVAL * 2);
+  }
 
   const handleSubmit = async (e?: SyntheticEvent<HTMLFormElement>) => {
     if (e) {
@@ -100,19 +105,18 @@ const Modal = () => {
     }
     
     if (isDeleteShootMode) {
-      return handleDeleteShoot();
+      return await handleDeleteShoot();
     }
     
     if (isEditBioMode) {
       setAppIsLoading(true);
       router.push("/bio/edit"); 
-      return handleModalClearing();
+      return transitionModalClose();
     }
 
     if (isEditShootMode) {
       setAppIsLoading(true);
       handleNavigateToEditShoot(modalEntityID);
-      return handleModalClearing();
     }
 
     if (modalAction !== "add" && (modalEntityID === null || typeof modalEntityID !== "number")) {
@@ -184,10 +188,7 @@ const Modal = () => {
       console.error(`Error processing ${modalAction} for ${modalEntityType}:`, error);
       toast.error(error?.message || "An unexpected error occurred");
     } finally {
-      setShowModal(false);
-      setTimeout(() => {
-        handleModalClearing(true);
-      }, MIN_LOADING_INTERVAL * 2);
+      transitionModalClose(true);
     }
   };
 
@@ -200,10 +201,7 @@ const Modal = () => {
 
   const handleCancel = () => {
     setCancelling(true);
-    setShowModal(false);
-    setTimeout(() => {
-      handleModalClearing(true);
-    }, MIN_LOADING_INTERVAL * 2);
+    transitionModalClose(true);
   };
 
     // useEffect to hide and clear modal on esc
@@ -292,7 +290,8 @@ const Modal = () => {
                 ? "Edit Bio"
                 : isEditShootMode
                 ? "Edit Shoot"
-                : `${normalizeCasing(modalAction ?? "")}`
+                // : `${normalizeCasing(modalAction ?? "")}`
+                : "Update"
               }
             </button>
             <button
