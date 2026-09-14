@@ -53,7 +53,6 @@ export interface AppContextValue {
   currentShootsPage: number;
   setCurrentShootsPage: Dispatch<SetStateAction<number>>;
   
-
   finalShootsPageLoaded: boolean;
   setFinalShootsPageLoaded: Dispatch<SetStateAction<boolean>>;
   

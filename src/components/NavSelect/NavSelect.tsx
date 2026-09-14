@@ -150,14 +150,17 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
           </div>
 
           {selectOptions.map(option => 
+
             <div 
+            key={option.id} 
               className="navSelect__option"
-              key={option.id} 
               onClick={() => handleUpdateSelectValue(option)}
             >
               {`# ${option.name?.toUpperCase()}`}
             </div>
+
           )}
+          
         </div>
       </div>
     </div>

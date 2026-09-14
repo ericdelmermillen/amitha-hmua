@@ -63,7 +63,6 @@ const Shoots = () => {
     setShootOrderIsEditable(false);
     setAppIsLoading(true);
 
-    // const tokenIsExpired = await checkTokenExpiration(setIsLoggedIn, navigate);
 
     // if (tokenIsExpired) {
     //   return;
@@ -281,31 +280,38 @@ const Shoots = () => {
         router.push("/notfound");
       }
     } else if (selectedTag !== null && !isOnShootDetails) {
-      // ***
       setShoots([])
       
       setSelectedTag(null);
-      // refreshes here
       handleRefreshShoots();
     }
   }, [tagParam, tags, selectedTag, isOnShootDetails, router]);
 
   // useEffect to clear shoots state on mounting /shoots
+  // useEffect(() => {
+  //   handleRefreshShoots()
+  // }, []);
+
+  // Clear shoots and selectedTag on unmount so leaving /work doesn't leave stale data in context
   useEffect(() => {
-    handleRefreshShoots()
+    handleRefreshShoots();
+
+    return () => {
+      setShoots([]);
+      setSelectedTag(null);
+    };
   }, []);
 
   
   return (
     <div className="shoots">
 
-      {isOnShootDetails 
-        ? (  
-            <h3 className="shoots__shootDetailsHeading">
-              Other {selectedTag ? normalizeCasing(selectedTag.name) : null} Shoots
-            </h3>
-          )
-        : null
+      {isOnShootDetails &&
+
+        <h3 className="shoots__shootDetailsHeading">
+          Other {selectedTag ? normalizeCasing(selectedTag.name) : null} Shoots
+        </h3>
+
       }
       
       <div className={`shoots__inner ${isOnShootDetails ? "onShootDetails" : ""}`}>

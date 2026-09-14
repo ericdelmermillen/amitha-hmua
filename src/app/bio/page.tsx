@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import Image from "next/image";
+import type { Metadata } from "next";
 import { BioResponse } from "@/typing/interfaces";
 import { getBio } from "@/actions/bioActions";
 import { toast } from "react-toastify";

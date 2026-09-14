@@ -17,6 +17,7 @@ const Nav = () => {
     scrollYPos, 
     getPrevScrollYPosValue,
     handleIsOnSamePage,
+    handleNavigateHome,
     setNavSelectValue,
     setShowNavSelectOptions,
     setShowSideNav,
@@ -44,7 +45,7 @@ const Nav = () => {
         <ClientLink 
           href="/work" 
           scroll={false}
-          onClick={isOnHome ? handleIsOnHome : undefined}
+          onClick={isOnHome ? handleIsOnHome : () => handleNavigateHome}
         >
           <div className="nav__logo">
             <Logo className={"nav__logo--icon"}/>
