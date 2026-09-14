@@ -53,20 +53,18 @@ export interface AppContextValue {
   currentShootsPage: number;
   setCurrentShootsPage: Dispatch<SetStateAction<number>>;
   
-  
+
   finalShootsPageLoaded: boolean;
   setFinalShootsPageLoaded: Dispatch<SetStateAction<boolean>>;
   
   // handler functions
   handleToggleSideNav: () => void;
   handleTouchOffDiv: () => void;
-  handleNavLinkClick: () => void;
-  handleIsOnSamePage: () => void;
+  handleIsOnSamePage: (e?: MouseEvent<HTMLElement>) => void;
   handleSideNavLinkClick: (e: MouseEvent<HTMLAnchorElement>) => void;
   handleLogoutUser: () => void;
   handleNavigateHome: (tagObj?: ShootEntity) => void;
   handleSetShowSideNavFalse: () => void;
-  handleIsOnCurrentPage: (e: MouseEvent<HTMLAnchorElement>) => void;
   shootOrderIsEditable: boolean;
   setShootOrderIsEditable: Dispatch<SetStateAction<boolean>>;
 

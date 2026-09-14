@@ -181,6 +181,10 @@ const Shoots = () => {
       return;
     }
 
+    if (!tagParam && selectedTag !== null && !isOnShootDetails) {
+      return;
+    }
+
     if (!finalShootsPageLoaded && shouldUpdateShoots) {
       const fetchShoots = async () => {
         isFetchingRef.current = true;
@@ -201,12 +205,19 @@ const Shoots = () => {
             filteredShoots = shootSummaries.filter((shoot) => shoot.shootID !== shootID);
           }
 
-          setShoots((prevShoots) => [
-            ...prevShoots,
-            ...filteredShoots.filter(
-              (shoot) => !prevShoots.some((prev) => prev.shootID === shoot.shootID)
-            ),
-          ]);
+          setShoots((prevShoots) => {
+            if (currentShootsPage === 1) {
+              return filteredShoots;
+            }
+
+            // Why are we filtering out the selectedShoot twice??
+            return [
+              ...prevShoots,
+              ...filteredShoots.filter(
+                (shoot) => !prevShoots.some((prev) => prev.shootID === shoot.shootID)
+              ),
+            ];
+          });
 
           if (isFinalPage || shootSummaries.length < itemsPerPage) {
             setFinalShootsPageLoaded(true);
@@ -270,6 +281,9 @@ const Shoots = () => {
         router.push("/notfound");
       }
     } else if (selectedTag !== null && !isOnShootDetails) {
+      // ***
+      setShoots([])
+      
       setSelectedTag(null);
       // refreshes here
       handleRefreshShoots();

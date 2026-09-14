@@ -16,10 +16,7 @@ const Nav = () => {
   const { 
     scrollYPos, 
     getPrevScrollYPosValue,
-    handleNavLinkClick, 
-    handleIsOnCurrentPage,
     handleIsOnSamePage,
-    setSelectedTag,
     setNavSelectValue,
     setShowNavSelectOptions,
     setShowSideNav,
@@ -30,10 +27,10 @@ const Nav = () => {
   const isOnHome = pathname === "/work";
 
   const handleIsOnHome = (e: MouseEvent<HTMLAnchorElement>) => {
-    setSelectedTag(null);
+    console.log("handleIsOneHome")
     setNavSelectValue(null);
     setShowNavSelectOptions(false);
-    handleIsOnCurrentPage(e);
+    handleIsOnSamePage(e);
     setShowSideNav(false);
   };
 
@@ -47,7 +44,7 @@ const Nav = () => {
         <ClientLink 
           href="/work" 
           scroll={false}
-          onClick={isOnHome ? handleIsOnHome : handleNavLinkClick}
+          onClick={isOnHome ? handleIsOnHome : undefined}
         >
           <div className="nav__logo">
             <Logo className={"nav__logo--icon"}/>
@@ -64,9 +61,10 @@ const Nav = () => {
               <li key={href} className={`nav__link nav__link${modifierClass}`}>
                 <ClientLink 
                   href={href}
-                  onClick={pathname !== href
-                    ? handleNavLinkClick
-                    : handleIsOnSamePage}
+                  onClick={pathname === href
+                    ? handleIsOnSamePage
+                    : undefined
+                  }
                 >
                   {pageName}
                 </ClientLink>

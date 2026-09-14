@@ -105,7 +105,8 @@ const Modal = () => {
     }
     
     if (isDeleteShootMode) {
-      return await handleDeleteShoot();
+      await handleDeleteShoot();
+      return transitionModalClose();
     }
     
     if (isEditBioMode) {
@@ -116,7 +117,8 @@ const Modal = () => {
 
     if (isEditShootMode) {
       setAppIsLoading(true);
-      handleNavigateToEditShoot(modalEntityID);
+      transitionModalClose();
+      return handleNavigateToEditShoot(modalEntityID);
     }
 
     if (modalAction !== "add" && (modalEntityID === null || typeof modalEntityID !== "number")) {
@@ -204,7 +206,7 @@ const Modal = () => {
     transitionModalClose(true);
   };
 
-    // useEffect to hide and clear modal on esc
+  // useEffect to hide and clear modal on esc
   useEffect(() => {
     const handleKeyDown =  (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -264,9 +266,9 @@ const Modal = () => {
             <input 
               className='modal__input'
               placeholder={`Enter new ${modalEntityType} name`}
-              type="text"
               defaultValue={modalEntityName ?? ""}
               ref={newEntryNameRef}
+              type="text"
               autoFocus
             />
               
@@ -290,7 +292,6 @@ const Modal = () => {
                 ? "Edit Bio"
                 : isEditShootMode
                 ? "Edit Shoot"
-                // : `${normalizeCasing(modalAction ?? "")}`
                 : "Update"
               }
             </button>

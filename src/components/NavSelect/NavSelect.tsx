@@ -81,10 +81,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
 
     if (showNavSelectOptions) {
       setNavSelectValue(null);
-      setTimeout(() => {
-        handleNavigateHome();
-      }, MIN_LOADING_INTERVAL);
-      return 
+      return handleNavigateHome();
     } 
 
     if (navSelectValue) {
@@ -104,7 +101,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     }
   };
   
-// useEffect to keep select display value in sync with the active URL tag query param
+ // useEffect to keep select display value in sync with the active URL tag query param
   useEffect(() => {
     const locationTagName = searchParams.get("tag");
     setNavSelectValue(locationTagName ? locationTagName.toUpperCase() : null);

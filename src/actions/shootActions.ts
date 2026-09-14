@@ -570,7 +570,7 @@ const deleteShootByID = async (id: number): Promise<ActionResponse> => {
 
     return {
       success: true,
-      message: `Shoot number ${id} and associated files deleted successfully`,
+      message: `Shoot number ${id} deleted successfully`,
     };
   } catch (error) {
     console.error("Error deleting file from AWS:", error);
@@ -582,7 +582,7 @@ const deleteShootByID = async (id: number): Promise<ActionResponse> => {
 };
 
 const updateShootOrder = () => {
-  console.log("Updating your shoot");
+  console.log("Updating shoot order");
 };
 
 export {

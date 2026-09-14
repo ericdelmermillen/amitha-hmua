@@ -62,25 +62,13 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
   const handleToggleSideNav = () => setShowSideNav(prev => !prev);
 
-
-  // ***
-
-  const handleNavLinkClick = () => handleClearAppState();
-
   const handleSideNavLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (isModifiedClick(e)) {
       return;
     };
     
     handleClearAppState();
-
-    setTimeout(() => {
-     requestAnimationFrame(() => handleSetShowSideNavFalse());
-    }, MIN_LOADING_INTERVAL * 1.5);
   };
-
-
-
 
   const handleSetShowSideNavFalse = () => {
     setShowSideNav((prev) => {
@@ -93,7 +81,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   };
 
   const handleRefreshShoots = () => {
-    // ***reset to empty attempted here
     setShoots([]);
     setFinalShootsPageLoaded(false);
     setCurrentShootsPage(1);
@@ -108,7 +95,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   };
 
   const handleNavigateToEditShoot = (id: number | null) => {
-    setSelectedTag(null);
     setNavSelectValue(null);
     setShouldRefreshModels(true);
     setShouldRefreshPhotographers(true);
@@ -129,32 +115,18 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       router.push(`/work?tag=${normalizeCasing(tagObj.name)}`);
     };
   };
-  
-  // do I need both handleIsOnCurrentPage and handleIsOnSamePage?
-  const handleIsOnCurrentPage = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (isModifiedClick(e)) {
+
+  const handleIsOnSamePage = (e?: MouseEvent<HTMLElement>) => {
+    if (e && isModifiedClick(e)) {
       return;
-    };
-    
+    }
+
     setAppIsLoading(true);
     scrollToTop();
-
-    setTimeout(() => {
-      setAppIsLoading(false);
-    }, APP_ISLOADING_DELAY);
+    handleClearAppState()
   };
-
-  const handleIsOnSamePage = () => {
-    setShowTouchOffDiv(false);
-    setShowNavSelectOptions(false);
-    scrollToTop();
-
-    setTimeout(() => {
-      setShowSideNav(false);
-      setAppIsLoading(false);
-    }, NAV_CLICK_DELAY);
-  };
-
+  
+  
   const handleLogoutUser = async (messageOrEvent?: unknown, messageType: TypeOptions = "success") => {
     const finalMessage =
       typeof messageOrEvent === "string" && messageOrEvent.length > 0
@@ -185,7 +157,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       setIsLoggedIn(false);
     }
     
-    setShowSideNav(false);
     setShowTouchOffDiv(false);
     setTagChoosers([{ number: 1, id: null, name: null }]);
     setNavSelectValue(null);
@@ -193,7 +164,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setShootOrderIsEditable(false);
 
     setShouldUpdateShoots(true);
-    
     setFinalShootsPageLoaded(false);
     setCurrentShootsPage(1);
 
@@ -323,10 +293,8 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     showSideNav, 
     setShowSideNav,
     handleToggleSideNav,
-    handleNavLinkClick,
     handleSetShowSideNavFalse,
     handleSideNavLinkClick,
-    handleIsOnCurrentPage,
     handleNavigateHome,
     handleIsOnSamePage,
     navSelectValue, 

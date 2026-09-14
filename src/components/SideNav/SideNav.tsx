@@ -16,7 +16,6 @@ const SideNav = () => {
   const { 
     showSideNav, 
     setShowSideNav,
-    handleNavLinkClick,
     handleIsOnSamePage,
     tags
   } = useAppContext();
@@ -28,7 +27,6 @@ const SideNav = () => {
   };
 
   const handleSideNavLinkClick = () => {
-    handleNavLinkClick();
     setTimeout(() => {
       setShowSideNav(false);
     }, NAV_CLICK_DELAY);
@@ -79,10 +77,11 @@ const SideNav = () => {
               ? (
                 <li 
                   key={href} 
-                  className={`sideNav__link sideNav__link"${modifierClass}`}
+                  className={`sideNav__link sideNav__link ${modifierClass}`}
                   onClick={pathname !== href
                     ? handleSideNavLinkClick
                     : handleIsOnSamePage
+                    // : handleIsOnCurrentPage
                   }
                 >
                   <ClientLink href={href}>
