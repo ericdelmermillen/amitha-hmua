@@ -28,7 +28,6 @@ const Nav = () => {
   const isOnHome = pathname === "/work";
 
   const handleIsOnHome = (e: MouseEvent<HTMLAnchorElement>) => {
-    console.log("handleIsOneHome")
     setNavSelectValue(null);
     setShowNavSelectOptions(false);
     handleIsOnSamePage(e);

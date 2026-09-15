@@ -81,7 +81,6 @@ const SideNav = () => {
                   onClick={pathname !== href
                     ? handleSideNavLinkClick
                     : handleIsOnSamePage
-                    // : handleIsOnCurrentPage
                   }
                 >
                   <ClientLink href={href}>

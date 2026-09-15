@@ -1,11 +1,11 @@
 "use client";
 
-import { useColorThemeContext } from "@/hooks/hooks";
+import { useTheme } from "next-themes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const ToastProvider = () => {
-  const { colorMode } = useColorThemeContext();
+  const { resolvedTheme } = useTheme();
   
   return (
     <ToastContainer
@@ -16,7 +16,7 @@ const ToastProvider = () => {
       closeOnClick
       draggable
       pauseOnHover
-      theme={colorMode === "dark" ? "dark" : "light" } 
+      theme={resolvedTheme === "dark" ? "dark" : "light"}
     />
   );
 };

@@ -101,7 +101,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     }
   };
   
- // useEffect to keep select display value in sync with the active URL tag query param
+  // useEffect to keep select display value in sync with the active URL tag query param
   useEffect(() => {
     const locationTagName = searchParams.get("tag");
     setNavSelectValue(locationTagName ? locationTagName.toUpperCase() : null);
@@ -152,7 +152,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
           {selectOptions.map(option => 
 
             <div 
-            key={option.id} 
+              key={option.id} 
               className="navSelect__option"
               onClick={() => handleUpdateSelectValue(option)}
             >

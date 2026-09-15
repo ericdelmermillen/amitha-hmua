@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { ShootDetailsPageProps } from "@/typing/interfaces";
 import { getShootByID } from "@/actions/shootActions"
@@ -10,20 +10,14 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
   const { id } = await params;
   const shootIdNum = parseInt(id, 10);
 
-  // refactor this later when next theme is implemented
   if (isNaN(shootIdNum)) {
-    redirect("/not-found");
+    notFound();
   }
 
   let data;
 
   try {
     const response = await getShootByID(shootIdNum);
-
-    if (!response.success) {
-      throw new Error(response.message || "Failed to load shoot details");
-    }
-    
     data = response?.data;
 
   } catch (error) {
@@ -31,9 +25,8 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
     throw error;
   }
 
-  // refactor to use notFound() after implementing Next Themes
   if (!data) {
-    redirect("/not-found");
+    notFound();
   }
 
   const {
@@ -163,4 +156,4 @@ export default ShootDetailsPage;
 
 export {
   generateMetadata
-}
+};

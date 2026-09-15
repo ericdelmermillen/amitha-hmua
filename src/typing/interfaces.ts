@@ -462,6 +462,10 @@ interface ShootData {
   photo_urls: string[];
 }
 
+interface ColorModeToggleProps {
+  inputId?: string;
+}
+
 
 export {
   type BioResponse,
@@ -512,4 +516,5 @@ export {
   type PhotographerShoot,
   type DeletePhotographerResponse,
   type ShootData,
+  type ColorModeToggleProps,
 }

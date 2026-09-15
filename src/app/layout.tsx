@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import  { ReactNode, Suspense } from "react";
 import { AppContextProvider } from "@/contexts/AppContext";
-import { ColorThemeProvider } from "@/contexts/ColorThemeContext";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ModalContextProvider } from "@/contexts/ModalContext";
 import { ToastProvider } from "@/providers/ToastProvider";
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
@@ -13,7 +13,6 @@ import SideNav from "@/components/SideNav/SideNav";
 import TouchOffDiv from "@/components/TouchOffDiv/TouchOffDiv";
 import "./globals.scss";
 
-
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html
@@ -21,56 +20,26 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <head>
-        <script
-          id="themeScript"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (() => {
-                try {
-                  let colorMode = localStorage.getItem("colorMode");
-
-                  if (!colorMode) {
-                    colorMode = "light";
-                    localStorage.setItem("colorMode", colorMode);
-                  };
-
-                  document.documentElement.setAttribute(
-                    "data-color-mode",
-                    colorMode
-                  );
-                } catch {
-                  document.documentElement.setAttribute(
-                    "data-color-mode",
-                    "light"
-                  );
-                }
-              })();
-            `
-          }}
-        />
-      </head>
-
       <body>
-        <Suspense fallback={null}>
-          <AppContextProvider>
-            <ColorThemeProvider>
-              <ModalContextProvider>
-            
-                <IsLoading/>
-                <TouchOffDiv />
-                <Nav />
-                <SideNav />
-                <Modal />
-                {children}
-                <FloatingButton />
-                <Footer />
-                <ToastProvider />
+                <Suspense fallback={null}>
 
-              </ModalContextProvider>
-            </ColorThemeProvider>
-          </AppContextProvider>
-          </Suspense>
+        <AppContextProvider>
+          <ThemeProvider>
+            <ModalContextProvider>
+              <IsLoading />
+              <TouchOffDiv />
+              <Nav />
+              <SideNav />
+              <Modal />
+                  {children}
+              <FloatingButton />
+              <Footer />
+              <ToastProvider />
+            </ModalContextProvider>
+          </ThemeProvider>
+        </AppContextProvider>
+        
+                </Suspense>
       </body>
     </html>
   );

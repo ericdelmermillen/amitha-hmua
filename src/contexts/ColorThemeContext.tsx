@@ -28,6 +28,7 @@ const ColorThemeProvider = ({
   });
   
   const toggleColorMode = () => {
+    console.log("click")
     const newColorMode: ColorMode =
       colorMode === "light"
         ? "dark"
