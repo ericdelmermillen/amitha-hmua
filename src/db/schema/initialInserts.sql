@@ -4,40 +4,31 @@ VALUES
   (
     1,
     'Amitha Millen-Suwanta',
-    '35e694e4-18bd-4c98-9500-8281fd9d17b3.jpeg',
+    '9f936ff3-b6a3-432e-baaa-34795cad7934.jpeg',
     'Meet Amitha, a dynamic makeup artist and fashion stylist who thrives on celebrating the unique beauty of each person. With a deep understanding that beauty knows no bounds, she rejects the notion of a one-size-fits-all approach to makeup. Instead, she crafts bespoke experiences for her clients, considering their individuality, comfort levels, and personal style.\n\nLocated in the heart of Toronto, Ontario, Amitha\'s professional journey has been a whirlwind of diverse experiences within the beauty industry. Though she revels in all aspects of her craft, her passion ignites most brightly within the realms of Fashion and Bridal makeup.\n\nFrom esteemed corporations to celebrated singers, actors, and brands across Canada, the USA, and the UK, Amitha and her team ensure that each client embarks on a unique and unforgettable beauty journey.'
   );
 
 INSERT INTO
   `models` (`id`, `name`)
 VALUES
-  (1, 'Test Model'),
   (2, 'Atom K'),
   (3, 'Anna Zemly'),
   (4, 'Note Amit'),
   (5, 'Ash Kalyn'),
-  (6, 'Amire'),
   (7, 'Catherina A'),
   (8, 'John Millen'),
   (9, 'Veronica Ye'),
-  (10, 'Agatha'),
-  (11, 'Makhy '),
   (12, 'Trevor Carter '),
   (13, 'Natasha Rabura'),
   (14, 'Grace '),
-  (15, 'Pattricia '),
-  (16, 'Adwoa'),
   (17, 'Daniella Traa'),
   (18, 'Ally'),
   (19, 'Anna'),
   (20, 'Jayden  Aj'),
-  (21, 'Caylen Walker'),
-  (22, 'Abby'),
   (23, 'Don'),
   (25, 'Gahaya'),
   (26, 'Celia'),
   (27, 'Mimi'),
-  (28, 'Hannah Zervos'),
   (29, 'Gaiyan'),
   (30, 'Luke'),
   (31, 'Oleg'),
@@ -47,20 +38,13 @@ VALUES
   (36, 'Maria'),
   (37, 'Gloria'),
   (38, 'Ayesha'),
-  (39, 'Alex'),
   (40, 'Issabella'),
   (41, 'Molly'),
-  (42, 'College of Makeup Art and Design'),
-  (45, 'Ash Kalyn'),
   (46, 'Abigail'),
-  (47, 'Vogue Italian Online'),
-  (49, 'Nasty Magazine'),
   (50, 'Catherine'),
   (53, 'Playapex'),
   (54, 'Marcozo'),
-  (55, 'Huemanity Hair Color'),
   (56, 'Paradox Unity'),
-  (57, 'Karina'),
   (58, 'Natalia'),
   (59, 'Hannas'),
   (60, 'Kristien'),
@@ -69,7 +53,6 @@ VALUES
   (64, 'Baie'),
   (65, 'Barbara'),
   (66, 'Emma Almeida'),
-  (67, 'Eric, Wesley, Oliver, Andrew, Ugo'),
   (68, 'Bluivory'),
   (69, 'Daria M'),
   (70, 'Sharon'),
@@ -82,28 +65,16 @@ VALUES
   (5, 'AGIVA Canada'),
   (6, 'Ariel Lii '),
   (7, 'Ashley '),
-  (8, 'GJ'),
   (9, 'Jainik'),
-  (10, 'Victoria'),
   (11, 'Mark Gallardo'),
-  (12, 'Peter '),
   (13, 'Emily '),
-  (14, 'Ryan '),
-  (15, 'Backdropsgallery'),
-  (16, 'The Purest Form'),
   (17, 'Sean Leber'),
-  (18, 'Theater'),
-  (19, 'Vouge Italian Online'),
   (20, 'Eli'),
-  (21, 'Hiep'),
   (22, 'Boyu Jian'),
-  (23, 'Olega'),
   (24, 'Matthew Bennette'),
   (25, 'Jian Von Esmane'),
-  (26, 'Jim CMU'),
   (27, 'Alfie'),
-  (29, 'Dimitri Traganis'),
-  (38, 'Shitty-head');
+  (29, 'Dimitri Traganis');
 
 INSERT INTO
   `tags` (`id`, `name`)
@@ -115,22 +86,23 @@ VALUES
   (12, 'Grooming'),
   (16, 'Theater'),
   (17, 'Celebrities'),
-  (18, 'Bridal');
+  (18, 'Bridal'),
+  (40, 'New Tag');
 
 INSERT INTO
   `shoots` (`id`, `shoot_date`, `display_order`)
 VALUES
-  (9, '2024-07-10', 98),
-  (14, '2024-07-10', 90),
-  (15, '2024-07-10', 77),
-  (20, '2024-07-10', 82),
-  (44, '2024-07-10', 87),
-  (48, '2024-07-10', 71),
-  (54, '2024-07-10', 113),
-  (62, '2024-07-10', 95),
-  (73, '2024-07-11', 120),
-  (79, '2024-07-17', 69),
-  (81, '2024-07-18', 66);
+  (9, '2024-07-10', 124),
+  (14, '2024-07-10', 116),
+  (15, '2024-07-10', 103),
+  (20, '2024-07-10', 108),
+  (44, '2024-07-10', 113),
+  (48, '2024-07-10', 97),
+  (54, '2024-07-10', 139),
+  (62, '2024-07-10', 121),
+  (73, '2024-07-11', 146),
+  (79, '2024-07-17', 95),
+  (81, '2024-07-18', 92);
 
 INSERT INTO
   `photos` (`id`, `shoot_id`, `photo_url`, `display_order`)
@@ -196,24 +168,6 @@ VALUES
     4
   ),
   (
-    1324,
-    14,
-    '9cb26eee-920e-4c05-a705-5e8ebf510f6b.jpeg',
-    1
-  ),
-  (
-    1325,
-    14,
-    '627227e4-5272-41b7-a527-9d5510ed996a.jpeg',
-    2
-  ),
-  (
-    1326,
-    14,
-    '9feaeb31-c299-4a3a-b23e-898c94e1b98a.jpeg',
-    3
-  ),
-  (
     1327,
     44,
     '0f8e05c1-4f47-467f-80d5-51193d48fb65.jpeg',
@@ -274,42 +228,6 @@ VALUES
     5
   ),
   (
-    1427,
-    54,
-    'ce1bbd62-0d21-4c7a-9dd2-c0c586d5ea71.jpeg',
-    1
-  ),
-  (
-    1428,
-    54,
-    '82e40892-f5df-4f23-9b2f-4b2fa1621853.jpeg',
-    2
-  ),
-  (
-    1429,
-    54,
-    '1d160f9a-1faa-4338-885f-322d6db6cf09.jpeg',
-    3
-  ),
-  (
-    1430,
-    54,
-    'a6134b59-1166-4d13-9735-fd59a167cc99.jpeg',
-    4
-  ),
-  (
-    1431,
-    54,
-    '5073edb7-c705-4e0d-98e0-99ad2213ecb2.jpeg',
-    5
-  ),
-  (
-    1432,
-    54,
-    '7d493802-8f8b-4c84-9ad6-b05b1c7bb9c4.jpeg',
-    6
-  ),
-  (
     1433,
     73,
     'fa669f86-3229-41c8-9839-58500c5b37b4.jpeg',
@@ -364,34 +282,88 @@ VALUES
     4
   ),
   (
-    1637,
+    1668,
     81,
     '3994b81d-f37d-4de9-81c4-35d54d862c69.jpeg',
     1
   ),
   (
-    1638,
+    1669,
     81,
     '78eb1f4c-aef4-4160-a5bd-1985e387ef87.jpeg',
     2
   ),
   (
-    1639,
+    1670,
     81,
     '5300ce13-ea03-44d4-9f9e-eb4ae8f171cd.jpeg',
     3
   ),
   (
-    1640,
+    1671,
     81,
     '7380a1f2-4e51-47bc-9c81-88106d910c3e.jpeg',
     4
   ),
   (
-    1641,
+    1672,
     81,
     '4a3b7935-2df3-4902-9505-bdf1b72ad561.jpeg',
     5
+  ),
+  (
+    1675,
+    14,
+    '9cb26eee-920e-4c05-a705-5e8ebf510f6b.jpeg',
+    1
+  ),
+  (
+    1676,
+    14,
+    '627227e4-5272-41b7-a527-9d5510ed996a.jpeg',
+    2
+  ),
+  (
+    1677,
+    14,
+    '9feaeb31-c299-4a3a-b23e-898c94e1b98a.jpeg',
+    3
+  ),
+  (
+    1678,
+    54,
+    'ce1bbd62-0d21-4c7a-9dd2-c0c586d5ea71.jpeg',
+    1
+  ),
+  (
+    1679,
+    54,
+    '82e40892-f5df-4f23-9b2f-4b2fa1621853.jpeg',
+    2
+  ),
+  (
+    1680,
+    54,
+    '1d160f9a-1faa-4338-885f-322d6db6cf09.jpeg',
+    3
+  ),
+  (
+    1681,
+    54,
+    'a6134b59-1166-4d13-9735-fd59a167cc99.jpeg',
+    4
+  ),
+  (
+    1682,
+    54,
+    '5073edb7-c705-4e0d-98e0-99ad2213ecb2.jpeg',
+    5
+  ),
+  (
+    1683,
+    54,
+    '7d493802-8f8b-4c84-9ad6-b05b1c7bb9c4.jpeg',
+    6
   );
 
 INSERT INTO

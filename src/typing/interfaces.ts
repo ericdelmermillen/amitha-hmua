@@ -427,11 +427,9 @@ interface ColorModeToggleProps {
   inputId?: string;
 }
 
-
 interface TagShoot {
   shoot_id: number;
 }
-
 
 interface ModelShoot {
   shoot_id: number;
