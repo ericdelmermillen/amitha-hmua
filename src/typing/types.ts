@@ -1,6 +1,4 @@
-export type ColorMode = "light" | "dark";
-
-export type ToastType =
+type ToastType =
   | "default"
   | "success"
   | "error"
@@ -15,6 +13,7 @@ type EntryNameType = "model" | "photographer" | "tag";
 type ModalActionType = "Add" | "Edit" | "Delete";
 
 export {
+  type ToastType,
   type ChooserType,
   type EntryNameType,
   type ModalActionType

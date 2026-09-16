@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Metadata } from "next";
 import { ShootDetailsPageProps } from "@/typing/interfaces";
 import { getShootByID } from "@/actions/shootActions"
@@ -11,7 +11,8 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
   const shootIdNum = parseInt(id, 10);
 
   if (isNaN(shootIdNum)) {
-    notFound();
+    // notFound();
+    redirect("/not-found");
   }
 
   let data;
@@ -26,7 +27,8 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
   }
 
   if (!data) {
-    notFound();
+    // notFound();
+    redirect("/not-found");
   }
 
   const {

@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useSearchParams,useRouter } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { 
   type MouseEvent, 
   useState,  
@@ -15,9 +15,10 @@ import { ShootEntity } from "@/typing/interfaces";
 import { checkUserSession, logoutUser } from "@/actions/authActions";
 import { getAllTags } from "@/actions/tagActions";
 
+// ***here
+
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
-const NAV_CLICK_DELAY = Number(process.env.NEXT_PUBLIC_NAV_CLICK_DELAY);
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
@@ -113,21 +114,23 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       router.push("/work");
     } else if (tagObj) {
       router.push(`/work?tag=${normalizeCasing(tagObj.name)}`);
-    };
+    }
   };
 
   const handleIsOnSamePage = (e?: MouseEvent<HTMLElement>) => {
     if (e && isModifiedClick(e)) {
       return;
     }
-
+    
     setAppIsLoading(true);
     scrollToTop();
-    handleClearAppState()
+    handleClearAppState();
   };
-  
-  
-  const handleLogoutUser = async (messageOrEvent?: unknown, messageType: TypeOptions = "success") => {
+
+  const handleLogoutUser = async (
+    messageOrEvent?: MouseEvent<HTMLElement> | string,
+    messageType: TypeOptions = "success"
+  ) => {
     const finalMessage =
       typeof messageOrEvent === "string" && messageOrEvent.length > 0
         ? messageOrEvent
@@ -162,7 +165,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setNavSelectValue(null);
     setShowNavSelectOptions(false);
     setShootOrderIsEditable(false);
-
     setShouldUpdateShoots(true);
     setFinalShootsPageLoaded(false);
     setCurrentShootsPage(1);
@@ -181,7 +183,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
         if (response?.success && Array.isArray(response.tags)) {
           setTags(response.tags);
-          // not sure how this works: why prev and response.tags?
+          // basically spreading in new tags
           setTagChoosers(prev => syncChoosers(prev, response.tags));
         } else {
           throw new Error(response?.message || "Failed to retrieve tags");
@@ -203,6 +205,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   useEffect(() => {
     const authStatus = searchParams.get("auth");
 
+    // auth checking for when user who was logged in attempts to navigae to a protected route but has had their token expire or be revoked in the meantime: middleware triggers the redirect and the client catches it based on the pathname
     if (authStatus === "false") {
       handleLogoutUser("Authentication failed. Logging you out...", "error");
     }
@@ -217,6 +220,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       }, APP_ISLOADING_DELAY);
     };
 
+    // what is the readyState on the document?
     if (document.readyState === "complete") {
       scrollToTop();
       handleLoad();
@@ -252,7 +256,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
         ticking = true;
       }
     };
-    
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -283,56 +287,71 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
 
   const contextValues = {
-    appIsLoading, 
-    setAppIsLoading,
+    // auth & session
     isLoggedIn, 
     setIsLoggedIn,
-    scrollYPos, 
-    setScrollYPos,
-    getPrevScrollYPosValue,
+    handleLogoutUser,
+
+    // route & app loading state
+    appIsLoading, 
+    setAppIsLoading,
+    handleClearAppState,
+    handleNavigateHome,
+    handleNavigateToAddShoot,
+    handleNavigateToEditShoot,
+    handleIsOnSamePage,
+
+    // ui navigation & drawers
     showSideNav, 
     setShowSideNav,
     handleToggleSideNav,
     handleSetShowSideNavFalse,
     handleSideNavLinkClick,
-    handleNavigateHome,
-    handleIsOnSamePage,
-    navSelectValue, 
-    setNavSelectValue,
-    selectedTag, 
-    setSelectedTag,
-    handleTouchOffDiv,
     showTouchOffDiv, 
     setShowTouchOffDiv,
-    showNavSelectOptions, 
-    setShowNavSelectOptions,
-    tags, 
-    tagChoosers, 
-    setTagChoosers,
-    setTags,
-    handleLogoutUser,
-    shootOrderIsEditable, 
-    setShootOrderIsEditable,
+    handleTouchOffDiv,
     showFloatingButton, 
     setShowFloatingButton,
-    handleNavigateToAddShoot,
-    handleNavigateToEditShoot,
-    handleClearAppState,
+
+    // nav select & tag filtering
+    navSelectValue, 
+    setNavSelectValue,
+    showNavSelectOptions, 
+    setShowNavSelectOptions,
+    selectedTag, 
+    setSelectedTag,
+    
+    // scroll position tracking
+    scrollYPos, 
+    setScrollYPos,
+    getPrevScrollYPosValue,
+    
+    // tags data
+    tags, 
+    setTags,
+    tagChoosers, 
+    setTagChoosers,
     shouldRefreshTags,
     setShouldRefreshTags,
-    shouldRefreshModels, 
-    setShouldRefreshModels,
-    shouldRefreshPhotographers, 
-    setShouldRefreshPhotographers,
+
+    // shoots data & pagination
     shoots, 
     setShoots,
-    shouldUpdateShoots, 
-    setShouldUpdateShoots,
     currentShootsPage, 
     setCurrentShootsPage,
     finalShootsPageLoaded, 
     setFinalShootsPageLoaded,
-    handleRefreshShoots
+    shouldUpdateShoots, 
+    setShouldUpdateShoots,
+    shootOrderIsEditable, 
+    setShootOrderIsEditable,
+    handleRefreshShoots,
+
+    // related entity refresh flags
+    shouldRefreshModels, 
+    setShouldRefreshModels,
+    shouldRefreshPhotographers, 
+    setShouldRefreshPhotographers,
   };
 
   return (

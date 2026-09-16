@@ -8,7 +8,7 @@ import {
   ShootLinkRow, 
   ShootRow, 
   ShootEntity, 
-  TagRow, 
+  EntityRow, 
   TagShoot
 } from "@/typing/interfaces";
 import { ResultSetHeader } from "mysql2";
@@ -18,7 +18,7 @@ import { pool } from "@/db/dbClient";
 // getAllTags
 const getAllTags = async (): Promise<GetAllTagsResponse> => {
   try {
-    const [rows] = await pool.query<TagRow[]>(
+    const [rows] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM tags ORDER BY name ASC"
     );
 
@@ -56,7 +56,7 @@ const addTag = async (name: string): Promise<AddTagResponse> => {
   }
 
   try {
-    const [existing] = await pool.query<TagRow[]>(
+    const [existing] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM tags WHERE name = ? LIMIT 1",
       [trimmedName]
     );
@@ -73,7 +73,7 @@ const addTag = async (name: string): Promise<AddTagResponse> => {
       [trimmedName]
     );
 
-    const [rows] = await pool.query<TagRow[]>(
+    const [rows] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM tags ORDER BY name ASC"
     );
 
@@ -118,7 +118,7 @@ const editTagByID = async (id: number, name: string): Promise<EditTagResponse> =
   }
 
   try {
-    const [existing] = await pool.query<TagRow[]>(
+    const [existing] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM tags WHERE id = ? LIMIT 1",
       [parsedID]
     );
@@ -130,7 +130,7 @@ const editTagByID = async (id: number, name: string): Promise<EditTagResponse> =
       };
     }
 
-    const [duplicate] = await pool.query<TagRow[]>(
+    const [duplicate] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM tags WHERE name = ? AND id != ? LIMIT 1",
       [trimmedName, parsedID]
     );
@@ -147,7 +147,7 @@ const editTagByID = async (id: number, name: string): Promise<EditTagResponse> =
       [trimmedName, parsedID]
     );
 
-    const [updated] = await pool.query<TagRow[]>(
+    const [updated] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM tags WHERE id = ? LIMIT 1",
       [parsedID]
     );
@@ -212,7 +212,7 @@ const deleteTagByID = async (id: number): Promise<DeleteTagResponse> => {
       };
     }
 
-    const [existing] = await pool.query<TagRow[]>(
+    const [existing] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM tags WHERE id = ? LIMIT 1",
       [parsedID]
     );
@@ -236,7 +236,7 @@ const deleteTagByID = async (id: number): Promise<DeleteTagResponse> => {
       };
     }
 
-    const [rows] = await pool.query<TagRow[]>(
+    const [rows] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM tags ORDER BY name ASC"
     );
 

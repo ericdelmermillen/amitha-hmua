@@ -3,12 +3,12 @@ import { ToastType } from "@/typing/types";
 import type { MouseEvent } from "react";
 import { toast } from "react-toastify";
 
-const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
+const MIN_LOADING_INTERVAL = parseInt(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL ?? "250", 10);
 
 const scrollToTop = () => {
   window.scrollTo({
     top: 0,
-    behavior: 'smooth'
+    behavior: "smooth",
   });  
   removeClassFromDiv("nav", "hide");
 };
@@ -86,7 +86,7 @@ const normalizeCasing = (string: string | undefined): string => {
 };
 
 const checkIfIsFirefox = () => {
-  return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+  return navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
 };
 
 const syncChoosers = (prevChoosers: ChooserItem[], freshEntities: ShootEntity[]): ChooserItem[] => {

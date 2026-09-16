@@ -58,32 +58,32 @@ const Nav = () => {
           {navPages.map(({ href, modifierClass, pageName, icon: Icon }) => href.startsWith("/") 
             
             ? (
-              <li key={href} className={`nav__link nav__link${modifierClass}`}>
-                <ClientLink 
-                  href={href}
-                  onClick={pathname === href
-                    ? handleIsOnSamePage
-                    : undefined
-                  }
-                >
-                  {pageName}
-                </ClientLink>
-              </li>
+                <li key={href} className={`nav__link nav__link${modifierClass}`}>
+                  <ClientLink 
+                    href={href}
+                    onClick={pathname === href
+                      ? handleIsOnSamePage
+                      : undefined
+                    }
+                  >
+                    {pageName}
+                  </ClientLink>
+                </li>
               ) 
             : (
-              <li
-                key={href}
-                className="nav__link nav__link--instagram"
-              >
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`nav__link nav__link${modifierClass}`}
+                <li
+                  key={href}
+                  className="nav__link nav__link--instagram"
                 >
-                  {Icon && <Icon className="nav__link--instagram" />}
-                </a>
-              </li>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`nav__link nav__link${modifierClass}`}
+                  >
+                    {Icon && <Icon className="nav__link--instagram" />}
+                  </a>
+                </li>
               )
           )}
           

@@ -7,7 +7,7 @@ import {
   EditPhotographerResponse, 
   GetAllPhotographersResponse, 
   ShootEntity, 
-  PhotographerRow, 
+  EntityRow, 
   PhotographerShoot, 
   ShootLinkRow
 } from "@/typing/interfaces";
@@ -16,7 +16,7 @@ import { ResultSetHeader } from "mysql2";
 // getAllPhotographers
 const getAllPhotographers = async (): Promise<GetAllPhotographersResponse> => {
   try {
-    const [rows] = await pool.query<PhotographerRow[]>(
+    const [rows] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM photographers ORDER BY name ASC"
     );
 
@@ -54,7 +54,7 @@ const addPhotographer = async (name: string): Promise<AddPhotographerResponse> =
   }
 
   try {
-    const [existing] = await pool.query<PhotographerRow[]>(
+    const [existing] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM photographers WHERE name = ? LIMIT 1",
       [trimmedName]
     );
@@ -71,7 +71,7 @@ const addPhotographer = async (name: string): Promise<AddPhotographerResponse> =
       [trimmedName]
     );
 
-    const [rows] = await pool.query<PhotographerRow[]>(
+    const [rows] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM photographers ORDER BY name ASC"
     );
 
@@ -116,7 +116,7 @@ const editPhotographerByID = async (id: number, newname: string): Promise<EditPh
   }
 
   try {
-    const [existing] = await pool.query<PhotographerRow[]>(
+    const [existing] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM photographers WHERE id = ? LIMIT 1",
       [parsedID]
     );
@@ -128,7 +128,7 @@ const editPhotographerByID = async (id: number, newname: string): Promise<EditPh
       };
     }
 
-    const [duplicate] = await pool.query<PhotographerRow[]>(
+    const [duplicate] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM photographers WHERE id != ? AND name = ? LIMIT 1",
       [parsedID, trimmedName]
     );
@@ -145,7 +145,7 @@ const editPhotographerByID = async (id: number, newname: string): Promise<EditPh
       [trimmedName, parsedID]
     );
 
-    const [updatedRows] = await pool.query<PhotographerRow[]>(
+    const [updatedRows] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM photographers WHERE id = ? LIMIT 1",
       [parsedID]
     );
@@ -200,7 +200,7 @@ const deletePhotographerByID = async (id: number): Promise<DeletePhotographerRes
       };
     }
 
-    const [existing] = await pool.query<PhotographerRow[]>(
+    const [existing] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM photographers WHERE id = ? LIMIT 1",
       [parsedID]
     );
@@ -224,7 +224,7 @@ const deletePhotographerByID = async (id: number): Promise<DeletePhotographerRes
       };
     }
 
-    const [rows] = await pool.query<PhotographerRow[]>(
+    const [rows] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM photographers ORDER BY name ASC"
     );
 

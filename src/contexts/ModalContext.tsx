@@ -1,14 +1,11 @@
 "use client";
 
 import { useState, createContext } from "react";
-import { useAppContext } from "@/hooks/hooks";
 import { ContextProviderProps, ModalContextValue, ModalData } from "@/typing/interfaces";
 
 const ModalContext = createContext<ModalContextValue | undefined>(undefined);
 
 const ModalContextProvider = ({ children }: ContextProviderProps) => {
-  const { setAppIsLoading } = useAppContext();
-  
   const [ showModal, setShowModal ] = useState(false);
   
   const [ modalAction, setModalAction ] = useState<string | null>(null);
@@ -18,7 +15,7 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
 
   const handleOpenModal = ({ e, action, entityType, entityName = null, entityID = null }: ModalData) => {
     e?.preventDefault();
-    e?.stopPropagation()
+    e?.stopPropagation();
     setShowModal(true);
     setModalAction(action);
     setModalEntityType(entityType);
@@ -26,15 +23,12 @@ const ModalContextProvider = ({ children }: ContextProviderProps) => {
     setModalEntityID(entityID);
   };
 
-  const handleClearModal = (clearAppIsLoading: boolean = false) => {
+  const handleClearModal = () => {
     setShowModal(false);
     setModalAction(null);
+    setModalEntityType(null);
     setModalEntityName(null);
     setModalEntityID(null);
-    
-    if (clearAppIsLoading) {
-      setAppIsLoading(false);
-    }
   };
 
   const contextValues: ModalContextValue = {

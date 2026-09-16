@@ -8,15 +8,15 @@ import {
   EditModelResponse, 
   GetAllModelsResponse, 
   ShootEntity, 
-  ModelRow, 
   ModelShoot, 
-  ShootLinkRow 
+  ShootLinkRow, 
+  EntityRow
 } from "@/typing/interfaces";
 
 // getAllModels
 const getAllModels = async (): Promise<GetAllModelsResponse> => {
   try {
-    const [rows] = await pool.query<ModelRow[]>(
+    const [rows] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM models ORDER BY name ASC"
     );
 
@@ -54,7 +54,7 @@ const addModel = async (name: string): Promise<AddModelResponse> => {
   }
 
   try {
-    const [existing] = await pool.query<ModelRow[]>(
+    const [existing] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM models WHERE name = ? LIMIT 1",
       [trimmedName]
     );
@@ -71,7 +71,7 @@ const addModel = async (name: string): Promise<AddModelResponse> => {
       [trimmedName]
     );
 
-    const [rows] = await pool.query<ModelRow[]>(
+    const [rows] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM models ORDER BY name ASC"
     );
 
@@ -116,7 +116,7 @@ const editModelByID = async (id: number, newname: string): Promise<EditModelResp
   }
 
   try {
-    const [existing] = await pool.query<ModelRow[]>(
+    const [existing] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM models WHERE id = ? LIMIT 1",
       [parsedID]
     );
@@ -128,7 +128,7 @@ const editModelByID = async (id: number, newname: string): Promise<EditModelResp
       };
     }
 
-    const [duplicate] = await pool.query<ModelRow[]>(
+    const [duplicate] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM models WHERE name = ? AND id != ? LIMIT 1",
       [trimmedName, parsedID]
     );
@@ -145,7 +145,7 @@ const editModelByID = async (id: number, newname: string): Promise<EditModelResp
       [trimmedName, parsedID]
     );
 
-    const [updatedRows] = await pool.query<ModelRow[]>(
+    const [updatedRows] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM models WHERE id = ? LIMIT 1",
       [parsedID]
     );
@@ -200,7 +200,7 @@ const deleteModelByID = async (id: number): Promise<DeleteModelResponse> => {
       };
     }
 
-    const [existing] = await pool.query<ModelRow[]>(
+    const [existing] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM models WHERE id = ? LIMIT 1",
       [parsedID]
     );
@@ -224,7 +224,7 @@ const deleteModelByID = async (id: number): Promise<DeleteModelResponse> => {
       };
     }
 
-    const [rows] = await pool.query<ModelRow[]>(
+    const [rows] = await pool.query<EntityRow[]>(
       "SELECT id, name FROM models ORDER BY name ASC"
     );
 

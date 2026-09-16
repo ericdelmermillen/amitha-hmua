@@ -4,37 +4,21 @@ import { ClientButtonProps } from "@/typing/interfaces";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import "./ClientButton.scss";
 
-const ClientButton = ({ 
-  text, 
-  variant = "standard", 
-  buttonType, 
-  modifierClass 
-}: ClientButtonProps) => {
-
-  const {
-    isLoggedIn,
-    handleLogoutUser
-    // modalIsOpen
-  } = useAppContext()
-    
-  const {
-    handleOpenModal,
-  } = useModalContext()
-  
-  const handleNavigateToEditoBio = ()=> {
-    handleOpenModal({ action: "edit", entityType: "bio" })
-  }
+const ClientButton = ({ text, variant = "standard", buttonType, modifierClass }: ClientButtonProps) => {
+  const { isLoggedIn, handleLogoutUser } = useAppContext();
+  const { handleOpenModal, showModal } = useModalContext();
   
   const safeModifierClass = typeof modifierClass === "string" ? modifierClass : "";
 
-  const modalIsOpen = false;
-
+  const handleNavigateToEditoBio = ()=> handleOpenModal({ action: "edit", entityType: "bio" });
+  
+  
   if (isLoggedIn && buttonType === "editBio") {
     return (
       <button
         className={`clientButton ${variant} ${safeModifierClass}`}
         onClick={handleNavigateToEditoBio}
-        disabled={modalIsOpen}
+        disabled={showModal}
       >
         {text}
       </button>
@@ -46,7 +30,7 @@ const ClientButton = ({
       <button
         className={`clientButton ${variant} ${safeModifierClass}`}
         onClick={handleLogoutUser}
-        disabled={modalIsOpen}
+        disabled={showModal}
       >
         {text}
       </button>

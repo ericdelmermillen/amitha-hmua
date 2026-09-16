@@ -2,7 +2,7 @@
 
 import { type MouseEvent, type TransitionEvent, useState } from "react";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
-import { CustomSelectProps, SelectOption, ShootEntity } from "@/typing/interfaces";
+import { CustomSelectProps, ShootEntity } from "@/typing/interfaces";
 import { normalizeCasing } from "@/utils/utils";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
 import DownIcon from "@/assets/icons/DownIcon";
@@ -73,14 +73,14 @@ const CustomSelect = ({
     handleOpenModal({e, action: "add", entityType: entityType, entityName: null, entityID: null})
   };
     
-  const handleEditEntry = (e: MouseEvent<HTMLElement>, option: SelectOption) => {
+  const handleEditEntry = (e: MouseEvent<HTMLElement>, option: ShootEntity) => {
     e.preventDefault();
     e.stopPropagation();
 
     handleOpenModal({e, action: "edit", entityType: entityType, entityName: option.name, entityID: option.id})
   };
 
-  const handleDeleteEntry = (e: MouseEvent<HTMLElement>, option: SelectOption) => {
+  const handleDeleteEntry = (e: MouseEvent<HTMLElement>, option: ShootEntity) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -95,7 +95,7 @@ const CustomSelect = ({
 
   const handleTouchOff = () => {
     setShowSelectOptions(false);
-    setAppIsLoading(false);
+    // setAppIsLoading(false);
   };
   
   return (

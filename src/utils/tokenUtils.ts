@@ -52,10 +52,7 @@ const verifyRefreshToken = async (token: string): Promise<TokenPayload | null> =
   }
 };
 
-const setAuthCookies = async (
-  accessToken: string,
-  refreshToken: string
-): Promise<void> => {
+const setAuthCookies = async (accessToken: string, refreshToken: string): Promise<void> => {
   const cookieStore = await cookies();
   const isProduction = process.env.NODE_ENV === "production";
 
@@ -75,7 +72,6 @@ const setAuthCookies = async (
     path: "/",
   });
 };
-
 
 const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
   const cookieStore = await cookies();

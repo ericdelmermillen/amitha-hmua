@@ -194,11 +194,11 @@ const Modal = () => {
     }
   };
 
-  const handleModalClearing = (clearAppIsLoading: boolean = false) => {
+  const handleModalClearing = () => {
     if (newEntryNameRef.current) {
       newEntryNameRef.current.value = "";
     }
-    handleClearModal(clearAppIsLoading);
+    handleClearModal();
   };
 
   const handleCancel = () => {

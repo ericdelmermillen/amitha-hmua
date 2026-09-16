@@ -18,7 +18,7 @@ const verifyTokenEdge = async (token: string, secret: Uint8Array): Promise<boole
 const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
 
-  const isProtected = protectedRoutes.some((route) => {
+  const isProtected = protectedRoutes.some(route => {
     return pathname.startsWith(route);
   });
 

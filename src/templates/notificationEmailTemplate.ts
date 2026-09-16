@@ -18,31 +18,6 @@ import { COPYRIGHT } from "@/textCopy/emailCopy";
 import { splitOnNewLine } from "@/utils/utils";
 
 
-// can use logo png in email header when I have the logo either in the public dir of the real site or if I upload it to s3 and use the url
-// logo must be png
-// HEADER
-// <tr>
-//   <td style="
-//     padding: 48px ${SPACING_SMALL};
-//     text-align: center;
-//     background-color: ${PRIMARY_COLOR};
-//   ">
-//     <img
-//       src="${SITE_URL}/logo.svg"
-//       alt="${COMPANY_NAME}"
-//       width="175"
-//       height="55"
-//       style="
-//         display: block;
-//         margin: 0 auto;
-//         width: 175px;
-//         height: 55px;
-//       "
-//     />
-//   </td>
-// </tr>
-
-
 const COMPANY_NAME = process.env.COMPANY_NAME;
 
 const notificationEmailTemplate = (

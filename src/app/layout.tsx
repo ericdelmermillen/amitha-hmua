@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import  { ReactNode, Suspense } from "react";
+import  { ReactNode } from "react";
 import { AppContextProvider } from "@/contexts/AppContext";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ModalContextProvider } from "@/contexts/ModalContext";
@@ -21,8 +21,6 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
       data-scroll-behavior="smooth"
     >
       <body>
-                <Suspense fallback={null}>
-
         <AppContextProvider>
           <ThemeProvider>
             <ModalContextProvider>
@@ -31,15 +29,13 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
               <Nav />
               <SideNav />
               <Modal />
-                  {children}
+                {children}
               <FloatingButton />
               <Footer />
               <ToastProvider />
             </ModalContextProvider>
           </ThemeProvider>
         </AppContextProvider>
-        
-                </Suspense>
       </body>
     </html>
   );
@@ -51,6 +47,6 @@ export const metadata: Metadata = {
   title: "Amitha HMUA Portfolio",
   description: "Portfolio Website of Amitha Millen-Suwanta Hair & Makeup Artist",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/favicon.svg"
   }
 };
