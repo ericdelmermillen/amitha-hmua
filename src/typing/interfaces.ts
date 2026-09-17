@@ -4,7 +4,9 @@ import {
   type SetStateAction, 
   type Dispatch, 
   type MouseEvent,
-  type DragEvent
+  type DragEvent,
+  type ComponentType, 
+  type SVGProps 
 } from "react";
 import { type RowDataPacket } from "mysql2";
 import { type TypeOptions } from "react-toastify";
@@ -100,6 +102,13 @@ interface ModalContextValue {
   setModalEntityName: Dispatch<SetStateAction<string | null>>;
   handleOpenModal: (data: ModalData) => void;
   handleClearModal: () => void;
+}
+
+interface NavPage {
+  pageName: string;
+  href: string;
+  modifierClass: string;
+  icon: ComponentType<SVGProps<SVGSVGElement>> | null;
 }
 
 interface ShootEntity {
@@ -452,6 +461,7 @@ export {
   type UpdatedBioData,
   type ShootDetailData,
   type IconProps,
+  type NavPage,
   type ClientButtonProps,
   type NavSelectProps,
   type ShootDatePickerProps,

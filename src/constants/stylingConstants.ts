@@ -13,12 +13,12 @@ const SPACING_MEDIUM = "24px";
 const SPACING_LARGE = "40px";
 
 // Typography
-const FONT = "Arial"
+const FONT = "Arial, Helvetica, sans-serif" as const;
 const FONT_SIZE_BODY = "16px";
 const FONT_SIZE_SMALL = "14px";
 const FONT_SIZE_TINY = "12px";
 const FONT_SIZE_HEADING = "24px";
-const FONT_WEIGHT = "600"
+const FONT_WEIGHT = "600";
 const LINE_HEIGHT = "1.5";
 
 // Other

@@ -29,7 +29,9 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
               <Nav />
               <SideNav />
               <Modal />
-                {children}
+                <main className="app">
+                  {children}
+                </main>
               <FloatingButton />
               <Footer />
               <ToastProvider />
@@ -41,12 +43,13 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   );
 };
 
-export default RootLayout;
-
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: "Amitha HMUA Portfolio",
   description: "Portfolio Website of Amitha Millen-Suwanta Hair & Makeup Artist",
   icons: {
     icon: "/favicon.svg"
   }
 };
+
+export  { metadata };
+export default RootLayout;

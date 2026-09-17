@@ -12,7 +12,6 @@
 	&__inner {
 		border: 1px solid var(--text-color);
 		margin-top: 2rem;
-		min-height: min(90vh, 500px);
 		padding-block: 3rem;
 		padding-inline: 1rem;
 		width: 90%;
@@ -42,12 +41,6 @@
 			display: grid;
 			grid-template-columns: repeat(2, 1fr);
 		}
-
-		& > :nth-child(3) {
-			@media (min-width: vars.$large-tablet) {
-				grid-column: 1 / -1;
-			}
-		}
 	}
 
 	&__hero-section {
@@ -60,7 +53,6 @@
 
 		@media (min-width: vars.$large-tablet) {
 			border: 1px solid var(--text-color);
-			padding-inline: 2rem;
 		}
 	}
 
@@ -107,7 +99,7 @@
 			resize: none;
 		}
 
-		@media (min-width: 500px) {
+		@media (min-width: vars.$small-tablet) {
 			height: 30rem;
 		}
 	}
@@ -123,7 +115,7 @@
 		@media (min-width: vars.$small-tablet) {
 			flex-direction: row;
 			gap: 2rem;
-			justify-content: row;
+			grid-column: 1 / -1;
 		}
 	}
 

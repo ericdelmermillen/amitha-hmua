@@ -16,7 +16,7 @@ const DB_QUEUE_LIMIT = parseInt(
 	10
 );
 
-if (!DB_HOST || !DB_USER || !DB_NAME) {
+if (!DB_HOST || !DB_USER || !DB_PASSWORD || !DB_NAME) {
 	throw new Error("Missing required database environment variables.");
 }
 

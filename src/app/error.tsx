@@ -3,9 +3,14 @@
 const GeneralErrorPage = () => {
   return (
       <div className="generalErrorPage">
-        <h1 className="generalErrorPage__heading">
-          Error
-        </h1>
+        <div className="generalErrorPage__inner">
+          <h1 className="generalErrorPage__heading">
+            An Error Occurred
+          </h1>
+          <h2 className="generalErrorPage__sub-heading">
+            Please try again later
+          </h2>
+        </div>
       </div>
   );
 };

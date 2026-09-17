@@ -7,7 +7,6 @@ import { splitOnNewLine } from "@/utils/utils";
 import ClientButton from "@/components/ClientButton/ClientButton";
 import "./BioPage.scss";
 
-
 const BioPage = async () => {
   let response: BioResponse;
 
@@ -148,5 +147,4 @@ const generateMetadata = async (): Promise<Metadata> => {
 };
 
 export { generateMetadata };
-
 export default BioPage;

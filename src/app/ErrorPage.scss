@@ -1,0 +1,22 @@
+@use "../partials/_mixins" as mx;
+@use "../partials/_variables" as vars;
+
+.generalErrorPage {
+	& {
+		@include mx.page;
+	}
+
+	&__inner {
+		@include mx.inner;
+	}
+
+	&__heading,
+	&__sub-heading {
+		color: var(--text-color);
+		text-align: center;
+	}
+
+	&__sub-heading {
+		margin-top: 1rem;
+	}
+}
