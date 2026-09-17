@@ -7,6 +7,10 @@
 		justify-content: center;
 	}
 
+	&__inner {
+		@include mx.inner;
+	}
+
 	&__heading,
 	&__sub-heading {
 		color: var(--text-color);

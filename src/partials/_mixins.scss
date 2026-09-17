@@ -8,17 +8,13 @@
 	display: flex;
 	flex-direction: column;
 	margin-inline: auto;
-	max-width: 1920px;
+	max-width: vars.$ultra-wide;
 	min-height: calc(100vh - 10rem + 1px);
-	padding-block: 4rem;
-	padding-top: 0rem;
+	padding-ottom: 4rem;
+	padding-top: 0;
 	width: 100%;
 
 	@media (min-width: vars.$tablet) {
-		margin-top: 4rem;
-	}
-
-	@media (min-width: 768px) {
 		margin-top: 0;
 	}
 }
@@ -29,17 +25,13 @@
 	flex-direction: column;
 	justify-content: center;
 	margin-inline: auto;
-	min-height: calc(100vh - calc(vars.$nav-height + vars.$footer-height) + 20px);
+	min-height: calc(100vh - vars.$nav-height + 1px);
 	padding-block: 4rem;
-	padding-top: 0rem;
+	padding-top: 0;
 	width: 100%;
 
 	@media (min-width: vars.$tablet) {
 		padding-top: 2rem;
-		margin-top: 4rem;
-	}
-
-	@media (min-width: 768px) {
 		margin-top: 0;
 	}
 }
@@ -58,30 +50,29 @@
 	padding: 0.5rem 1rem;
 	transition: background-color 0.3s ease;
 
-	// &:focus,
 	&:hover {
 		background: var(--button-color);
 		color: var(--button-background);
 		outline: 2px solid var(--button-background);
-		transition: all 0.3s ease;
 	}
 
 	&:active {
 		transform: scale(0.98);
-		transition: all 0.3s ease;
 	}
 }
 
 @mixin buttonRounded {
 	@include button;
-	border-radius: 50px;
+	& {
+		border-radius: 3rem;
+	}
 }
 
 @mixin input {
+	background: var(--background-color);
 	border: 1px solid var(--text-color);
 	border-radius: var(--border-radius);
-	background: var(--background-color);
-	color: var(--text-color) !important;
+	color: var(--text-color);
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 1.125rem;
 	padding-block: 0.5rem;
@@ -96,7 +87,7 @@
 
 	&:-webkit-autofill {
 		-webkit-box-shadow: none !important;
-		background-color: none !important;
+		background-color: transparent !important;
 		box-shadow: none !important;
 		color: inherit;
 		transition: background-color 5000s ease-in-out 0s;
@@ -174,7 +165,6 @@
 		gap: 1rem;
 
 		@media (min-width: vars.$tablet) {
-			flex-direction: row;
 			gap: 0.5rem;
 		}
 	}
@@ -199,10 +189,8 @@
 		}
 	}
 
-	&__button {
-		&--remove-icon {
-			stroke: var(--text-color);
-		}
+	&--remove-icon {
+		stroke: var(--text-color);
 	}
 }
 
@@ -215,7 +203,7 @@
 	justify-content: center;
 	letter-spacing: 3px;
 
-	@media (min-width: 400px) {
+	@media (min-width: vars.$small-phone) {
 		font-size: 1.25rem;
 	}
 }
@@ -227,7 +215,6 @@
 }
 
 @mixin disabledButton {
-	cursor: pointer;
 	opacity: 0.5;
 	pointer-events: none;
 }
@@ -239,15 +226,8 @@
 	box-shadow: var(--nav-footer-box-shadow);
 	height: 100vh;
 	position: fixed;
-	// ***for slide in left from right
-	// ***for slide in right from left
-	// left: 0;
 	top: 0;
-	// transform: translateX(100%); /* start offscreen right */
-	// ***for slide in left from right
-	// ***for slide in right from left
-	// transform: translateX(-100%); /* start offscreen right */
-	transition: transform 0.33s ease-in-out; /* only transform for performance */
+	transition: transform 0.33s ease-in-out;
 	width: 80vw;
 	will-change: transform;
 	z-index: 3;
@@ -264,8 +244,10 @@
 
 @mixin sideNavRightToLeft {
 	@include sideNav;
-	right: 0;
-	transform: translateX(100%); /* start offscreen right */
+	& {
+		right: 0;
+		transform: translateX(100%); /* start offscreen right */
+	}
 }
 
 @mixin sideNavLeftToRight {
@@ -284,10 +266,10 @@
 
 @mixin sideNavCloseButton {
 	cursor: pointer;
-	height: 1.85rem;
+	height: vars.$side-nav-close-button-height;
 	position: fixed;
 	top: calc((vars.$nav-height - vars.$side-nav-close-button-height) / 2);
-	width: 1.85rem;
+	width: vars.$side-nav-close-button-height;
 }
 
 @mixin sideNavInner {
@@ -315,11 +297,9 @@
 	height: vars.$nav-toggle-height;
 	justify-content: center;
 	position: absolute;
-	// top: calc((vars.$nav-height - vars.$nav-toggle-height) / 2);
-	// left: 0;
+	top: calc((vars.$nav-height - vars.$nav-toggle-height) / 2);
 	width: 2.25rem;
 
-	// @media (min-width: vars.$medium-tablet) {
 	@media (min-width: vars.$large-tablet) {
 		display: none;
 	}
