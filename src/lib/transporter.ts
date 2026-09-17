@@ -11,5 +11,4 @@ import nodemailer from "nodemailer";
     },
   });
 
-
 export { transporter }

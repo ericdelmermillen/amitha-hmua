@@ -63,13 +63,16 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const initDb = async () => {
-	const connection = await pool.getConnection();
+  let connection: mysql.PoolConnection | undefined;
 
 	try {
+    connection = await pool.getConnection();
 		await connection.query("SELECT 1");
 		console.log("MySQL database connected.");
 	} finally {
-		connection.release();
+    if (connection) {
+      connection.release();
+    }
 	}
 };
 
