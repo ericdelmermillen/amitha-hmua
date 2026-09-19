@@ -7,23 +7,26 @@ import "./ColorModeToggle.scss";
 
 const ColorModeToggle = ({ inputId }: ColorModeToggleProps) => {
   const { resolvedTheme, setTheme } = useTheme();
-  const [ mounted, setMounted ] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [ isMounted, setIsMounted ] = useState(false);
 
   const handleToggle = () => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
-  const isDarkMode = mounted && resolvedTheme === "dark";
+  const isDarkMode = isMounted && resolvedTheme === "dark";
+
+  // useEffect to handle updating of ismounted
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
 
   return (
     <button
       id={inputId}
       className={`colorModeToggle ${isDarkMode ? "colorModeToggle--dark" : ""}`}
-      onClick={handleToggle}
+      onClick={isMounted ? handleToggle : undefined}
+      disabled={!isMounted}
       type="button"
       aria-label="Toggle color mode"
       aria-pressed={isDarkMode}
@@ -38,7 +41,7 @@ const ColorModeToggle = ({ inputId }: ColorModeToggleProps) => {
         src="/icons/crescent_moon.svg"
         alt="Color Mode Dark moon icon"
       />
-      <span className={`colorModeToggle__ball ${mounted ? "show" : "hide"}`} />
+      <span className={`colorModeToggle__ball ${isMounted ? "show" : "hide"}`} />
     </button>
   );
 };
