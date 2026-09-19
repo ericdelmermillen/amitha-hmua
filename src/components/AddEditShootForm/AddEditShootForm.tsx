@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { ChooserItem, InputPhoto, ShootEntity } from "@/typing/interfaces";
 import { EntryNameType } from "@/typing/types";
-import { useState, useEffect, ChangeEvent, SubmitEvent } from "react";
+import { type ChangeEvent, type SubmitEvent, useState, useEffect } from "react";
 import { useAppContext } from "@/hooks/hooks";
 import { getAllModels } from "@/actions/modelActions";
 import { getAllPhotographers } from "@/actions/photographerActions";
@@ -129,15 +129,20 @@ const AddEditShootForm = () => {
       const compressedImageUrl = URL.createObjectURL(compressedImage);
 
       setShootPhotos(prev =>
-        prev.map(photo =>
-          photo.photoNo === inputNo
-            ? {
-                ...photo,
-                photoPreview: compressedImageUrl,
-                photoData: compressedImage
-              }
-            : photo
-        )
+        prev.map(photo => {
+          if (photo.photoNo === inputNo) {
+            if (photo.photoPreview && photo.photoPreview.startsWith("blob:")) {
+              URL.revokeObjectURL(photo.photoPreview);
+            }
+
+            return {
+              ...photo,
+              photoPreview: compressedImageUrl,
+              photoData: compressedImage,
+            };
+          }
+          return photo;
+        })
       );
     } catch (error) {
       console.error("Image compression failed:", error);
@@ -196,6 +201,7 @@ const AddEditShootForm = () => {
     }
 
     try {
+      setAppIsLoading(true);
       const photoUrls: string[] = [];
 
       for (const photo of photos) {
@@ -284,6 +290,12 @@ const AddEditShootForm = () => {
   };
 
   const handleCancel = () => {
+    shootPhotos.forEach((photo) => {
+      if (photo.photoPreview && photo.photoPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(photo.photoPreview);
+      }
+    });
+
     handleNavigateHome();
     toast.info("Cancelling...");
   };
@@ -538,7 +550,7 @@ const AddEditShootForm = () => {
             type="button"
           >
             Add Model
-            <span className="addOrEditShootForm__textButton-icon">
+            <span className="addEditShootForm__textButton-icon">
               <AddIcon 
                 className={"addEditShootForm__add-icon"}
                 strokeClassName={"addEditShootForm__add-stroke"}
@@ -558,15 +570,16 @@ const AddEditShootForm = () => {
                 setSelectChoosers={setModelChoosers}
               />
 
-              <span 
+              <button 
                 className={`addEditShootForm__selector-removeIcon ${modelChoosers.length > 1 ? "show" : ""}`}
                 onClick={modelChoosers.length > 1
                   ? () => handleRemoveSelect("model", number)
                   : undefined
                 }
+                type="button"
               >
                 <MinusIcon className={"addEditShootForm__minus-icon"} />
-              </span>  
+              </button>  
             </div>
           
           )}
@@ -584,7 +597,7 @@ const AddEditShootForm = () => {
             type="button"
           >
             Add Photographer
-            <span className="addOrEditShootForm__textButton-icon">
+            <span className="addEditShootForm__textButton-icon">
               <AddIcon 
                 className={"addEditShootForm__add-icon"}
                 strokeClassName={"addEditShootForm__add-stroke"}
@@ -619,7 +632,6 @@ const AddEditShootForm = () => {
 
         </div>
 
-        
       </div>
 
       <div className="addEditShootForm__button-container">

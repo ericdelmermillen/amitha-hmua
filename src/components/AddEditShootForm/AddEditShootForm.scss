@@ -4,7 +4,10 @@
 .addEditShootForm {
 	& {
 		border: 2px solid var(--text-color);
+		display: flex;
+		flex-direction: column;
 		flex-grow: 1;
+		gap: 2rem;
 		padding-block: 2rem;
 		padding-inline: 1rem;
 		width: 90%;
@@ -16,11 +19,6 @@
 		@media (min-width: vars.$desktop) {
 			max-width: 1000px;
 		}
-
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-		border: 2px solid var(--text-color);
 	}
 
 	&__heading {
@@ -39,8 +37,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
-		left: 50%;
-		z-index: 3;
 	}
 
 	&__label {
@@ -52,32 +48,17 @@
 		}
 	}
 
-	// &__icon-container {
-	// 	// position: absolute;
-	// }
-
 	&__calendarIcon {
 		fill: var(--text-color);
 	}
 
 	&__choosers {
+		align-items: center;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
 		margin-inline: auto;
 		max-width: 25rem;
 		width: 100%;
-
-		// &--tags {
-		// 	border: 2px solid red;
-		// }
-
-		// &--models {
-		// }
-
-		// &--photographers {
-		// 	border: 2px solid green;
-		// }
 	}
 
 	&__textButton {
@@ -109,11 +90,11 @@
 	}
 
 	&__selector-removeIcon {
+		bottom: 0;
 		cursor: pointer;
 		height: 0;
 		opacity: 0;
 		position: absolute;
-		bottom: 0;
 		width: 0;
 
 		&.show {
@@ -152,10 +133,9 @@
 	&__photoInputs {
 		display: grid;
 		gap: 2rem;
-		grid-template-columns: repeat(auto-fit, 1fr);
 		justify-content: center;
-		padding-block: 1rem;
 		margin-block: 1rem;
+		padding-block: 1rem;
 		width: 100%;
 
 		@media (min-width: 500px) {
@@ -194,7 +174,6 @@
 
 		@media (min-width: vars.$desktop) {
 			min-width: min(100%, 900px);
-			width: 200px !important;
 		}
 	}
 

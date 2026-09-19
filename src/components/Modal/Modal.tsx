@@ -292,7 +292,9 @@ const Modal = () => {
                 ? "Edit Bio"
                 : isEditShootMode
                 ? "Edit Shoot"
-                : "Update"
+                : modalAction === "edit"
+                ? "Update"
+                : "Delete"
               }
             </button>
             <button
