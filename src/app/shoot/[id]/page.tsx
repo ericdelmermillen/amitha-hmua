@@ -153,7 +153,6 @@ const generateMetadata = async ( {params }: ShootDetailsPageProps): Promise<Meta
 
 
 export default ShootDetailsPage;
-
 export {
   generateMetadata
 };
