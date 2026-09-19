@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { ShootDetailsPageProps } from "@/typing/interfaces";
 import { getShootByID } from "@/actions/shootActions"
@@ -11,7 +11,6 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
   const shootIdNum = parseInt(id, 10);
 
   if (isNaN(shootIdNum)) {
-    // notFound();
     redirect(`/not-found?shoot=${id}`);
   }
 
@@ -27,7 +26,6 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
   }
 
   if (!data) {
-    // notFound();
     redirect(`/not-found?shoot=${id}`);
   }
 
@@ -54,7 +52,7 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
           
           {photos && photos.map((photo, idx) => 
 
-            <div key={photo.photo_url} className="shootDetailsPage__photo-container">
+            <div key={photo.id} className="shootDetailsPage__photo-container">
               
               {idx === 0 && 
 
@@ -132,7 +130,7 @@ const generateMetadata = async ( {params }: ShootDetailsPageProps): Promise<Meta
 
     const modelNames = shootData?.models.join(", ");
     const photographerNames = shootData?.photographers.join(", ");
-    const primaryImage = shootData?.photo_urls[0]?.photo_url || "";
+    const primaryImage = shootData?.photo_urls?.at(0)?.photo_url || "";
 
     const title = `Shoot #${shootData?.shoot_id}${modelNames ? ` - ${modelNames}` : ""} | Amitha HMUA`;
     const description = `Hair and Makeup by Amitha Millen-Suwanta.${photographerNames ? ` Photography by ${photographerNames}.` : ""}`;
