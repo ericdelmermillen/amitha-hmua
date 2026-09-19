@@ -8,7 +8,7 @@ import Link from "next/link";
 interface ClientLinkProps {
   href: string;
   className?: string;
-  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+  onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
   children?: ReactNode;
   scroll?: boolean;
 }
@@ -24,13 +24,13 @@ const ClientLink = ({
   const { setAppIsLoading } = useAppContext();
 
   const handleLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (isModifiedClick(e)) {
-      onClick?.(e);
-      return;
-    };
+    if (!isModifiedClick(e)) {
+      setAppIsLoading(true);
+    }
 
-    setAppIsLoading(true);
-    onClick?.(e);
+    if (onClick) {
+      onClick(e);
+    }
   };
 
   return (
