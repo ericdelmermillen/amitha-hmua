@@ -14,8 +14,6 @@ import { sendContactFormMessage } from "@/actions/contactActions";
 import { toast } from "react-toastify";
 import "./ContactForm.scss";
 
-const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
-
 const ContactForm = () => {
   const { handleNavigateHome, setAppIsLoading } = useAppContext();
   
@@ -145,32 +143,22 @@ const ContactForm = () => {
   const handleCancel = () => {
     toast.info("Cancelling...");
     setAppIsLoading(true);
-    
-    setTimeout(() => {
-      setAppIsLoading(false);
-      handleClearFormAndGoHome();
-    }, MIN_LOADING_INTERVAL * 2);
+    handleClearFormAndGoHome();
   };
 
   const handleClearFormAndGoHome = () => {
-    setTimeout(() => {
-      setFirstName("");
-      setFirstNameIsValid(true);
-      setLastName("");
-      setLastNameIsValid(true);
-      setEmail("");
-      setEmailIsValid(true);
-      setSubject("");
-      setSubjectIsValid(true);
-      setMessage("");
-      setMessageIsValid(true);
-      setIsSubmitting(false);
-      
-      setTimeout(() => {
-        handleNavigateHome();
-        setAppIsLoading(false);
-      }, MIN_LOADING_INTERVAL * 2);
-    }, MIN_LOADING_INTERVAL * 2);
+    setFirstName("");
+    setFirstNameIsValid(true);
+    setLastName("");
+    setLastNameIsValid(true);
+    setEmail("");
+    setEmailIsValid(true);
+    setSubject("");
+    setSubjectIsValid(true);
+    setMessage("");
+    setMessageIsValid(true);
+    setIsSubmitting(false);
+    handleNavigateHome();
   };
 
   return (
