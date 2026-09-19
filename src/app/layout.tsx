@@ -15,17 +15,14 @@ import "./globals.scss";
 
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      data-scroll-behavior="smooth"
-    >
+    <html lang="en" suppressHydrationWarning>
       <body>
         <AppContextProvider>
           <ThemeProvider>
             <ModalContextProvider>
               <IsLoading />
               <TouchOffDiv />
+              <ToastProvider />
               <Nav />
               <SideNav />
               <Modal />
@@ -34,7 +31,6 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
                 </main>
               <FloatingButton />
               <Footer />
-              <ToastProvider />
             </ModalContextProvider>
           </ThemeProvider>
         </AppContextProvider>

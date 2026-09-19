@@ -12,7 +12,7 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
 
   if (isNaN(shootIdNum)) {
     // notFound();
-    redirect("/not-found");
+    redirect(`/not-found?shoot=${id}`);
   }
 
   let data;
@@ -28,7 +28,7 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
 
   if (!data) {
     // notFound();
-    redirect("/not-found");
+    redirect(`/not-found?shoot=${id}`);
   }
 
   const {

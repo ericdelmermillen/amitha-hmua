@@ -2,7 +2,6 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { BioResponse } from "@/typing/interfaces";
 import { getBio } from "@/actions/bioActions";
-import { toast } from "react-toastify";
 import { splitOnNewLine } from "@/utils/utils";
 import ClientButton from "@/components/ClientButton/ClientButton";
 import "./BioPage.scss";
@@ -14,7 +13,6 @@ const BioPage = async () => {
     response = await getBio();
   } catch (error) {
     console.error("Failed to load bio:", error);
-    toast.error("An error occured. Please try again later.")
     throw error;
   }
 
@@ -31,7 +29,7 @@ const BioPage = async () => {
   
 return (
     <div className="bioPage">
-      <div className={"bioPage__inner"}>
+      <div className="bioPage__inner">
 
         <div className="bioPage__hero-container">
 
@@ -61,7 +59,7 @@ return (
             }
 
           </div>
-          <h3 className={`bioPage__heroName`}>
+          <h3 className="bioPage__heroName">
             {bioName}
           </h3>
 

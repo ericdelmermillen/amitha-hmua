@@ -1,6 +1,5 @@
 @use "../partials/_variables" as vars;
 @use "../partials/_mixins" as mx;
-@import "react-toastify/dist/ReactToastify.css";
 
 // custom vars defined here
 :root {
@@ -48,12 +47,7 @@
 	--button-padding-lg: 0.75rem 1.5rem;
 	--button-padding-xl: 1rem 1.75rem;
 
-	// button text color
-	--button-text-color: #f0f0f0;
-
 	// opacity
-	--faded-text-opacity-value-1: 0.75;
-	--faded-text-opacity-value-2: 0.9;
 	--modal-overlay-bg: rgba(0, 0, 0, 0.5);
 
 	// modal
@@ -64,7 +58,7 @@
 	--gap-value-toast: 0px;
 
 	// colors
-	--error-color: red;
+	--error-color: #ff0000;
 	--neutral-white: #f8f9fa;
 
 	// UI
@@ -78,7 +72,6 @@
 *::before,
 *::after {
 	box-sizing: border-box;
-	font-family: var(--body-font);
 	margin: 0;
 	padding: 0;
 }
@@ -89,10 +82,8 @@ html {
 		scroll-behavior: smooth;
 		text-size-adjust: 100%;
 		-webkit-text-size-adjust: 100%;
-	}
-
-	&[data-scroll-behavior="smooth"] {
-		scroll-behavior: smooth;
+		// preserves space for scroll bar: doesn't show the tracker thing though
+		// scrollbar-gutter: stable;
 	}
 
 	&[data-color-mode="light"] {
@@ -104,7 +95,7 @@ html {
 		--button-link: #888676;
 		--box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 		--nav-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-		--footer-boxShadow: 0 -4px 8px rgba(0, 0, 0, 0.25);
+		--footer-box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.25);
 		--toggle-sky: #47478d;
 		--toggle-ball: #f3f3f3;
 		--error-color: #ff0000;
@@ -136,6 +127,7 @@ body {
 		color: var(--text-color);
 		display: flex;
 		flex-direction: column;
+		font-family: var(--body-font);
 		min-height: calc(100vh + 1px);
 		overflow-x: hidden;
 	}
@@ -166,12 +158,14 @@ ol {
 }
 
 input {
-	&:-webkit-autofill {
-		background: none !important;
-		box-shadow: none !important;
+	&:-webkit-autofill,
+	&:-webkit-autofill:hover,
+	&:-webkit-autofill:focus {
+		-webkit-text-fill-color: var(--text-color);
+		-webkit-box-shadow: 0 0 0px 1000px var(--background-color) inset !important;
+		box-shadow: 0 0 0px 1000px var(--background-color) inset !important;
 		caret-color: var(--text-color);
 		transition: background-color 5000s ease-in-out 0s;
-		-webkit-box-shadow: none !important;
 	}
 }
 
@@ -191,6 +185,7 @@ img {
 
 .app {
 	& {
+		margin-inline: auto;
 		max-width: vars.$ultra-wide;
 		width: 100%;
 	}
@@ -230,6 +225,7 @@ img {
 	}
 
 	&__close-button {
+		position: absolute;
 		top: 0.8rem;
 		right: 0.8rem;
 

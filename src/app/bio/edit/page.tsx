@@ -4,8 +4,9 @@ import {
   ChangeEvent, 
   SubmitEvent, 
   useState, 
+  useRef,
   useEffect, 
-  useCallback 
+  useCallback, 
 } from "react";
 import { useRouter } from "next/navigation";
 import { InputPhoto } from "@/typing/interfaces";
@@ -28,7 +29,7 @@ const EditBioPage = () => {
   const [ bioText, setBioText ] = useState("");
   const [ cancelling, setCancelling ] = useState(false);
 
-  const [ inputPhotos, setInputPhotos ] = useState<InputPhoto[]>([
+  const [ inputPhoto, setInputPhoto ] = useState<InputPhoto[]>([
     {
       photoNo: 1,
       photoPreview: null,
@@ -37,9 +38,11 @@ const EditBioPage = () => {
     }
   ]);
 
+  const cancelTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const router = useRouter();
 
-  const handleBioCNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleBioNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setBioName(e.target.value);
   };
 
@@ -76,16 +79,20 @@ const EditBioPage = () => {
 
       const compressedImageUrl = URL.createObjectURL(compressedImage);
 
-      setInputPhotos(prev =>
-        prev.map(photo =>
-          photo.photoNo === inputNo
-            ? {
-                ...photo,
-                photoPreview: compressedImageUrl,
-                photoData: compressedImage
-              }
-            : photo
-        )
+      setInputPhoto(prev =>
+        prev.map(photo => {
+          if (photo.photoNo === inputNo) {
+            if (photo.photoPreview && photo.photoPreview.startsWith("blob:")) {
+              URL.revokeObjectURL(photo.photoPreview);
+            }
+            return {
+              ...photo,
+              photoPreview: compressedImageUrl,
+              photoData: compressedImage
+            };
+          }
+          return photo;
+        })
       );
     } catch (error) {
       console.error("Image compression failed:", error);
@@ -95,7 +102,8 @@ const EditBioPage = () => {
     }
   }, []);
 
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  // const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
 
     let errors = 0;
@@ -110,7 +118,7 @@ const EditBioPage = () => {
       errors++;
     }
 
-    if (!inputPhotos[0]?.photoPreview) {
+    if (!inputPhoto[0]?.photoPreview) {
       staggerToastsByN("Bio image missing", "error", errors);
       errors++;
     }
@@ -122,7 +130,7 @@ const EditBioPage = () => {
     try {
       setAppIsLoading(true);
 
-      const targetPhoto = inputPhotos[0];
+      const targetPhoto = inputPhoto[0];
       let newImageName = "";
       let isPhotoUpdated = false;
 
@@ -195,10 +203,18 @@ const EditBioPage = () => {
     }
   };
 
+  // const handleCancel = () => {
+  //   setAppIsLoading(true);
+  //   setCancelling(true);
+  //   setTimeout(() => {
+  //     router.push("/bio");
+  //   }, MIN_LOADING_INTERVAL);
+  // };
+
   const handleCancel = () => {
     setAppIsLoading(true);
     setCancelling(true);
-    setTimeout(() => {
+    cancelTimerRef.current = setTimeout(() => {
       router.push("/bio");
     }, MIN_LOADING_INTERVAL);
   };
@@ -216,7 +232,7 @@ const EditBioPage = () => {
         setBioName(response.data.bioName);
         setBioText(response.data.bioText);
 
-        setInputPhotos([
+        setInputPhoto([
           {
             photoNo: 1,
             photoPreview: response.data.bioImgURL ?? null,
@@ -232,6 +248,15 @@ const EditBioPage = () => {
     };
 
     loadBio();
+  }, []);
+
+  // useEffect to clear timeout on handleCancel in case page is unmounted before it fires
+  useEffect(() => {
+    return () => {
+      if (cancelTimerRef.current) {
+        clearTimeout(cancelTimerRef.current);
+      }
+    };
   }, []);
 
   return (
@@ -250,8 +275,8 @@ const EditBioPage = () => {
 
               <div className="editBioPage__photoInput">
                 <PhotoInput
-                  shootPhoto={inputPhotos[0]}
-                  setShootPhotos={setInputPhotos}
+                  shootPhoto={inputPhoto[0]}
+                  setShootPhotos={setInputPhoto}
                   handleImageChange={handleImageChange}
                 />
               </div>
@@ -262,7 +287,7 @@ const EditBioPage = () => {
               type="text"
               className="editBioPage__bio-caption"
               value={bioName}
-              onChange={handleBioCNameChange}
+              onChange={handleBioNameChange}
             />
 
           </div>

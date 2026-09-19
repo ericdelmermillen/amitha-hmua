@@ -15,9 +15,9 @@ if (!BUCKET_PATH || !BIO_DIRNAME) {
 
 // getBio
 const getBio = async (): Promise<BioResponse> => {
-	try {
-		const [rows] = await pool.query(
-			`SELECT * FROM bio LIMIT 1`
+  try {
+    const [rows] = await pool.query(
+      `SELECT * FROM bio LIMIT 1`
 		);
 
 		const bioData = (rows as any[])[0];
