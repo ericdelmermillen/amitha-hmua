@@ -1,7 +1,7 @@
 @use "../../partials/_mixins" as mx;
 @use "../../partials/_variables" as vars;
 
-.homePage {
+.workPage {
 	@include mx.page;
 
 	&__inner {

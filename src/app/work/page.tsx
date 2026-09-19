@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Shoots from "@/components/Shoots/Shoots";
 import "./WorkPage.scss";
 
-const WorkPage = async () => {
+const WorkPage = () => {
 
   return (
-    <div className="homePage">
-      <div className="homePage__inner">
+    <div className="workPage">
+      <div className="workPage__inner">
         <Shoots />
       </div>
     </div>
