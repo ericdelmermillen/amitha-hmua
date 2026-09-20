@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppContext } from "@/hooks/hooks";
 import "./IsLoading.scss";
 
-const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
+const APP_ISLOADING_DELAY = parseInt(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY || "300", 10);
 
 const IsLoading = () => {
   const { appIsLoading } = useAppContext();
@@ -12,15 +12,20 @@ const IsLoading = () => {
   const [ isVisible, setIsVisible ] = useState(false);
   const [ show, setShow ] = useState(false);
 
+  // useEffect to handle visibility of isLoading
   useEffect(() => {
+    let rafID: number;
+
     if (appIsLoading) {
       setIsVisible(true);
 
-      requestAnimationFrame(() => {
+      rafID = requestAnimationFrame(() => {
         setShow(true);
       });
 
-      return;
+      return () => {
+        cancelAnimationFrame(rafID);
+      };
     }
 
     setShow(false);
@@ -29,7 +34,9 @@ const IsLoading = () => {
       setIsVisible(false);
     }, APP_ISLOADING_DELAY);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [appIsLoading]);
 
   if (!isVisible) {

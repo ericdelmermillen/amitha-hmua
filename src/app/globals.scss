@@ -185,6 +185,8 @@ img {
 
 .app {
 	& {
+		display: flex;
+		flex-direction: column;
 		margin-inline: auto;
 		max-width: vars.$ultra-wide;
 		width: 100%;
