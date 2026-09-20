@@ -124,7 +124,7 @@ const ContactForm = () => {
 
       staggerToastsByN(response.message, "success", 1);
       staggerToastsByN("Redirecting...", "info", 2);
-      handleClearFormAndGoHome();
+      handleNavigateHome();
 
     } catch (error) {
       setIsSubmitting(false);
@@ -143,23 +143,9 @@ const ContactForm = () => {
   const handleCancel = () => {
     toast.info("Cancelling...");
     setAppIsLoading(true);
-    handleClearFormAndGoHome();
-  };
-
-  const handleClearFormAndGoHome = () => {
-    setFirstName("");
-    setFirstNameIsValid(true);
-    setLastName("");
-    setLastNameIsValid(true);
-    setEmail("");
-    setEmailIsValid(true);
-    setSubject("");
-    setSubjectIsValid(true);
-    setMessage("");
-    setMessageIsValid(true);
-    setIsSubmitting(false);
     handleNavigateHome();
   };
+
 
   return (
     <div className="contactForm">

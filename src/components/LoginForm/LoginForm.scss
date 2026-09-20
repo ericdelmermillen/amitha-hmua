@@ -2,28 +2,25 @@
 @use "../../partials/variables.scss" as vars;
 
 .loginForm {
-	align-items: center;
-	background-color: var(--modal-overlay-bg);
-	display: flex;
-	justify-content: center;
-	height: 100%;
-	left: 50%;
-	position: absolute;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	width: 100%;
+	& {
+		align-items: center;
+		background-color: var(--modal-overlay-bg);
+		display: flex;
+		justify-content: center;
+		height: 100%;
+		position: fixed;
+		width: 100%;
+	}
 
 	&__modal {
 		background-color: var(--background-color);
 		border-radius: var(--border-radius);
-		// ?
 		box-shadow: 0 0 10px var(--box-shadow);
 		display: flex;
 		flex-direction: column;
 		min-height: 28rem;
 		max-height: 34rem;
 		max-width: 40rem;
-		overflow-y: auto;
 		padding-block: 1rem;
 		padding-inline: 2rem;
 		position: absolute;
@@ -41,7 +38,7 @@
 		color: var(--text-color);
 		font-size: 1.75rem;
 		margin-bottom: 1.5rem;
-		margin-top: 20%;
+		margin-top: 1rem;
 		text-align: center;
 	}
 
@@ -51,7 +48,6 @@
 
 	&__label {
 		display: none;
-		margin-bottom: 5px;
 	}
 
 	&__form {
@@ -63,10 +59,6 @@
 
 	&__input {
 		@include mx.input;
-
-		&:focus {
-			outline: none;
-		}
 	}
 
 	.passwordInput {
@@ -100,10 +92,7 @@
 		visibility: hidden;
 	}
 
-	&__error.email-error {
-		visibility: visible;
-	}
-
+	&__error.email-error,
 	&__error.password-error {
 		visibility: visible;
 	}

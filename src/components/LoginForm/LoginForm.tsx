@@ -7,10 +7,8 @@ import { isValidEmail, isValidPassword, staggerToastsByN } from "@/utils/utils";
 import { loginUser } from "@/actions/authActions"
 import { toast } from "react-toastify";
 import Hide from "@/assets/icons/Hide";
-import Show from "../../assets/icons/Show";
+import Show from "@/assets/icons/Show";
 import "./LoginForm.scss";
-
-const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 
 const LoginForm = () => {
   const { 
@@ -39,7 +37,7 @@ const LoginForm = () => {
 
     if (initialFormCheck) {
       handleCheckEmailIsValid(emailValue);
-    };
+    }
   };
 
   const handleCheckEmailIsValid = (emailValue: string) => {
@@ -52,18 +50,18 @@ const LoginForm = () => {
 
     if (initialFormCheck) {
       handleCheckPasswordIsValid(passwordValue);
-    };
+    }
   };
 
   const handleTogglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
+    setShowPassword(prev => !prev);
   };
 
   const handleCheckPasswordIsValid = (passwordValue: string) => {
     setPasswordIsValid(isValidPassword(passwordValue));
   };
 
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
 
     if (!initialFormCheck) {
@@ -86,7 +84,7 @@ const LoginForm = () => {
 
     if (errors > 0) {
       return;
-    };
+    }
     
     try {
       setIsSubmitting(true);
@@ -113,32 +111,12 @@ const LoginForm = () => {
   const handleCancel = () => {
     toast.info("Cancelling...");
     setAppIsLoading(true);
-    
-    setTimeout(() => {
-      setAppIsLoading(false);
-      handleClearFormAndGoHome();
-    }, MIN_LOADING_INTERVAL * 2);
-  };
-
-    const handleClearFormAndGoHome = () => {
-    setTimeout(() => {
-      setEmail("");
-      setEmailIsValid(true);
-      setPassword("");
-      setPasswordIsValid(true);
-
-      setIsSubmitting(false);
-      
-      setTimeout(() => {
-        handleNavigateHome();
-        setAppIsLoading(false);
-      }, MIN_LOADING_INTERVAL * 2);
-    }, MIN_LOADING_INTERVAL * 2);
+    handleNavigateHome();
   };
 
   // useEffect to check isSafari boolean after hydration on client
   useEffect(() => {
-    const userAgent = navigator.userAgent.toLowerCase();
+    const userAgent = typeof navigator !== "undefined" ? navigator.userAgent.toLowerCase() : "";
     const isUsingSafari = userAgent.includes("safari") && 
       !userAgent.includes("chrome") && 
       !userAgent.includes("chromium") && 
@@ -186,18 +164,19 @@ const LoginForm = () => {
                 onChange={handlePasswordChange}
               />
 
-              <div 
+              <button 
                 className={`passwordInput__icon ${!isSafari ? "show": ""}`}
                 onClick={handleTogglePasswordVisibility}
+                type="button"
               >
 
                 {showPassword 
-                  ? <Hide className={"passwordInput__icon--hide"}/>
-                  : <Show className={"passwordInput__icon--show"}/>
+                  ? <Hide className="passwordInput__icon--hide"/>
+                  : <Show className="passwordInput__icon--show"/>
                 }
-              </div>
+              </button>
             </div>
-            <div className={`loginForm__error ${!passwordIsValid && initialFormCheck && "password-error"}`}>
+            <div className={`loginForm__error ${!passwordIsValid && initialFormCheck ? "password-error" : ""}`}>
               Invalid Password
             </div>
           </div>

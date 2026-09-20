@@ -66,7 +66,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const handleSideNavLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (isModifiedClick(e)) {
       return;
-    };
+    }
     
     handleClearAppState();
   };
