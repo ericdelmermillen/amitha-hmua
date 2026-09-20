@@ -6,7 +6,6 @@ import AddIcon from "@/assets/icons/AddIcon";
 import UpIcon from "@/assets/icons/UpIcon";
 import "./FloatingButton.scss";
 
-
 const FloatingButton = () => {
   const { 
     isLoggedIn,
@@ -15,22 +14,23 @@ const FloatingButton = () => {
    } = useAppContext();
 
   return (
-    <div className={`floatingButton ${isLoggedIn && showFloatingButton
-      ? "toTop" 
+    <button className={`floatingButton ${isLoggedIn && showFloatingButton
+      ? "addShoot"
       : !showFloatingButton
       ? "hide"
-      : "add_Shoot"}`}
+      : "toTop" }`}
       onClick={isLoggedIn 
         ? handleNavigateToAddShoot
         : scrollToTop}
+      type="button"
     >
       {isLoggedIn 
 
-        ? <AddIcon className={"floatingButton__add"} strokeClassName={"floatingButton__add-stroke"}/>
-        : <UpIcon className={"floatingButton__up"} strokeClassName={"floatingButton__up-stroke"}/>
+        ? <AddIcon className="floatingButton__add" strokeClassName="floatingButton__add-stroke"/>
+        : <UpIcon className="floatingButton__up" strokeClassName="floatingButton__up-stroke"/>
           
       }
-    </div>
+    </button>
   );
 };
 

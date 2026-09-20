@@ -263,7 +263,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
   // useEffect to update showFloatingButton on page navigation
   useEffect(() => {
-    if (!pathname.includes("edit") && !pathname.includes("add")) {
+    if (!pathname.includes("edit") && !pathname.includes("add") && !pathname.includes("login")) {
       setShowFloatingButton(true);
     } else {
       setShowFloatingButton(false);
