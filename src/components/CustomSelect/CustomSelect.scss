@@ -25,7 +25,7 @@
 		}
 
 		&.tall {
-			z-index: 6;
+			z-index: 4;
 		}
 	}
 
@@ -66,6 +66,7 @@
 			min-height: 3rem;
 			position: sticky;
 			top: 0;
+			width: 100%;
 			z-index: 2;
 		}
 	}
@@ -107,13 +108,18 @@
 			}
 		}
 
-		&:nth-of-type(2) {
+		&:nth-of-type(1) {
 			border-top: none;
 		}
 
 		&--add {
 			color: var(--button-link);
 			text-decoration: underline;
+			width: 100%;
+		}
+
+		&:nth-last-of-type(1) {
+			border-bottom: 1px solid var(--text-color);
 		}
 	}
 
@@ -204,7 +210,7 @@
 
 		&.show {
 			display: block;
-			z-index: 5;
+			z-index: 3;
 		}
 	}
 }

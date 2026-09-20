@@ -18,12 +18,11 @@ const CustomSelect = ({
   setSelectChoosers 
 }: CustomSelectProps) => {
   const {
-    setAppIsLoading,
     setShowTouchOffDiv,
     appIsLoading
   } = useAppContext();
 
-  const { handleOpenModal } = useModalContext()
+  const { handleOpenModal } = useModalContext();
 
   const [ showSelectOptions, setShowSelectOptions ] = useState(false);
 
@@ -34,12 +33,12 @@ const CustomSelect = ({
       return
     }
 
-    setShowSelectOptions(prev => !prev)
+    setShowSelectOptions(prev => !prev);
   };
 
   const handleUpdateSelectValue = (option: ShootEntity) => {
-    setSelectChoosers((prevChoosers) => {
-      return prevChoosers.map((chooser) => {
+    setSelectChoosers(prevChoosers => {
+      return prevChoosers.map(chooser => {
         if (chooser.number === chooserNumber) {
           return {
             ...chooser,
@@ -55,15 +54,13 @@ const CustomSelect = ({
   };
 
   const handleTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
-    requestAnimationFrame(() => {
-      const nodes = document.querySelectorAll(".customSelect__inner");
-      
-      for (const node of nodes) {
-        if (!showSelectOptions) {
-          node.scrollTop = 0;
-        }
-      }
-    })
+    if (e.target !== e.currentTarget) {
+      return;
+    }
+
+    if (!showSelectOptions) {
+      e.currentTarget.scrollTop = 0;
+    }
   };
   
   const handleAddNewOption = (e: MouseEvent<HTMLElement>) => {
@@ -84,18 +81,12 @@ const CustomSelect = ({
     e.preventDefault();
     e.stopPropagation();
 
-    if (entityType === "model") {
-      handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id})
-    } else if (entityType === "photographer") {
-      handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id})
-    } else if (entityType === "tag") {
-      handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id})
-    }  
+    handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id});
   };
 
   const handleTouchOff = () => {
     setShowSelectOptions(false);
-    // setAppIsLoading(false);
+    setShowTouchOffDiv(false);
   };
   
   return (
@@ -106,9 +97,10 @@ const CustomSelect = ({
           onTransitionEnd={handleTransitionEnd}
         >
           <div className={`customSelect__select ${showSelectOptions ? "tall" : ""}`} >
-            <div 
+            <button 
               className="customSelect__selectValue"
-              onClick={(e) => handleTopRowClick(e)}
+              onClick={handleTopRowClick}
+              type="button"
             >
               <span 
                 className={`customSelect__default-option 
@@ -137,7 +129,7 @@ const CustomSelect = ({
                   strokeClassName={"customSelect__down-stroke"}
                 />
               </div>
-            </div>
+            </button>
 
             {selectOptions.map((option) => {
             
@@ -154,6 +146,7 @@ const CustomSelect = ({
                   <button 
                     className="customSelect__inline-button customSelect__inline-button--delete"
                     onClick={(e) => handleDeleteEntry(e, option)}
+                    type="button"
                   >
                     <DeleteIcon 
                       className={"customSelect__icon customSelect__icon--delete"}
@@ -166,6 +159,7 @@ const CustomSelect = ({
                   <button 
                     className="customSelect__inline-button customSelect__inline-button--edit"
                     onClick={(e) => handleEditEntry(e, option)}
+                    type="button"
                   >
                     <EditIcon 
                       className={"customSelect__icon customSelect__icon--edit"}
@@ -176,12 +170,13 @@ const CustomSelect = ({
               );
             })}     
 
-            <div 
+            <button 
               className="customSelect__option customSelect__option--add"
-              onClick={(e) => handleAddNewOption(e)}
+              onClick={handleAddNewOption}
+              type="button"
             >
               Add New Entry
-            </div>
+            </button>
           </div>
         </div>
       </div>
