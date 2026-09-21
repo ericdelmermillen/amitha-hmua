@@ -7,24 +7,17 @@
 		background: var(--nav-and-footer-bg);
 		box-shadow: var(--nav-box-shadow);
 		display: flex;
-		height: 5rem;
 		height: vars.$nav-height;
 		justify-content: center;
 		margin-top: 0;
 		position: fixed;
-		transition: all var(--nav-transition-interval) ease;
+		transition: top var(--nav-transition-interval) ease;
 		top: 0;
 		width: 100%;
 		z-index: 5;
 
 		@media (min-width: vars.$tablet) {
-			align-items: center;
-			display: flex;
-			justify-content: center;
-			left: 0;
 			padding-block: 1rem;
-			position: fixed;
-			right: 0;
 		}
 
 		&.hide {
@@ -39,10 +32,6 @@
 		max-width: vars.$ultra-wide;
 		padding-inline: 2.5rem;
 		width: 100%;
-
-		@media (min-width: vars.$tablet) {
-			justify-content: baseline;
-		}
 	}
 
 	&__logo {
@@ -94,6 +83,7 @@
 			fill: var(--text-color);
 			justify-content: center;
 			max-width: 4rem;
+			transform: translateY(0.25rem);
 		}
 
 		&--colorMode {

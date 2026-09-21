@@ -1,12 +1,12 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { type MouseEvent } from "react";
 import { useAppContext } from "@/hooks/hooks";
-import { usePathname } from "next/navigation";
 import { navPages } from "@/constants/navPages";
-import ClientButton from "../ClientButton/ClientButton";
-import ClientLink from "../ClientLink/ClientLink";
-import ColorModeToggle from "../ColorModeToggle/ColorModeToggle";
+import ClientButton from "@/components/ClientButton/ClientButton";
+import ClientLink from "@/components/ClientLink/ClientLink";
+import ColorModeToggle from "@/components/ColorModeToggle/ColorModeToggle";
 import Logo from "@/assets/icons/Logo";
 import NavBarToggle from "@/components/NavBarToggle/NavBarToggle";
 import NavSelect from "@/components/NavSelect/NavSelect"
@@ -34,17 +34,16 @@ const Nav = () => {
     setShowSideNav(false);
   };
 
+  const navIsHidden = getPrevScrollYPosValue() < scrollYPos && scrollYPos > 50;
+
   return (
-    <nav 
-      id="nav"
-      className={`nav ${getPrevScrollYPosValue() < scrollYPos && scrollYPos > 50 ? "hide" : ""}`}
-    >
+    <nav className={`nav ${navIsHidden ? "hide" : ""}`}>
       <div className="nav__content">
 
         <ClientLink 
           href="/work" 
           scroll={false}
-          onClick={isOnHome ? handleIsOnHome : () => handleNavigateHome}
+          onClick={isOnHome ? handleIsOnHome : () => handleNavigateHome()}
         >
           <div className="nav__logo">
             <Logo className={"nav__logo--icon"}/>
@@ -71,17 +70,14 @@ const Nav = () => {
                 </li>
               ) 
             : (
-                <li
-                  key={href}
-                  className="nav__link nav__link--instagram"
-                >
+                <li key={href} className={`nav__link nav__link${modifierClass}`}>
                   <a
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`nav__link nav__link${modifierClass}`}
+                    className="nav__link-anchor"
                   >
-                    {Icon && <Icon className="nav__link--instagram" />}
+                    {Icon && <Icon className={`nav__icon nav__icon${modifierClass}`} />}
                   </a>
                 </li>
               )
