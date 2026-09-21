@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppContext } from "../../hooks/hooks";
+import { useAppContext } from "@/hooks/hooks";
 import "./NavBarToggle.scss";
 
 const NavBarToggle = () => {
@@ -17,10 +17,9 @@ const NavBarToggle = () => {
 
   return (
     <button 
-      type="button"
       className={`navBarToggle ${showSideNav ? "open" : ""}`}
-      aria-label="Toggle Menu"
       onClick={handleToggle}
+      type="button"
     >
       <div className="navBarToggle__icon"></div>
       <div className="navBarToggle__icon"></div>
