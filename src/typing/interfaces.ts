@@ -191,6 +191,11 @@ interface NavSelectProps {
   modifierClass?: string;
 }
 
+interface NavLinkProps {
+  children?: ReactNode;
+  href: string;
+}
+
 interface ShootDatePickerProps {
   id: string;
   shootDate: Date | null;
@@ -464,6 +469,7 @@ export {
   type NavPage,
   type ClientButtonProps,
   type NavSelectProps,
+  type NavLinkProps,
   type ShootDatePickerProps,
   type CustomSelectProps,
   type PhotoInputProps,
