@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useRef, useEffect, SyntheticEvent } from "react";
+import { useState, useRef, useEffect, SyntheticEvent, useCallback } from "react";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { deleteShootByID } from "@/actions/shootActions";
 import { addTag, deleteTagByID, editTagByID } from "@/actions/tagActions";
@@ -11,7 +11,7 @@ import { normalizeCasing, scrollToTop } from "@/utils/utils";
 import { toast } from "react-toastify";
 import "./Modal.scss";
 
-const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
+const MIN_LOADING_INTERVAL = parseInt(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL || "250", 10);
 
 const Modal = () => {
   const { 
@@ -38,6 +38,7 @@ const Modal = () => {
   const [ cancelling, setCancelling ] = useState(false);
 
   const newEntryNameRef = useRef<HTMLInputElement>(null);
+  const modalCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const router = useRouter();
 
@@ -63,6 +64,7 @@ const Modal = () => {
     }
 
     const modalEntityIDNum = parseInt(String(modalEntityID), 10);
+    
 
     if (isNaN(modalEntityIDNum)) {
       console.error("Invalid shoot ID provided for deletion");
@@ -88,17 +90,7 @@ const Modal = () => {
       scrollToTop();
     }
   };
-
-  const transitionModalClose = (handleFinishIsLoading = false) => {
-    setShowModal(false);
-    setTimeout(() => {
-      handleModalClearing();
-      if (handleFinishIsLoading) {
-        setAppIsLoading(false)
-      }
-    }, MIN_LOADING_INTERVAL * 2);
-  }
-
+  
   const handleSubmit = async (e?: SyntheticEvent<HTMLFormElement>) => {
     if (e) {
       e.preventDefault();
@@ -150,7 +142,7 @@ const Modal = () => {
         response = await addModel(newName);
       } else if (isAddPhotographerMode) {
         response = await addPhotographer(newName);
-      } if (isAddTagMode) {
+      } else if (isAddTagMode) {
         response = await addTag(newName);
       } else if (isEditTagMode) {
         response = await editTagByID(modalEntityID as number, newName);
@@ -194,12 +186,26 @@ const Modal = () => {
     }
   };
 
-  const handleModalClearing = () => {
+  const handleModalClearing = useCallback(() => {
     if (newEntryNameRef.current) {
       newEntryNameRef.current.value = "";
     }
     handleClearModal();
-  };
+  }, [handleClearModal]);
+
+  const transitionModalClose = useCallback((handleFinishIsLoading = false) => {
+    if (modalCloseTimeoutRef.current) {
+      clearTimeout(modalCloseTimeoutRef.current);
+    }
+
+    setShowModal(false);
+    modalCloseTimeoutRef.current = setTimeout(() => {
+      handleModalClearing();
+      if (handleFinishIsLoading) {
+        setAppIsLoading(false);
+      }
+    }, MIN_LOADING_INTERVAL * 2);
+  }, [setShowModal, handleModalClearing, setAppIsLoading]);
 
   const handleCancel = () => {
     setCancelling(true);
@@ -210,7 +216,7 @@ const Modal = () => {
   useEffect(() => {
     const handleKeyDown =  (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        handleModalClearing();
+        transitionModalClose();
       };
     };
 
@@ -221,12 +227,12 @@ const Modal = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [showModal, handleClearModal]);
+  }, [showModal, transitionModalClose]);
 
   // useEffect to clear modal on scroll
   useEffect(() => {
     if (showModal) {
-      handleModalClearing();
+      transitionModalClose();
     };
   }, [scrollYPos]);
 
@@ -236,6 +242,15 @@ const Modal = () => {
       newEntryNameRef.current.value = modalAction === "edit" ? (modalEntityName ?? "") : "";
     }
   }, [showModal, modalAction, modalEntityName]);
+
+  // useEffect to handle clearing modalCloseTimeoutRef
+  useEffect(() => {
+    return () => {
+      if (modalCloseTimeoutRef.current) {
+        clearTimeout(modalCloseTimeoutRef.current);
+      }
+    };
+  }, []);
   
   // useEffect to reset cancelling when modal opens again
   useEffect(() => {
@@ -261,7 +276,7 @@ const Modal = () => {
             }`}
           </h3>
 
-          {(modalAction === "add" || modalAction === "edit" && !isEditShootMode && !isEditBioMode) && 
+          {((modalAction === "add" || modalAction === "edit") && !isEditShootMode && !isEditBioMode) && 
 
             <input 
               className='modal__input'
@@ -292,6 +307,8 @@ const Modal = () => {
                 ? "Edit Bio"
                 : isEditShootMode
                 ? "Edit Shoot"
+                : modalAction === "add"
+                ? "Create"
                 : modalAction === "edit"
                 ? "Update"
                 : "Delete"
@@ -301,6 +318,7 @@ const Modal = () => {
               className={`modal__button modal__button--cancel ${cancelling ? "disabled" : ""}`}
               onClick={handleCancel}
               disabled={cancelling}
+              type="button"
             >
               Cancel
             </button>

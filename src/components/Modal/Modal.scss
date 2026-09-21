@@ -55,11 +55,10 @@
 
 	&__heading {
 		& {
-			text-align: center;
-			margin-top: 2rem;
-
 			color: var(--text-color);
 			font-size: 2rem;
+			margin-top: 2rem;
+			text-align: center;
 		}
 	}
 
@@ -88,7 +87,6 @@
 			flex-direction: column;
 			flex-shrink: 0;
 			gap: 1rem;
-			margin-top: 2rem;
 			margin-top: auto;
 
 			@media (min-width: vars.$small-tablet) {
