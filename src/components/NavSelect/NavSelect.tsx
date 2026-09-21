@@ -8,7 +8,7 @@ import { scrollToTop } from "@/utils/utils";
 import DownIcon from "@/assets/icons/DownIcon";
 import "./NavSelect.scss";
 
-const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
+const MIN_LOADING_INTERVAL = parseInt(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL || "250", 10);
 
 const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
   const {
@@ -27,34 +27,40 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
 
   const safeModifierClass = typeof modifierClass === "string" ? modifierClass : "";
 
-  const handleTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
-    requestAnimationFrame(() => {
-      const nodes = document.querySelectorAll(".navSelect__inner");
-      
-      for (const node of nodes) {
-        if (!showNavSelectOptions) {
-          node.scrollTop = 0;
-        }
-      }
-    })
-  };
+  const showDefaultOption = 
+    (!showNavSelectOptions && !navSelectValue) || 
+    (showNavSelectOptions && !navSelectValue) || 
+    (showNavSelectOptions && navSelectValue);
 
+  const showSelectedOption = 
+    (showNavSelectOptions && !navSelectValue) || 
+    (!showNavSelectOptions && navSelectValue);
+
+  const handleTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget) {
+      return;
+    }
+
+    if (!showNavSelectOptions) {
+      e.currentTarget.scrollTop = 0;
+    }
+  };
+    
   const handleDownArrowClick = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
 
-    setShowNavSelectOptions(prev => {
-      const next = !prev
-      
-      if (next) {
-        setShowTouchOffDiv(true)
-      }
-      
-      return next;
-    });
+    const nextState = !showNavSelectOptions;
+    setShowNavSelectOptions(nextState);
+
+    if (nextState) {
+      setShowTouchOffDiv(true);
+    } else {
+      setShowTouchOffDiv(false);
+    }
   };
 
   const handleUpdateSelectValue = (option: ShootEntity) => {
-    const isSamePageClick = option.name.toLowerCase() === searchParams.get("tag")?.toLowerCase()
+    const isSamePageClick = option.name.toLowerCase() === searchParams.get("tag")?.toLowerCase();
 
     setAppIsLoading(true);
     setNavSelectValue(option.name);
@@ -106,41 +112,27 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     const locationTagName = searchParams.get("tag");
     setNavSelectValue(locationTagName ? locationTagName.toUpperCase() : null);
   }, [searchParams, setNavSelectValue]);
-
+  
   return (
     <div className={`navSelect ${showNavSelectOptions ? "tall" : "short"}`}>
       <div 
-        id="navSelectInner"
-        onTransitionEnd={handleTransitionEnd}
         className={`navSelect__inner ${showNavSelectOptions ? "tall" : ""}`}
+        onTransitionEnd={handleTransitionEnd}
       >
         <div className={`navSelect__select ${showNavSelectOptions ? "tall" : ""}`} >
           <div 
             className={`navSelect__selectValue ${safeModifierClass} ${!showNavSelectOptions ? "short" : ""}`} 
               onClick={handleTopOptionClick}
           >
-            <span 
-              className={`navSelect__default-option 
-              ${(!showNavSelectOptions && !navSelectValue) 
-                || (showNavSelectOptions && !navSelectValue) 
-                || (showNavSelectOptions && navSelectValue)
-                ? "show" 
-                : "hide"}`}
-            >
+            <span className={`navSelect__default-option ${showDefaultOption ? "show" : "hide"}`}>
               WORK
             </span>
-            <span 
-              className={`navSelect__default-option 
-              ${
-                (showNavSelectOptions && !navSelectValue) || (!showNavSelectOptions && navSelectValue) 
-                ? "show" 
-                : "hide"}`}
-            >
+            <span className={`navSelect__default-option ${showSelectedOption ? "show" : "hide"}`}>
               {navSelectValue ? `# ${navSelectValue.toUpperCase()}` : null}
             </span>
             <div 
               className="navSelect__down"
-              onClick={(e) => handleDownArrowClick(e)}
+              onClick={handleDownArrowClick}
             >
               <DownIcon 
                 className={"navSelect__down-icon"}

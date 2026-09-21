@@ -38,14 +38,15 @@
 		transition: max-height 0.25s ease;
 		width: 100%;
 		-ms-overflow-style: none; // hide in explorer
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
 	}
 
 	&.tall &__inner {
 		max-height: 30rem;
 		transition: max-height 0.5s ease;
-
-		@media (min-width: vars.$large-tablet) {
-		}
 	}
 
 	&__select {
@@ -126,16 +127,6 @@
 		&.disabled {
 			opacity: 0.5;
 		}
-	}
-
-	/* Hide scrollbar for WebKit browsers (Safari and Chrome) */
-	&__inner::-webkit-scrollbar {
-		display: none;
-	}
-
-	/* Hide the scrollbar */
-	&::-webkit-scrollbar {
-		width: 0;
 	}
 
 	&__down {

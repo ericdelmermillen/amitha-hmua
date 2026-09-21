@@ -31,6 +31,10 @@
 		transition: max-height 0.25s ease;
 		width: 100%;
 		-ms-overflow-style: none; // hide in explorer
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
 	}
 
 	&.tall &__inner {
@@ -41,10 +45,6 @@
 			transition: max-height 0.5s ease;
 		}
 	}
-
-	// &.short &__inner {
-	// 	overflow-y: hidden;
-	// }
 
 	&__select {
 		color: var(--text-color);
@@ -65,18 +65,14 @@
 		}
 	}
 
-	&.tall &__selectValue {
-		background: var(--nav-and-footer-bg);
-	}
-
 	&__default-option {
 		&.hide {
 			display: none;
 		}
 
 		&.show {
-			display: block;
 			color: var(--text-color);
+			display: block;
 			text-transform: uppercase;
 		}
 	}
@@ -101,38 +97,24 @@
 		}
 	}
 
-	/* Hide scrollbar for WebKit browsers (Safari and Chrome) */
-	&__inner::-webkit-scrollbar {
-		display: none;
-	}
-
-	/* Hide the scrollbar */
-	&::-webkit-scrollbar {
-		width: 0;
-	}
-
 	&__down {
 		align-items: center;
 		display: flex;
 		height: 3rem;
+		justify-content: center;
 		position: absolute;
 		right: 0;
 		top: 0;
-		justify-content: center;
 		width: 3rem;
-
-		&__stroke {
-			stroke: var(--text-color);
-		}
-	}
-
-	&__down-icon {
-		height: 14px;
-		width: 14px;
 	}
 
 	&__down-stroke {
 		stroke: var(--text-color);
 		stroke-width: 20px;
+	}
+
+	&__down-icon {
+		height: 14px;
+		width: 14px;
 	}
 }
