@@ -1,9 +1,10 @@
 "use client";
 
 import type { AppContextValue, ModalContextValue } from "@/typing/interfaces";
-import { useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { AppContext } from "@/contexts/AppContext";
 import { ModalContext } from "@/contexts/ModalContext";
+import { checkIfIsFirefox } from "@/utils/utils";
 
 const useAppContext = (): AppContextValue => {
   const context = useContext(AppContext);
@@ -21,7 +22,18 @@ const useModalContext = (): ModalContextValue => {
   return context;
 };
 
+const useIsFirefox = () => {
+  const [ isFirefox, setIsFirefox ] = useState(false);
+
+  useEffect(() => {
+    setIsFirefox(checkIfIsFirefox());
+  }, []);
+
+  return isFirefox;
+};
+
 export { 
   useAppContext,
   useModalContext,
+  useIsFirefox
 };

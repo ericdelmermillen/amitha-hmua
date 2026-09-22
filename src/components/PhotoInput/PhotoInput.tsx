@@ -10,12 +10,11 @@ import {
   useState 
 } from "react";
 import { PhotoInputProps } from "@/typing/interfaces";
-import { checkIfIsFirefox } from "@/utils/utils";
+import { useIsFirefox } from "@/hooks/hooks";
 import PhotoPlaceholder from "@/assets/icons/PhotoPlaceholder";
 import "./PhotoInput.scss";
 
-const isFirefox = checkIfIsFirefox();
-const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
+const MIN_LOADING_INTERVAL = parseInt(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL || "250", 10);
 
 const PhotoInput = ({ 
   shootPhoto, 
@@ -26,6 +25,7 @@ const PhotoInput = ({
 }: PhotoInputProps) => {
 
   const [ showImage, setShowImage ] = useState(false);
+  const isFirefox = useIsFirefox();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -80,12 +80,14 @@ const PhotoInput = ({
   const handleImageLoad = () => {
     setShowImage(true);
   };
-
+  
   // useEffect to clean up blob data
   useEffect(() => {
+    const previewToRevoke = shootPhoto.photoPreview;
+
     return () => {
-      if (shootPhoto.photoPreview && shootPhoto.photoPreview.startsWith("blob:")) {
-        URL.revokeObjectURL(shootPhoto.photoPreview);
+      if (previewToRevoke?.startsWith("blob:")) {
+        URL.revokeObjectURL(previewToRevoke);
       }
     };
   }, [shootPhoto.photoPreview]);
@@ -163,6 +165,7 @@ const PhotoInput = ({
         onChange={handleFileChange}
       />
     </div>
-  )};
+  );
+};
 
 export default PhotoInput;

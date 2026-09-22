@@ -1,15 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useState, DragEvent } from "react";
+import { useState, DragEvent, useEffect } from "react";
 import { ShootProps } from "@/typing/interfaces";
-import { useAppContext, useModalContext } from "@/hooks/hooks";
+import { useAppContext, useIsFirefox, useModalContext } from "@/hooks/hooks";
 import { checkIfIsFirefox } from "@/utils/utils";
 import DeleteIcon from "@/assets/icons/DeleteIcon"
 import EditIcon from "@/assets/icons/EditIcon";
 import "./Shoot.scss";
-
-const isFirefox = checkIfIsFirefox();
 
 const Shoot = ({ 
   shootID, 
@@ -24,8 +22,8 @@ const Shoot = ({
 }: ShootProps) => {
 
   const { isLoggedIn } = useAppContext();
-  
   const {  handleOpenModal } = useModalContext();
+  const isFirefox = useIsFirefox();
 
   const [ imageIsLoaded, setIsImagedLoaded ] = useState(false);
 
