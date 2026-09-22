@@ -11,7 +11,12 @@ import ClientLink from "@/components/ClientLink/ClientLink";
 import Shoot from "@/components/Shoot/Shoot";
 import "./Shoots.scss";
 
-const itemsPerPage = 12;
+// ***Uncancelled in-flight request / dangling promise race condition:
+// If a fetch is in flight and the user navigates away or switches tags, the promise resolution 
+// can execute after unmount/cleanup, dirtying global AppContext with stale shoot data.
+
+// const itemsPerPage = 12;
+const itemsPerPage = 3;
 
 const Shoots = () => {
   const { 
@@ -33,6 +38,10 @@ const Shoots = () => {
     handleRefreshShoots
   } = useAppContext();
 
+  // console.log("selectedTag", selectedTag?.name)
+  
+  
+
   const searchParams = useSearchParams();
   const tagParam = searchParams.get("tag");
   const params = useParams();
@@ -48,6 +57,9 @@ const Shoots = () => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const isFetchingRef = useRef(false);
 
+  const finalShootsPageLoadedRef = useRef(finalShootsPageLoaded);
+  finalShootsPageLoadedRef.current = finalShootsPageLoaded;
+
   const handleShootDragStart = (e: DragEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>, shootID: number) => {
     const selectedShoot = shoots.find(shoot => shoot.shootID === shootID);
     setActiveDragShoot(selectedShoot || null);
@@ -62,11 +74,6 @@ const Shoots = () => {
   const saveNewOrder = async () => {
     setShootOrderIsEditable(false);
     setAppIsLoading(true);
-
-
-    // if (tokenIsExpired) {
-    //   return;
-    // };
     
     if (isLoggedIn) {      
       toast.info("Updating database. One sec...");
@@ -170,7 +177,6 @@ const Shoots = () => {
 
   // useEffect to fetch shoots
   useEffect(() => {
-    // Guard: If tag is in URL but selectedTag hasn't resolved from DB tags yet, wait
     if (tagParam && selectedTag === null) {
       return;
     }
@@ -181,6 +187,7 @@ const Shoots = () => {
     }
 
     if (!tagParam && selectedTag !== null && !isOnShootDetails) {
+    console.log("right here")
       return;
     }
 
@@ -209,7 +216,6 @@ const Shoots = () => {
               return filteredShoots;
             }
 
-            // Why are we filtering out the selectedShoot twice??
             return [
               ...prevShoots,
               ...filteredShoots.filter(
@@ -238,14 +244,14 @@ const Shoots = () => {
   useEffect(() => {
     const sentinel = sentinelRef.current;
 
-    if (!sentinel || finalShootsPageLoaded) {
+    if (!sentinel) {
       return;
     }
 
-    const observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver(entries => {
       const target = entries[0];
 
-      if (target.isIntersecting && !isFetchingRef.current && !finalShootsPageLoaded && shoots.length > 0) {
+      if (target.isIntersecting && !isFetchingRef.current && !finalShootsPageLoadedRef.current) {
         setCurrentShootsPage((prevPage) => prevPage + 1);
         setShouldUpdateShoots(true);
       }
@@ -256,7 +262,7 @@ const Shoots = () => {
     return () => {
       observer.disconnect();
     };
-  }, [finalShootsPageLoaded, shoots.length]);
+  }, [setCurrentShootsPage, setShouldUpdateShoots]);
 
   // useEffect to sync URL tag param with AppContext
   useEffect(() => {
@@ -280,28 +286,21 @@ const Shoots = () => {
         router.push("/notfound");
       }
     } else if (selectedTag !== null && !isOnShootDetails) {
-      setShoots([])
-      
       setSelectedTag(null);
       handleRefreshShoots();
     }
   }, [tagParam, tags, selectedTag, isOnShootDetails, router]);
-
-  // useEffect to clear shoots state on mounting /shoots
-  // useEffect(() => {
-  //   handleRefreshShoots()
-  // }, []);
 
   // Clear shoots and selectedTag on unmount so leaving /work doesn't leave stale data in context
   useEffect(() => {
     handleRefreshShoots();
 
     return () => {
-      setShoots([]);
       setSelectedTag(null);
+      setShootOrderIsEditable(false);
+      handleRefreshShoots();
     };
   }, []);
-
   
   return (
     <div className="shoots">
@@ -309,25 +308,25 @@ const Shoots = () => {
       {isOnShootDetails &&
 
         <h3 className="shoots__shootDetailsHeading">
-          Other {selectedTag ? normalizeCasing(selectedTag.name) : null} Shoots
+          Other {selectedTag ? normalizeCasing(selectedTag.name || "") : null} Shoots
         </h3>
 
       }
       
       <div className={`shoots__inner ${isOnShootDetails ? "onShootDetails" : ""}`}>
 
-        {shoots.map(shoot => (
+        {shoots.map(({ shootID, displayOrder, thumbnailURL, models, photographers }) => (
 
           <ClientLink 
-            key={shoot.shootID} 
-            href={tagParam ? `/shoot/${shoot.shootID}?tag=${tagParam}` : `/shoot/${shoot.shootID}`}
+            key={shootID} 
+            href={tagParam ? `/shoot/${shootID}?tag=${tagParam}` : `/shoot/${shootID}`}
           >
             <Shoot
-              shootID={shoot.shootID}
-              displayOrder={shoot.displayOrder}
-              thumbnailURL={shoot.thumbnailURL}
-              models={shoot.models}
-              photographers={shoot.photographers}
+              shootID={shootID}
+              displayOrder={displayOrder}
+              thumbnailURL={thumbnailURL}
+              models={models}
+              photographers={photographers}
               isOnShootDetails={isOnShootDetails}
               shootOrderIsEditable={shootOrderIsEditable}
               handleShootDragStart={handleShootDragStart}
@@ -367,7 +366,14 @@ const Shoots = () => {
         : null
       }
 
-      <div className="shoots__sentinel" ref={sentinelRef}></div>
+    
+      {!finalShootsPageLoaded 
+    
+        ? <div className="shoots__sentinel" ref={sentinelRef}></div> 
+        : null
+      }
+
+    <div className="shoots__sentinel" ref={sentinelRef}></div> 
     </div>
   );
 };

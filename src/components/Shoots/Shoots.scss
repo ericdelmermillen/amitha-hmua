@@ -5,6 +5,7 @@
 	& {
 		display: flex;
 		flex-direction: column;
+		margin-bottom: 2rem;
 		max-width: min(calc(100vw - 4rem), vars.$desktop);
 		min-width: min(calc(100vw - 4rem), vars.$desktop);
 	}
@@ -20,9 +21,7 @@
 		display: grid;
 		gap: 1rem;
 		grid-template-columns: repeat(1, 1fr);
-		height: 80%;
 		min-height: 60vh;
-		min-width: 100%;
 
 		@media (min-width: vars.$tablet) {
 			grid-template-columns: repeat(2, 1fr);
@@ -56,7 +55,9 @@
 	}
 
 	&__sentinel {
-		height: 0;
+		height: 1px;
+		pointer-events: none;
+		visibility: hidden;
 		width: 100%;
 	}
 }

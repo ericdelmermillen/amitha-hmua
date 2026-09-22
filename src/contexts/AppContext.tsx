@@ -110,6 +110,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   };
 
   const handleNavigateHome = (tagObj?: ShootEntity) => {
+    console.log("handleNavigateHome")
     if (!tagObj) {
       router.push("/work");
     } else if (tagObj) {
@@ -286,7 +287,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   }, []);
 
 
-  const contextValues = {
+  const contextValues: AppContextValue = {
     // auth & session
     isLoggedIn, 
     setIsLoggedIn,
