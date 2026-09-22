@@ -1,5 +1,5 @@
-@use "../../partials/mixins.scss" as mx;
-@use "../../partials/variables.scss" as vars;
+@use "../../partials/_mixins.scss" as mx;
+@use "../../partials/_variables.scss" as vars;
 
 .shoot {
 	& {
@@ -41,7 +41,7 @@
 
 	&__img {
 		@include mx.shootImg;
-		* {
+		& {
 			opacity: 0;
 			transition: opacity var(--placeholder-transition-time) ease-out;
 		}
@@ -120,29 +120,8 @@
 		}
 	}
 
-	&__shoot_id {
-		align-items: center;
-		background: var(--background-color);
-		border-radius: 50%;
-		box-shadow: var(--box-shadow);
-		color: var(--text-color);
-		display: flex;
-		height: 2.5rem;
-		justify-content: center;
-		outline: 1px solid var(--text-color);
-		position: absolute;
-		right: 0.75rem;
-		top: 0.75rem;
-		padding: 0.55rem;
-		width: 2.5rem;
-
-		&:hover {
-			scale: 1.05;
-		}
-	}
-
-	.models__label,
-	.photographers__label {
+	&__models-label,
+	&__photographers-label {
 		display: none;
 	}
 }

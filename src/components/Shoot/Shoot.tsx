@@ -1,11 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useState, DragEvent, useEffect } from "react";
+import { useState, DragEvent } from "react";
 import { ShootProps } from "@/typing/interfaces";
 import { useAppContext, useIsFirefox, useModalContext } from "@/hooks/hooks";
-import { checkIfIsFirefox } from "@/utils/utils";
-import DeleteIcon from "@/assets/icons/DeleteIcon"
+import DeleteIcon from "@/assets/icons/DeleteIcon";
 import EditIcon from "@/assets/icons/EditIcon";
 import "./Shoot.scss";
 
@@ -22,12 +21,12 @@ const Shoot = ({
 }: ShootProps) => {
 
   const { isLoggedIn } = useAppContext();
-  const {  handleOpenModal } = useModalContext();
+  const { handleOpenModal } = useModalContext();
   const isFirefox = useIsFirefox();
 
-  const [ imageIsLoaded, setIsImagedLoaded ] = useState(false);
+  const [ imageIsLoaded, setImageIsLoaded ] = useState(false);
 
-  const handleUpdateImageIsLoaded = () => setIsImagedLoaded(true);
+  const handleUpdateImageIsLoaded = () => setImageIsLoaded(true);
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -57,25 +56,22 @@ const Shoot = ({
       
       {isLoggedIn && !isOnShootDetails && !shootOrderIsEditable
 
-        ? <div 
-            className="shoot__deleteBtn"
-            onClick={(e) => handleOpenModal({e, action: "delete", entityType: "shoot", entityID: shootID})}
-          >
-            <DeleteIcon className={"shoot__deleteBtn--icon"} />
-          </div>
+        ? 
+          <>
+            <div 
+              className="shoot__deleteBtn"
+              onClick={(e) => handleOpenModal({e, action: "delete", entityType: "shoot", entityID: shootID})}
+            >
+              <DeleteIcon className={"shoot__deleteBtn--icon"} />
+            </div>
 
-        : null
-        
-      }
-
-      {isLoggedIn && !isOnShootDetails && !shootOrderIsEditable
-
-        ? <div 
-            className="shoot__editBtn"
-            onClick={(e) => handleOpenModal({e, action: "edit", entityType: "shoot", entityID: shootID})}
-          >
-            <EditIcon className={"shoot__editBtn--icon"} />
-          </div>
+            <div 
+              className="shoot__editBtn"
+              onClick={(e) => handleOpenModal({e, action: "edit", entityType: "shoot", entityID: shootID})}
+            >
+              <EditIcon className={"shoot__editBtn--icon"} />
+            </div>
+          </>
 
         : null
         
@@ -106,22 +102,16 @@ const Shoot = ({
 
       <div className={`shoot__info ${!isOnShootDetails ? "show" : ""}`}>
         <p className="shoot__models">
-          <span className="models__label">
-            {models && models.length > 1 
-              ? "Models: " 
-              : "Model: "}
+          <span className="shoot__models-label">
+            {models && models.length > 1 ? "Models: " : "Model: "}
           </span>
-          {models && models.length > 1 
-            ? models.join(", ") 
-            : models}
+          {models && models.length > 1 ? models.join(", ") : models}
         </p>
         <p className="shoot__photographers">
-          <span className="photographers__label">   
-            Photos
+          <span className="shoot__photographers-label">   
+            Photos:{" "}
           </span>
-            {photographers && photographers.length > 0
-              ? photographers.join(", ")
-              : ""}
+            {photographers && photographers.length > 0 ? photographers.join(", ") : ""}
         </p>
       </div>
 
