@@ -13,13 +13,11 @@ const ShootDatePicker = ({ shootDate, setShootDate, className, rawDate }: ShootD
   return (
     <div className="shootDatePicker">
       <DatePicker
-        selected={rawDate
-          ? rawDate
-          : shootDate}
+        selected={rawDate? rawDate : shootDate}
         onChange={handleChange}
         className="shootDatePicker__selector"
         dateFormat="MM/dd/yyyy"
-        placeholderText={shootDate ? "Select a date" : undefined}
+        placeholderText="Select a date"
       />
       <div className="shootDatePicker__icon-container">
         <CalendarIcon className={className} />
