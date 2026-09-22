@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { 
   ChangeEvent,
   DragEvent, 
@@ -15,6 +14,8 @@ import PhotoPlaceholder from "@/assets/icons/PhotoPlaceholder";
 import "./PhotoInput.scss";
 
 const MIN_LOADING_INTERVAL = parseInt(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL || "250", 10);
+
+// *** revisit placeholders once I implement suspense
 
 const PhotoInput = ({ 
   shootPhoto, 
@@ -44,7 +45,9 @@ const PhotoInput = ({
       setTimeout(() => {
         setShowImage(true);
       }, MIN_LOADING_INTERVAL);
-    };
+      
+      e.target.value = "";
+    }
   };
 
   const handleClearInput = (e: MouseEvent<HTMLElement>) => {
@@ -67,11 +70,11 @@ const PhotoInput = ({
         return shootPhoto;
       });
 
-    return updatedPhotos;
-  });
+      return updatedPhotos;
+    });
 
-  setShowImage(false);
-};
+    setShowImage(false);
+  };
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -80,7 +83,7 @@ const PhotoInput = ({
   const handleImageLoad = () => {
     setShowImage(true);
   };
-  
+
   // useEffect to clean up blob data
   useEffect(() => {
     const previewToRevoke = shootPhoto.photoPreview;
@@ -114,29 +117,17 @@ const PhotoInput = ({
       // draggable
       >
 
-        {shootPhoto.photoPreview && shootPhoto.photoPreview.startsWith("blob:") 
-        
-        ? (
-            <img
-              className={`photoInput__image ${showImage ? "inFront" : ""}`}
-              src={shootPhoto.photoPreview}
-              onLoad={handleImageLoad}
-              alt="Photo preview"
-              draggable
-            />
-          ) 
-        : shootPhoto.photoPreview ? 
-          (
-            <Image
+        {shootPhoto.photoPreview 
+
+          ? <img
               className={`photoInput__image ${showImage ? "inFront" : ""}`}
               src={shootPhoto.photoPreview}
               alt="Photo preview"
               onLoad={handleImageLoad}
-              draggable
-              fill
             />
-          ) 
-        : null}
+          : null
+
+        }
           
         <PhotoPlaceholder
           className={`photoInput__placeholder ${showImage ? "behind" : ""}`}
