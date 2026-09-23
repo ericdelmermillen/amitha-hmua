@@ -187,7 +187,6 @@ const Shoots = () => {
     }
 
     if (!tagParam && selectedTag !== null && !isOnShootDetails) {
-    console.log("right here")
       return;
     }
 

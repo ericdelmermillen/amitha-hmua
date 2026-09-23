@@ -110,7 +110,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   };
 
   const handleNavigateHome = (tagObj?: ShootEntity) => {
-    console.log("handleNavigateHome")
     if (!tagObj) {
       router.push("/work");
     } else if (tagObj) {

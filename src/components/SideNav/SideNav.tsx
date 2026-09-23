@@ -10,7 +10,7 @@ import ClientLink from "@/components/ClientLink/ClientLink";
 import NavSelect from "@/components/NavSelect/NavSelect";
 import "./SideNav.scss";
 
-const NAV_CLICK_DELAY = Number(process.env.NEXT_PUBLIC_NAV_CLICK_DELAY);
+const NAV_CLICK_DELAY = parseInt(process.env.NEXT_PUBLIC_NAV_CLICK_DELAY || "250", 10);
 
 const SideNav = () => {
   const { 
@@ -44,10 +44,19 @@ const SideNav = () => {
       };
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowSideNav(false);
+        console.log("esc")
+      }
+    };
+
     document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [showSideNav, setShowSideNav]);
 
@@ -55,13 +64,14 @@ const SideNav = () => {
     <div className={`sideNav ${showSideNav ? "show" : ""}`}>
       <div className="sideNav__inner">
 
-        <div 
+        <button 
           className="sideNav__close-button" 
           onClick={handleSetShowSideNav}
+          type="button"
         >
           <div className="sideNav__close-icon"></div>
           <div className="sideNav__close-icon"></div>
-        </div>
+        </button>
         
         <div className="sideNav__menu">
           <ul className="sideNav__links">
@@ -77,7 +87,7 @@ const SideNav = () => {
               ? (
                 <li 
                   key={href} 
-                  className={`sideNav__link sideNav__link ${modifierClass}`}
+                  className={`sideNav__link sideNav__link--${modifierClass}`}
                   onClick={pathname !== href
                     ? handleSideNavLinkClick
                     : handleIsOnSamePage
@@ -90,7 +100,7 @@ const SideNav = () => {
                 ) 
               : (
                   <li 
-                    className={`sideNav__link sideNav__link${modifierClass}`}
+                    className={`sideNav__link sideNav__link--${modifierClass}`}
                     key={href}
                   >
                     <a href={href} target="_blank" rel="noopener noreferrer">
@@ -100,13 +110,13 @@ const SideNav = () => {
                 )
             )}
 
-            <div className="sideNav__logOut">
+            <li className="sideNav__logOut">
               <ClientButton 
                 text="Logout"
                 variant="rounded"
                 buttonType="logOut"
               />
-            </div>
+            </li>
             <li className="sideNav__colorModeToggler">
               <ColorModeToggle inputId={"sideNavColorModeToggle"} />
             </li>

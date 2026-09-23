@@ -5,19 +5,19 @@ const navPages: NavPage[] = [
   { 
     pageName: "BIO", 
     href: "/bio", 
-    modifierClass: "--bio", 
+    modifierClass: "bio", 
     icon: null 
   },
   { 
     pageName: "CONTACT", 
     href: "/contact", 
-    modifierClass: "--contact", 
+    modifierClass: "contact", 
     icon: null 
   },
   { 
     pageName: "INSTAGRAM", 
     href: "https://www.instagram.com/amitha_hmua/", 
-    modifierClass: "--instagram", 
+    modifierClass: "instagram", 
     icon: Instagram 
   },
 ];

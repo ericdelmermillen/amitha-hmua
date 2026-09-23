@@ -100,7 +100,6 @@
 
 	&__colorModeToggler {
 		align-items: center;
-		margin-inline: auto;
 		display: flex;
 		justify-content: center;
 		left: 50%;
@@ -111,10 +110,6 @@
 
 .navSelect {
 	&__selectValue.side-nav {
-		background: var(--background-color);
-	}
-
-	&.tall &__selectValue.side-nav {
 		background: var(--background-color);
 	}
 }
