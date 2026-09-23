@@ -9,6 +9,10 @@ const TouchOffDiv = () => {
     showTouchOffDiv 
   } = useAppContext();
 
+  if (!showTouchOffDiv) {
+    return null;
+  }
+
   return (
     <div className={`touchOffDiv ${showTouchOffDiv ? "show" : ""}`} onClick={handleTouchOffDiv}/>
   );
