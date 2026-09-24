@@ -1,3 +1,4 @@
+import { type QueryResultRow } from "pg";
 import { 
   type ReactNode, 
   type ChangeEvent,
@@ -315,10 +316,17 @@ interface EntityRow extends RowDataPacket {
   name: string;
 }
 
+interface BioResponseData {
+  bioName: string;
+  bioText: string;
+  bioImgURL: string;
+  bioImageNotSet: boolean;
+}
+
 interface BioResponse {
-	success: boolean;
-	data?: BioData;
-	message?: string;
+  success: boolean;
+  message?: string;
+  data?: BioResponseData;
 }
 
 interface GetShootSummariesParams {
@@ -453,6 +461,14 @@ interface PhotographerShoot {
   shoot_id: number;
 }
 
+// from action refactor
+interface BioRow extends QueryResultRow {
+  id: number;
+  name: string;
+  text: string;
+  img_url: string | null;
+}
+
 export {
   type ContextProviderProps,
   type AppContextValue,
@@ -486,6 +502,7 @@ export {
   type TokenDetails,
   type UserRow,
   type EntityRow,
+  type BioResponseData,
   type BioResponse,
   type GetShootSummariesParams,
   type GetShootSummariesResponse,
@@ -511,4 +528,6 @@ export {
   type TagShoot,
   type ModelShoot,
   type PhotographerShoot,
+  // 
+  type BioRow,
 };

@@ -1,9 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ActionResponse, BioResponse, UpdatedBioData } from "@/typing/interfaces";
+import { type PoolClient } from "pg";
+import { 
+  type BioResponse, 
+  type BioRow, 
+  type ActionResponse, 
+  type UpdatedBioData 
+} from "@/typing/interfaces";
+import { pool } from "@/db/dbClient_pg";
 import { deleteFiles } from "@/s3/s3";
-import { pool } from "@/db/dbClient";
 import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
 const BUCKET_PATH = process.env.BUCKET_PATH;
@@ -16,41 +22,38 @@ if (!BUCKET_PATH || !BIO_DIRNAME) {
 // getBio
 const getBio = async (): Promise<BioResponse> => {
   try {
-    const [rows] = await pool.query(
-      `SELECT * FROM bio LIMIT 1`
-		);
+    const result = await pool.query<BioRow>(
+      "SELECT id, name, text, img_url FROM bio LIMIT 1"
+    );
 
-		const bioData = (rows as any[])[0];
+    const data = result.rows[0];
 
-		if (!bioData) {
-			return {
-				success: false,
-				message: "Bio data not found or not set"
-			};
-		}
+    if (!data) {
+      return {
+        success: false,
+        message: "Bio data not found or not set",
+      };
+    }
 
-		const bioImgURL = bioData.bio_img_url
-			? `${BUCKET_PATH}${BIO_DIRNAME}/${bioData.bio_img_url}`
-			: "";
+    const bioImgURL = data.img_url ? `${BUCKET_PATH}${BIO_DIRNAME}/${data.img_url}` : "";
 
-		return {
-			success: true,
-			data: {
-				bioName: bioData.bio_name,
-				bioText: bioData.bio_text,
-				bioImgURL,
-				bioImageNotSet: !bioImgURL.length
-			}
-		};
+    return {
+      success: true,
+      data: {
+        bioName: data.name,
+        bioText: data.text,
+        bioImgURL,
+        bioImageNotSet: bioImgURL.length === 0,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching bio data:", error);
 
-	} catch (error) {
-		console.error("Error fetching bio data:", error);
-
-		return {
-			success: false,
-			message: "An error occurred while fetching the Bio Page data"
-		};
-	}
+    return {
+      success: false,
+      message: "An error occurred while fetching the Bio Page data",
+    };
+  }
 };
 
 // updateBio
@@ -58,68 +61,59 @@ const updateBio = async ({
   bio_name,
   bio_img_url,
   bio_text,
-  updated_Photo
+  updated_Photo,
 }: UpdatedBioData): Promise<ActionResponse> => {
   await verifyAndRefreshSession();
 
-  let connection;
+  let client: PoolClient | undefined;
 
   try {
-    connection = await pool.getConnection();
-    await connection.beginTransaction();
+    client = await pool.connect();
+    await client.query("BEGIN");
 
-    const [existingRows] = await connection.query(
-      `SELECT * FROM bio LIMIT 1`
+    const existingResult = await client.query<BioRow>(
+      "SELECT id, name, text, img_url FROM bio LIMIT 1"
     );
 
-    const existingBioData = (existingRows as any[])[0];
+    const existingData = existingResult.rows[0];
 
-    if (!existingBioData) {
-      await connection.query(
+    if (!existingData) {
+      await client.query(
         `
-        INSERT INTO bio
-        (
-          bio_name,
-          bio_text,
-          bio_img_url
-        )
-        VALUES (?, ?, ?)
+        INSERT INTO bio (name, text, img_url)
+        VALUES ($1, $2, $3)
         `,
         [bio_name, bio_text, bio_img_url]
       );
 
-      await connection.commit();
+      await client.query("COMMIT");
       revalidatePath("/bio");
 
       return {
         success: true,
-        message: "Bio inserted successfully"
+        message: "Bio inserted successfully",
       };
     }
 
-    const previousBioImg = existingBioData.bio_img_url;
+    const previousBioImg = existingData.img_url;
 
-    await connection.query(
+    await client.query(
       `
       UPDATE bio
       SET
-        bio_name = ?,
-        bio_text = ?,
-        bio_img_url = ?
-      WHERE id = ?
+        name = $1,
+        text = $2,
+        img_url = $3
+      WHERE id = $4
       `,
-      [bio_name, bio_text, bio_img_url, existingBioData.id]
+      [bio_name, bio_text, bio_img_url, existingData.id]
     );
 
-    await connection.commit();
+    await client.query("COMMIT");
     revalidatePath("/bio");
 
     // Clean up old photo after successful DB update
-    if (
-      updated_Photo &&
-      previousBioImg &&
-      previousBioImg !== bio_img_url
-    ) {
+    if (updated_Photo && previousBioImg && previousBioImg !== bio_img_url) {
       try {
         await deleteFiles([`${BIO_DIRNAME}/${previousBioImg}`]);
       } catch (error) {
@@ -129,12 +123,11 @@ const updateBio = async ({
 
     return {
       success: true,
-      message: "Bio updated successfully"
+      message: "Bio updated successfully",
     };
-
   } catch (error) {
-    if (connection) {
-      await connection.rollback();
+    if (client) {
+      await client.query("ROLLBACK");
     }
 
     console.error("Error updating Bio:", error);
@@ -150,18 +143,16 @@ const updateBio = async ({
 
     return {
       success: false,
-      message: "Error updating Bio page"
+      message: "Error updating Bio page",
     };
-
   } finally {
-    if (connection) {
-      connection.release();
+    if (client) {
+      client.release();
     }
   }
 };
 
-
-export {
+export { 
   getBio,
   updateBio
-}
+ };

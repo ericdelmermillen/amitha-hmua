@@ -68,7 +68,7 @@ const initDb = async () => {
 	try {
     connection = await pool.getConnection();
 		await connection.query("SELECT 1");
-		console.log("MySQL database connected.");
+		console.log("postgres database connected.");
 	} finally {
     if (connection) {
       connection.release();
