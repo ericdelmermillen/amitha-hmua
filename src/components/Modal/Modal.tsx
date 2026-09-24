@@ -173,6 +173,7 @@ const Modal = () => {
           setShouldRefreshPhotographers(true);
         } else if (modalEntityType === "tag") {
           setShouldRefreshTags(true);
+          console.log(response)
         }
         
       } else {

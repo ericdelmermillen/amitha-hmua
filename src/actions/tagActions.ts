@@ -1,25 +1,22 @@
 "use server";
 
 import { 
-  AddTagResponse, 
-  DeleteTagResponse, 
-  EditTagResponse, 
-  GetAllTagsResponse, 
-  ShootLinkRow, 
-  ShootRow, 
-  ShootEntity, 
-  EntityRow, 
-  TagShoot
+  type AddTagResponse, 
+  type DeleteTagResponse, 
+  type EditTagResponse, 
+  type GetAllTagsResponse, 
+  type ShootLinkRow, 
+  type ShootEntity, 
+  type EntityRow, 
 } from "@/typing/interfaces";
-import { ResultSetHeader } from "mysql2";
-import { pool } from "@/db/dbClient";
-
+import { pool } from "@/db/dbClient_pg";
+import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
 // getAllTags
 const getAllTags = async (): Promise<GetAllTagsResponse> => {
   try {
-    const [rows] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM tags ORDER BY name ASC"
+    const { rows } = await pool.query<EntityRow>(
+      "SELECT id, name FROM tag ORDER BY name ASC"
     );
 
     const formattedTags: ShootEntity[] = rows.map((row) => {
@@ -46,6 +43,8 @@ const getAllTags = async (): Promise<GetAllTagsResponse> => {
 
 // addTag
 const addTag = async (name: string): Promise<AddTagResponse> => {
+  await verifyAndRefreshSession();
+
   const trimmedName = name.trim();
 
   if (!trimmedName) {
@@ -56,25 +55,20 @@ const addTag = async (name: string): Promise<AddTagResponse> => {
   }
 
   try {
-    const [existing] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM tags WHERE name = ? LIMIT 1",
+    const { rows: inserted } = await pool.query<EntityRow>(
+      "INSERT INTO tag (name) VALUES ($1) ON CONFLICT (LOWER(name)) DO NOTHING RETURNING id, name",
       [trimmedName]
     );
 
-    if (existing.length > 0) {
+    if (inserted.length === 0) {
       return {
         success: false,
         message: "A tag with that name already exists",
       };
     }
 
-    await pool.query(
-      "INSERT INTO tags (name) VALUES (?)",
-      [trimmedName]
-    );
-
-    const [rows] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM tags ORDER BY name ASC"
+    const { rows } = await pool.query<EntityRow>(
+      "SELECT id, name FROM tag ORDER BY name ASC"
     );
 
     const formattedTags: ShootEntity[] = rows.map((row) => {
@@ -100,10 +94,12 @@ const addTag = async (name: string): Promise<AddTagResponse> => {
 
 // editTagByID
 const editTagByID = async (id: number, name: string): Promise<EditTagResponse> => {
+  await verifyAndRefreshSession();
+
   const parsedID = parseInt(String(id), 10);
   const trimmedName = name.trim();
 
-  if (isNaN(parsedID) || parsedID <= 0) {
+  if (Number.isNaN(parsedID) || parsedID <= 0) {
     return {
       success: false,
       message: "Valid tag ID is required",
@@ -118,22 +114,11 @@ const editTagByID = async (id: number, name: string): Promise<EditTagResponse> =
   }
 
   try {
-    const [existing] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM tags WHERE id = ? LIMIT 1",
-      [parsedID]
-    );
-
-    if (existing.length === 0) {
-      return {
-        success: false,
-        message: `Tag with ID ${parsedID} does not exist`,
-      };
-    }
-
-    const [duplicate] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM tags WHERE name = ? AND id != ? LIMIT 1",
+    const { rows: duplicate } = await pool.query<EntityRow>(
+      "SELECT id, name FROM tag WHERE LOWER(name) = LOWER($1) AND id != $2 LIMIT 1",
       [trimmedName, parsedID]
     );
+    
 
     if (duplicate.length > 0) {
       return {
@@ -142,15 +127,17 @@ const editTagByID = async (id: number, name: string): Promise<EditTagResponse> =
       };
     }
 
-    await pool.query(
-      "UPDATE tags SET name = ? WHERE id = ?",
+    const { rows: updated } = await pool.query<EntityRow>(
+      "UPDATE tag SET name = $1 WHERE id = $2 RETURNING id, name",
       [trimmedName, parsedID]
     );
 
-    const [updated] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM tags WHERE id = ? LIMIT 1",
-      [parsedID]
-    );
+    if (updated.length === 0) {
+      return {
+        success: false,
+        message: `Tag with ID ${parsedID} does not exist`,
+      };
+    }
 
     const formattedTag: ShootEntity = {
       id: updated[0].id,
@@ -174,9 +161,11 @@ const editTagByID = async (id: number, name: string): Promise<EditTagResponse> =
 
 // deleteTagByID
 const deleteTagByID = async (id: number): Promise<DeleteTagResponse> => {
+  await verifyAndRefreshSession();
+
   const parsedID = parseInt(String(id), 10);
 
-  if (isNaN(parsedID) || parsedID <= 0) {
+  if (Number.isNaN(parsedID) || parsedID <= 0) {
     return {
       success: false,
       message: "Valid tag ID is required",
@@ -184,60 +173,32 @@ const deleteTagByID = async (id: number): Promise<DeleteTagResponse> => {
   }
 
   try {
-    const [links] = await pool.query<ShootLinkRow[]>(
-      "SELECT shoot_id FROM shoot_tags WHERE tag_id = ?",
+    const { rows: shoots } = await pool.query<ShootLinkRow>(
+      "SELECT shoot_id FROM shoot_tag WHERE tag_id = $1",
       [parsedID]
     );
 
-    if (links.length > 0) {
-      const shootIds = links.map((r) => {
-        return r.shoot_id;
-      });
-
-      const [shootRows] = await pool.query<ShootRow[]>(
-        "SELECT id FROM shoots WHERE id IN (?)",
-        [shootIds]
-      );
-
-      const tagShoots: TagShoot[] = shootRows.map((s) => {
-        return {
-          shoot_id: s.id,
-        };
-      });
-
+    if (shoots.length > 0) {
       return {
         success: false,
         message: "Tag cannot be deleted because it appears in existing shoot(s)",
-        tagShoots,
       };
     }
 
-    const [existing] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM tags WHERE id = ? LIMIT 1",
+    const { rows: deleted } = await pool.query<EntityRow>(
+      "DELETE FROM tag WHERE id = $1 RETURNING id, name",
       [parsedID]
     );
 
-    if (existing.length === 0) {
+    if (deleted.length === 0) {
       return {
         success: false,
         message: `Tag number ${parsedID} does not exist`,
       };
     }
 
-    const [result] = await pool.query<ResultSetHeader>(
-      "DELETE FROM tags WHERE id = ?",
-      [parsedID]
-    );
-
-    if (result.affectedRows === 0) {
-      return {
-        success: false,
-        message: `Tag number ${parsedID} not deleted`,
-      };
-    }
-
-    const [rows] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM tags ORDER BY name ASC"
+    const { rows } = await pool.query<EntityRow>(
+      "SELECT id, name FROM tag ORDER BY name ASC"
     );
 
     const formattedTags: ShootEntity[] = rows.map((row) => {

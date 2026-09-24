@@ -392,7 +392,8 @@ interface DeleteTagResponse {
   success: boolean;
   message: string;
   tags?: ShootEntity[];
-  tagShoots?: TagShoot[];
+  // tagShoots?: TagShoot[];
+  tagShoots?: number[];
 }
 
 interface GetAllModelsResponse {
