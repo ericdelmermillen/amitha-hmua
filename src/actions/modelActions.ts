@@ -1,26 +1,27 @@
 "use server";
 
-import { pool } from "@/db/dbClient";
-import { ResultSetHeader } from "mysql2";
 import { 
-  AddModelResponse, 
-  DeleteModelResponse, 
-  EditModelResponse, 
-  GetAllModelsResponse, 
-  ShootEntity, 
-  ModelShoot, 
-  ShootLinkRow, 
-  EntityRow
+  type AddModelResponse, 
+  type DeleteModelResponse, 
+  type EditModelResponse, 
+  type GetAllModelsResponse, 
+  type ShootLinkRow, 
+  type ShootEntity, 
+  type EntityRow, 
 } from "@/typing/interfaces";
+import { pool } from "@/db/dbClient_pg";
+import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
 // getAllModels
 const getAllModels = async (): Promise<GetAllModelsResponse> => {
+  await verifyAndRefreshSession();
+
   try {
-    const [rows] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM models ORDER BY name ASC"
+    const { rows } = await pool.query<EntityRow>(
+      "SELECT id, name FROM model ORDER BY name ASC"
     );
 
-    const formattedModels: ShootEntity[] = rows.map((row) => {
+    const formattedModels: ShootEntity[] = rows.map(row => {
       return {
         id: row.id,
         name: row.name,
@@ -44,6 +45,8 @@ const getAllModels = async (): Promise<GetAllModelsResponse> => {
 
 // addModel
 const addModel = async (name: string): Promise<AddModelResponse> => {
+  await verifyAndRefreshSession();
+
   const trimmedName = name.trim();
 
   if (!trimmedName) {
@@ -54,28 +57,23 @@ const addModel = async (name: string): Promise<AddModelResponse> => {
   }
 
   try {
-    const [existing] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM models WHERE name = ? LIMIT 1",
+    const { rows: inserted } = await pool.query<EntityRow>(
+      "INSERT INTO model (name) VALUES ($1) ON CONFLICT (LOWER(name)) DO NOTHING RETURNING id, name",
       [trimmedName]
     );
 
-    if (existing.length > 0) {
+    if (inserted.length === 0) {
       return {
         success: false,
         message: "A model with that name already exists",
       };
     }
 
-    await pool.query(
-      "INSERT INTO models (name) VALUES (?)",
-      [trimmedName]
+    const { rows } = await pool.query<EntityRow>(
+      "SELECT id, name FROM model ORDER BY name ASC"
     );
 
-    const [rows] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM models ORDER BY name ASC"
-    );
-
-    const formattedModels: ShootEntity[] = rows.map((row) => {
+    const formattedModels: ShootEntity[] = rows.map(row => {
       return {
         id: row.id,
         name: row.name,
@@ -97,11 +95,13 @@ const addModel = async (name: string): Promise<AddModelResponse> => {
 };
 
 // editModelByID
-const editModelByID = async (id: number, newname: string): Promise<EditModelResponse> => {
-  const parsedID = parseInt(String(id), 10);
-  const trimmedName = newname.trim();
+const editModelByID = async (id: number, name: string): Promise<EditModelResponse> => {
+  await verifyAndRefreshSession();
 
-  if (isNaN(parsedID) || parsedID <= 0) {
+  const parsedID = parseInt(String(id), 10);
+  const trimmedName = name.trim();
+
+  if (Number.isNaN(parsedID) || parsedID <= 0) {
     return {
       success: false,
       message: "Valid model ID is required",
@@ -116,20 +116,8 @@ const editModelByID = async (id: number, newname: string): Promise<EditModelResp
   }
 
   try {
-    const [existing] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM models WHERE id = ? LIMIT 1",
-      [parsedID]
-    );
-
-    if (existing.length === 0) {
-      return {
-        success: false,
-        message: `Model with ID ${parsedID} does not exist`,
-      };
-    }
-
-    const [duplicate] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM models WHERE name = ? AND id != ? LIMIT 1",
+    const { rows: duplicate } = await pool.query<EntityRow>(
+      "SELECT id, name FROM model WHERE LOWER(name) = LOWER($1) AND id != $2 LIMIT 1",
       [trimmedName, parsedID]
     );
 
@@ -140,19 +128,21 @@ const editModelByID = async (id: number, newname: string): Promise<EditModelResp
       };
     }
 
-    await pool.query(
-      "UPDATE models SET name = ? WHERE id = ?",
+    const { rows: updated } = await pool.query<EntityRow>(
+      "UPDATE model SET name = $1 WHERE id = $2 RETURNING id, name",
       [trimmedName, parsedID]
     );
 
-    const [updatedRows] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM models WHERE id = ? LIMIT 1",
-      [parsedID]
-    );
+    if (updated.length === 0) {
+      return {
+        success: false,
+        message: `Model with ID ${parsedID} does not exist`,
+      };
+    }
 
     const formattedModel: ShootEntity = {
-      id: updatedRows[0].id,
-      name: updatedRows[0].name,
+      id: updated[0].id,
+      name: updated[0].name,
     };
 
     return {
@@ -171,9 +161,11 @@ const editModelByID = async (id: number, newname: string): Promise<EditModelResp
 
 // deleteModelByID
 const deleteModelByID = async (id: number): Promise<DeleteModelResponse> => {
+  await verifyAndRefreshSession();
+
   const parsedID = parseInt(String(id), 10);
 
-  if (isNaN(parsedID) || parsedID <= 0) {
+  if (Number.isNaN(parsedID) || parsedID <= 0) {
     return {
       success: false,
       message: "Valid model ID is required",
@@ -181,54 +173,35 @@ const deleteModelByID = async (id: number): Promise<DeleteModelResponse> => {
   }
 
   try {
-    const [shootLinks] = await pool.query<ShootLinkRow[]>(
-      "SELECT shoot_id FROM shoot_models WHERE model_id = ?",
+    const { rows: shoots } = await pool.query<ShootLinkRow>(
+      "SELECT shoot_id FROM shoot_model WHERE model_id = $1",
       [parsedID]
     );
 
-    if (shootLinks.length > 0) {
-      const modelShoots: ModelShoot[] = shootLinks.map((s) => {
-        return {
-          shoot_id: s.shoot_id,
-        };
-      });
-
+    if (shoots.length > 0) {
       return {
         success: false,
         message: "Model cannot be deleted because they appear in existing shoot(s)",
-        modelShoots,
       };
     }
 
-    const [existing] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM models WHERE id = ? LIMIT 1",
+    const { rows: deleted } = await pool.query<EntityRow>(
+      "DELETE FROM model WHERE id = $1 RETURNING id, name",
       [parsedID]
     );
 
-    if (existing.length === 0) {
+    if (deleted.length === 0) {
       return {
         success: false,
         message: `Model number ${parsedID} does not exist`,
       };
     }
 
-    const [result] = await pool.query<ResultSetHeader>(
-      "DELETE FROM models WHERE id = ?",
-      [parsedID]
+    const { rows } = await pool.query<EntityRow>(
+      "SELECT id, name FROM model ORDER BY name ASC"
     );
 
-    if (result.affectedRows === 0) {
-      return {
-        success: false,
-        message: `Model number ${parsedID} not deleted`,
-      };
-    }
-
-    const [rows] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM models ORDER BY name ASC"
-    );
-
-    const formattedModels: ShootEntity[] = rows.map((row) => {
+    const formattedModels: ShootEntity[] = rows.map(row => {
       return {
         id: row.id,
         name: row.name,

@@ -27,6 +27,8 @@ CREATE TABLE model (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE UNIQUE INDEX model_name_lower_unique ON model (LOWER(name));
+
 DROP TABLE IF EXISTS photographer CASCADE;
 
 CREATE TABLE photographer (
@@ -35,6 +37,8 @@ CREATE TABLE photographer (
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE UNIQUE INDEX photographer_name_lower_unique ON photographer (LOWER(name));
 
 DROP TABLE IF EXISTS tag CASCADE;
 

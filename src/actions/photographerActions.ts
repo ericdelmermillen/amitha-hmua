@@ -1,26 +1,27 @@
 "use server";
 
-import { pool } from "@/db/dbClient";
 import { 
-  AddPhotographerResponse, 
-  DeletePhotographerResponse, 
-  EditPhotographerResponse, 
-  GetAllPhotographersResponse, 
-  ShootEntity, 
-  EntityRow, 
-  PhotographerShoot, 
-  ShootLinkRow
+  type AddPhotographerResponse, 
+  type DeletePhotographerResponse, 
+  type EditPhotographerResponse, 
+  type GetAllPhotographersResponse, 
+  type ShootLinkRow, 
+  type ShootEntity, 
+  type EntityRow, 
 } from "@/typing/interfaces";
-import { ResultSetHeader } from "mysql2";
+import { pool } from "@/db/dbClient_pg";
+import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
 // getAllPhotographers
 const getAllPhotographers = async (): Promise<GetAllPhotographersResponse> => {
+  await verifyAndRefreshSession();
+  
   try {
-    const [rows] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM photographers ORDER BY name ASC"
+    const { rows } = await pool.query<EntityRow>(
+      "SELECT id, name FROM photographer ORDER BY name ASC"
     );
 
-    const formattedPhotographers: ShootEntity[] = rows.map((row) => {
+    const formattedPhotographers: ShootEntity[] = rows.map(row => {
       return {
         id: row.id,
         name: row.name,
@@ -44,6 +45,8 @@ const getAllPhotographers = async (): Promise<GetAllPhotographersResponse> => {
 
 // addPhotographer
 const addPhotographer = async (name: string): Promise<AddPhotographerResponse> => {
+  await verifyAndRefreshSession();
+
   const trimmedName = name.trim();
 
   if (!trimmedName) {
@@ -54,28 +57,23 @@ const addPhotographer = async (name: string): Promise<AddPhotographerResponse> =
   }
 
   try {
-    const [existing] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM photographers WHERE name = ? LIMIT 1",
+    const { rows: inserted } = await pool.query<EntityRow>(
+      "INSERT INTO photographer (name) VALUES ($1) ON CONFLICT (LOWER(name)) DO NOTHING RETURNING id, name",
       [trimmedName]
     );
 
-    if (existing.length > 0) {
+    if (inserted.length === 0) {
       return {
         success: false,
         message: "A photographer with that name already exists",
       };
     }
 
-    await pool.query(
-      "INSERT INTO photographers (name) VALUES (?)",
-      [trimmedName]
+    const { rows } = await pool.query<EntityRow>(
+      "SELECT id, name FROM photographer ORDER BY name ASC"
     );
 
-    const [rows] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM photographers ORDER BY name ASC"
-    );
-
-    const formattedPhotographers: ShootEntity[] = rows.map((row) => {
+    const formattedPhotographers: ShootEntity[] = rows.map(row => {
       return {
         id: row.id,
         name: row.name,
@@ -97,11 +95,13 @@ const addPhotographer = async (name: string): Promise<AddPhotographerResponse> =
 };
 
 // editPhotographerByID
-const editPhotographerByID = async (id: number, newname: string): Promise<EditPhotographerResponse> => {
-  const parsedID = parseInt(String(id), 10);
-  const trimmedName = newname.trim();
+const editPhotographerByID = async (id: number, name: string): Promise<EditPhotographerResponse> => {
+  await verifyAndRefreshSession();
 
-  if (isNaN(parsedID) || parsedID <= 0) {
+  const parsedID = parseInt(String(id), 10);
+  const trimmedName = name.trim();
+
+  if (Number.isNaN(parsedID) || parsedID <= 0) {
     return {
       success: false,
       message: "Valid photographer ID is required",
@@ -116,21 +116,9 @@ const editPhotographerByID = async (id: number, newname: string): Promise<EditPh
   }
 
   try {
-    const [existing] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM photographers WHERE id = ? LIMIT 1",
-      [parsedID]
-    );
-
-    if (existing.length === 0) {
-      return {
-        success: false,
-        message: `Photographer with ID ${parsedID} does not exist`,
-      };
-    }
-
-    const [duplicate] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM photographers WHERE id != ? AND name = ? LIMIT 1",
-      [parsedID, trimmedName]
+    const { rows: duplicate } = await pool.query<EntityRow>(
+      "SELECT id, name FROM photographer WHERE LOWER(name) = LOWER($1) AND id != $2 LIMIT 1",
+      [trimmedName, parsedID]
     );
 
     if (duplicate.length > 0) {
@@ -140,19 +128,21 @@ const editPhotographerByID = async (id: number, newname: string): Promise<EditPh
       };
     }
 
-    await pool.query(
-      "UPDATE photographers SET name = ? WHERE id = ?",
+    const { rows: updated } = await pool.query<EntityRow>(
+      "UPDATE photographer SET name = $1 WHERE id = $2 RETURNING id, name",
       [trimmedName, parsedID]
     );
 
-    const [updatedRows] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM photographers WHERE id = ? LIMIT 1",
-      [parsedID]
-    );
+    if (updated.length === 0) {
+      return {
+        success: false,
+        message: `Photographer with ID ${parsedID} does not exist`,
+      };
+    }
 
     const formattedPhotographer: ShootEntity = {
-      id: updatedRows[0].id,
-      name: updatedRows[0].name,
+      id: updated[0].id,
+      name: updated[0].name,
     };
 
     return {
@@ -171,9 +161,11 @@ const editPhotographerByID = async (id: number, newname: string): Promise<EditPh
 
 // deletePhotographerByID
 const deletePhotographerByID = async (id: number): Promise<DeletePhotographerResponse> => {
+  await verifyAndRefreshSession();
+
   const parsedID = parseInt(String(id), 10);
 
-  if (isNaN(parsedID) || parsedID <= 0) {
+  if (Number.isNaN(parsedID) || parsedID <= 0) {
     return {
       success: false,
       message: "Valid photographer ID is required",
@@ -181,54 +173,35 @@ const deletePhotographerByID = async (id: number): Promise<DeletePhotographerRes
   }
 
   try {
-    const [shootLinks] = await pool.query<ShootLinkRow[]>(
-      "SELECT shoot_id FROM shoot_photographers WHERE photographer_id = ?",
+    const { rows: shoots } = await pool.query<ShootLinkRow>(
+      "SELECT shoot_id FROM shoot_photographer WHERE photographer_id = $1",
       [parsedID]
     );
 
-    if (shootLinks.length > 0) {
-      const photographerShoots: PhotographerShoot[] = shootLinks.map((s) => {
-        return {
-          shoot_id: s.shoot_id,
-        };
-      });
-
+    if (shoots.length > 0) {
       return {
         success: false,
         message: "Photographer cannot be deleted because they appear in existing shoot(s)",
-        photographerShoots,
       };
     }
 
-    const [existing] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM photographers WHERE id = ? LIMIT 1",
+    const { rows: deleted } = await pool.query<EntityRow>(
+      "DELETE FROM photographer WHERE id = $1 RETURNING id, name",
       [parsedID]
     );
 
-    if (existing.length === 0) {
+    if (deleted.length === 0) {
       return {
         success: false,
         message: `Photographer number ${parsedID} does not exist`,
       };
     }
 
-    const [result] = await pool.query<ResultSetHeader>(
-      "DELETE FROM photographers WHERE id = ?",
-      [parsedID]
+    const { rows } = await pool.query<EntityRow>(
+      "SELECT id, name FROM photographer ORDER BY name ASC"
     );
 
-    if (result.affectedRows === 0) {
-      return {
-        success: false,
-        message: `Photographer number ${parsedID} not deleted`,
-      };
-    }
-
-    const [rows] = await pool.query<EntityRow[]>(
-      "SELECT id, name FROM photographers ORDER BY name ASC"
-    );
-
-    const formattedPhotographers: ShootEntity[] = rows.map((row) => {
+    const formattedPhotographers: ShootEntity[] = rows.map(row => {
       return {
         id: row.id,
         name: row.name,

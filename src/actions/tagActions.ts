@@ -19,7 +19,7 @@ const getAllTags = async (): Promise<GetAllTagsResponse> => {
       "SELECT id, name FROM tag ORDER BY name ASC"
     );
 
-    const formattedTags: ShootEntity[] = rows.map((row) => {
+    const formattedTags: ShootEntity[] = rows.map(row => {
       return {
         id: row.id,
         name: row.name,
@@ -71,7 +71,7 @@ const addTag = async (name: string): Promise<AddTagResponse> => {
       "SELECT id, name FROM tag ORDER BY name ASC"
     );
 
-    const formattedTags: ShootEntity[] = rows.map((row) => {
+    const formattedTags: ShootEntity[] = rows.map(row => {
       return {
         id: row.id,
         name: row.name,
@@ -201,7 +201,7 @@ const deleteTagByID = async (id: number): Promise<DeleteTagResponse> => {
       "SELECT id, name FROM tag ORDER BY name ASC"
     );
 
-    const formattedTags: ShootEntity[] = rows.map((row) => {
+    const formattedTags: ShootEntity[] = rows.map(row => {
       return {
         id: row.id,
         name: row.name,
