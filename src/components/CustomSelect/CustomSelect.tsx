@@ -119,7 +119,7 @@ const CustomSelect = ({
                   ? "show" 
                   : "hide"}`}
               >
-                {entityType === "tag" ? normalizeCasing(selectValue ?? "") : selectValue}
+                {selectValue}
               </span>
               <div 
                 className="customSelect__down"
@@ -154,7 +154,7 @@ const CustomSelect = ({
                     />
                   </button>
                   <span className={`customSelect__option-value ${isOptionSelected ? "disabled" : ""}`}>
-                    {entityType === "tag" ? normalizeCasing(option.name ?? "") : option.name}
+                    {option.name}
                   </span>
                   <button 
                     className="customSelect__inline-button customSelect__inline-button--edit"
