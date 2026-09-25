@@ -1,50 +1,78 @@
 INSERT INTO
-  `bio` (`id`, `bio_name`, `bio_img_url`, `bio_text`)
+  bio (id, name, img_url, text) OVERRIDING SYSTEM VALUE
 VALUES
   (
     1,
     'Amitha Millen-Suwanta',
-    '9f936ff3-b6a3-432e-baaa-34795cad7934.jpeg',
-    'Meet Amitha, a dynamic makeup artist and fashion stylist who thrives on celebrating the unique beauty of each person. With a deep understanding that beauty knows no bounds, she rejects the notion of a one-size-fits-all approach to makeup. Instead, she crafts bespoke experiences for her clients, considering their individuality, comfort levels, and personal style.\n\nLocated in the heart of Toronto, Ontario, Amitha\'s professional journey has been a whirlwind of diverse experiences within the beauty industry. Though she revels in all aspects of her craft, her passion ignites most brightly within the realms of Fashion and Bridal makeup.\n\nFrom esteemed corporations to celebrated singers, actors, and brands across Canada, the USA, and the UK, Amitha and her team ensure that each client embarks on a unique and unforgettable beauty journey.'
+    'e0d7e126-eaab-4e1a-957a-fe9563ed71ec.jpeg',
+    E 'Meet Amitha, a dynamic makeup artist and fashion stylist who thrives on celebrating the unique beauty of each person. With a deep understanding that beauty knows no bounds, she rejects the notion of a one-size-fits-all approach to makeup. Instead, she crafts bespoke experiences for her clients, considering their individuality, comfort levels, and personal style.\n\nLocated in the heart of Toronto, Ontario, Amitha''s professional journey has been a whirlwind of diverse experiences within the beauty industry. Though she revels in all aspects of her craft, her passion ignites most brightly within the realms of Fashion and Bridal makeup.\n\nFrom esteemed corporations to celebrated singers, actors, and brands across Canada, the USA, and the UK, Amitha and her team ensure that each client embarks on a unique and unforgettable beauty journey.'
+  );
+
+SELECT
+  setval(
+    pg_get_serial_sequence('bio', 'id'),
+    (
+      SELECT
+        MAX(id)
+      FROM
+        bio
+    )
   );
 
 INSERT INTO
-  `models` (`id`, `name`)
+  model (id, name) OVERRIDING SYSTEM VALUE
 VALUES
+  (1, 'Test Model'),
   (2, 'Atom K'),
   (3, 'Anna Zemly'),
   (4, 'Note Amit'),
   (5, 'Ash Kalyn'),
+  (6, 'Amire'),
   (7, 'Catherina A'),
   (8, 'John Millen'),
   (9, 'Veronica Ye'),
+  (10, 'Agatha'),
+  (11, 'Makhy '),
   (12, 'Trevor Carter '),
   (13, 'Natasha Rabura'),
   (14, 'Grace '),
+  (15, 'Pattricia '),
+  (16, 'Adwoa'),
   (17, 'Daniella Traa'),
   (18, 'Ally'),
   (19, 'Anna'),
   (20, 'Jayden  Aj'),
+  (21, 'Caylen Walker'),
+  (22, 'Abby'),
   (23, 'Don'),
   (25, 'Gahaya'),
   (26, 'Celia'),
   (27, 'Mimi'),
+  (28, 'Hannah Zervos'),
   (29, 'Gaiyan'),
   (30, 'Luke'),
   (31, 'Oleg'),
   (32, 'Varintorn Yaroojjanont'),
   (33, 'Natalia Polakowski'),
   (34, 'Jessica Gwen'),
+  (35, 'Layla Harris'),
   (36, 'Maria'),
   (37, 'Gloria'),
   (38, 'Ayesha'),
+  (39, 'Alex'),
   (40, 'Issabella'),
   (41, 'Molly'),
+  (42, 'College of Makeup Art and Design'),
+  (45, 'Ash Kalyn (2)'),
   (46, 'Abigail'),
+  (47, 'Vogue Italian Online'),
+  (49, 'Nasty Magazine'),
   (50, 'Catherine'),
   (53, 'Playapex'),
   (54, 'Marcozo'),
+  (55, 'Huemanity Hair Color'),
   (56, 'Paradox Unity'),
+  (57, 'Karina'),
   (58, 'Natalia'),
   (59, 'Hannas'),
   (60, 'Kristien'),
@@ -53,32 +81,74 @@ VALUES
   (64, 'Baie'),
   (65, 'Barbara'),
   (66, 'Emma Almeida'),
+  (67, 'Eric, Wesley, Oliver, Andrew, Ugo'),
   (68, 'Bluivory'),
   (69, 'Daria M'),
   (70, 'Sharon'),
-  (71, 'Elite Models');
+  (71, 'Elite Models'),
+  (72, 'Rae'),
+  (73, 'Tressy'),
+  (75, 'Amitha Millen-Suwanta'),
+  (76, 'Anika Julia'),
+  (82, 'Elis');
+
+SELECT
+  setval(
+    pg_get_serial_sequence('model', 'id'),
+    (
+      SELECT
+        MAX(id)
+      FROM
+        model
+    )
+  );
 
 INSERT INTO
-  `photographers` (`id`, `name`)
+  photographer (id, name) OVERRIDING SYSTEM VALUE
 VALUES
+  (1, 'Test Photo'),
   (4, 'Umair Shaikh'),
   (5, 'AGIVA Canada'),
   (6, 'Ariel Lii '),
   (7, 'Ashley '),
+  (8, 'GJ'),
   (9, 'Jainik'),
+  (10, 'Victoria'),
   (11, 'Mark Gallardo'),
+  (12, 'Peter '),
   (13, 'Emily '),
+  (14, 'Ryan '),
+  (15, 'Backdropsgallery'),
+  (16, 'The Purest Form'),
   (17, 'Sean Leber'),
+  (18, 'Theater'),
+  (19, 'Vouge Italian Online'),
   (20, 'Eli'),
+  (21, 'Hiep'),
   (22, 'Boyu Jian'),
+  (23, 'Olega'),
   (24, 'Matthew Bennette'),
   (25, 'Jian Von Esmane'),
+  (26, 'Jim CMU'),
   (27, 'Alfie'),
-  (29, 'Dimitri Traganis');
+  (29, 'Dimitri Traganis'),
+  (37, 'Samuel Engelking');
+
+SELECT
+  setval(
+    pg_get_serial_sequence('photographer', 'id'),
+    (
+      SELECT
+        MAX(id)
+      FROM
+        photographer
+    )
+  );
 
 INSERT INTO
-  `tags` (`id`, `name`)
+  tag (id, name) OVERRIDING SYSTEM VALUE
 VALUES
+  (7, 'Commercial'),
   (8, 'Creative'),
   (9, 'Styling'),
   (10, 'Beauty'),
@@ -87,25 +157,49 @@ VALUES
   (16, 'Theater'),
   (17, 'Celebrities'),
   (18, 'Bridal'),
-  (40, 'New Tag');
+  (35, 'Fashion');
+
+SELECT
+  setval(
+    pg_get_serial_sequence('tag', 'id'),
+    (
+      SELECT
+        MAX(id)
+      FROM
+        tag
+    )
+  );
 
 INSERT INTO
-  `shoots` (`id`, `shoot_date`, `display_order`)
+  shoot (id, date, display_order) OVERRIDING SYSTEM VALUE
 VALUES
-  (9, '2024-07-10', 124),
-  (14, '2024-07-10', 116),
-  (15, '2024-07-10', 103),
-  (20, '2024-07-10', 108),
-  (44, '2024-07-10', 113),
-  (48, '2024-07-10', 97),
-  (54, '2024-07-10', 139),
-  (62, '2024-07-10', 121),
-  (73, '2024-07-11', 146),
-  (79, '2024-07-17', 95),
-  (81, '2024-07-18', 92);
+  (9, '2024-07-10', 103),
+  (14, '2024-07-10', 95),
+  (15, '2024-07-10', 82),
+  (20, '2024-07-10', 87),
+  (44, '2024-07-10', 92),
+  (48, '2024-07-10', 76),
+  (54, '2024-07-10', 118),
+  (62, '2024-07-10', 100),
+  (73, '2024-07-11', 125),
+  (79, '2024-07-17', 74),
+  (81, '2024-07-18', 71),
+  (134, '2026-09-03', 2),
+  (135, '2026-09-16', 1);
+
+SELECT
+  setval(
+    pg_get_serial_sequence('shoot', 'id'),
+    (
+      SELECT
+        MAX(id)
+      FROM
+        shoot
+    )
+  );
 
 INSERT INTO
-  `photos` (`id`, `shoot_id`, `photo_url`, `display_order`)
+  photo (id, shoot_id, img_url, display_order) OVERRIDING SYSTEM VALUE
 VALUES
   (
     1271,
@@ -168,6 +262,24 @@ VALUES
     4
   ),
   (
+    1324,
+    14,
+    '9cb26eee-920e-4c05-a705-5e8ebf510f6b.jpeg',
+    1
+  ),
+  (
+    1325,
+    14,
+    '627227e4-5272-41b7-a527-9d5510ed996a.jpeg',
+    2
+  ),
+  (
+    1326,
+    14,
+    '9feaeb31-c299-4a3a-b23e-898c94e1b98a.jpeg',
+    3
+  ),
+  (
     1327,
     44,
     '0f8e05c1-4f47-467f-80d5-51193d48fb65.jpeg',
@@ -228,6 +340,42 @@ VALUES
     5
   ),
   (
+    1427,
+    54,
+    'ce1bbd62-0d21-4c7a-9dd2-c0c586d5ea71.jpeg',
+    1
+  ),
+  (
+    1428,
+    54,
+    '82e40892-f5df-4f23-9b2f-4b2fa1621853.jpeg',
+    2
+  ),
+  (
+    1429,
+    54,
+    '1d160f9a-1faa-4338-885f-322d6db6cf09.jpeg',
+    3
+  ),
+  (
+    1430,
+    54,
+    'a6134b59-1166-4d13-9735-fd59a167cc99.jpeg',
+    4
+  ),
+  (
+    1431,
+    54,
+    '5073edb7-c705-4e0d-98e0-99ad2213ecb2.jpeg',
+    5
+  ),
+  (
+    1432,
+    54,
+    '7d493802-8f8b-4c84-9ad6-b05b1c7bb9c4.jpeg',
+    6
+  ),
+  (
     1433,
     73,
     'fa669f86-3229-41c8-9839-58500c5b37b4.jpeg',
@@ -282,93 +430,129 @@ VALUES
     4
   ),
   (
-    1668,
+    1637,
     81,
     '3994b81d-f37d-4de9-81c4-35d54d862c69.jpeg',
     1
   ),
   (
-    1669,
+    1638,
     81,
     '78eb1f4c-aef4-4160-a5bd-1985e387ef87.jpeg',
     2
   ),
   (
-    1670,
+    1639,
     81,
     '5300ce13-ea03-44d4-9f9e-eb4ae8f171cd.jpeg',
     3
   ),
   (
-    1671,
+    1640,
     81,
     '7380a1f2-4e51-47bc-9c81-88106d910c3e.jpeg',
     4
   ),
   (
-    1672,
+    1641,
     81,
     '4a3b7935-2df3-4902-9505-bdf1b72ad561.jpeg',
     5
   ),
   (
-    1675,
-    14,
-    '9cb26eee-920e-4c05-a705-5e8ebf510f6b.jpeg',
+    1899,
+    134,
+    '647a53f4-d841-4db4-bb9f-b9c391f199a6.jpeg',
     1
   ),
   (
-    1676,
-    14,
-    '627227e4-5272-41b7-a527-9d5510ed996a.jpeg',
+    1900,
+    134,
+    '71eb8203-8681-44d2-aa69-9591418cc65a.jpeg',
     2
   ),
   (
-    1677,
-    14,
-    '9feaeb31-c299-4a3a-b23e-898c94e1b98a.jpeg',
+    1901,
+    134,
+    '49662a66-1f12-4a8c-a09f-e9f846414698.jpeg',
     3
   ),
   (
-    1678,
-    54,
-    'ce1bbd62-0d21-4c7a-9dd2-c0c586d5ea71.jpeg',
-    1
-  ),
-  (
-    1679,
-    54,
-    '82e40892-f5df-4f23-9b2f-4b2fa1621853.jpeg',
-    2
-  ),
-  (
-    1680,
-    54,
-    '1d160f9a-1faa-4338-885f-322d6db6cf09.jpeg',
-    3
-  ),
-  (
-    1681,
-    54,
-    'a6134b59-1166-4d13-9735-fd59a167cc99.jpeg',
+    1902,
+    134,
+    '50562863-ef08-4653-bef6-61f07a4d30d3.jpeg',
     4
   ),
   (
-    1682,
-    54,
-    '5073edb7-c705-4e0d-98e0-99ad2213ecb2.jpeg',
+    1903,
+    134,
+    '44aee0f3-bb9d-4424-99d2-43156f6045e8.jpeg',
     5
   ),
   (
-    1683,
-    54,
-    '7d493802-8f8b-4c84-9ad6-b05b1c7bb9c4.jpeg',
+    1904,
+    134,
+    'fbbbac65-c8a3-4228-abe2-efffeac8cdcd.jpeg',
     6
+  ),
+  (
+    1905,
+    134,
+    '0a0f8071-73b1-4f6c-a3f2-6e373163a658.jpeg',
+    7
+  ),
+  (
+    1906,
+    134,
+    'c9ba9247-4fe2-4e06-b606-29700bed4401.jpeg',
+    8
+  ),
+  (
+    1907,
+    134,
+    'c77386f8-339a-42e6-8df9-70669258eb20.jpeg',
+    9
+  ),
+  (
+    1908,
+    134,
+    'f9994e6b-d2c8-4063-ba70-d9360c482297.jpeg',
+    10
+  ),
+  (
+    1909,
+    135,
+    'cba52ee0-a607-4422-9b4b-b63aa4841082.jpeg',
+    1
+  ),
+  (
+    1910,
+    135,
+    '20de6951-8f54-4c4b-97a6-61bc93b44f19.jpeg',
+    2
+  ),
+  (
+    1911,
+    135,
+    '0e022813-2d18-46bc-8ca7-11385dfd62f9.jpeg',
+    3
+  );
+
+SELECT
+  setval(
+    pg_get_serial_sequence('photo', 'id'),
+    (
+      SELECT
+        MAX(id)
+      FROM
+        photo
+    )
   );
 
 INSERT INTO
-  `shoot_models` (`shoot_id`, `model_id`)
+  shoot_model (shoot_id, model_id)
 VALUES
+  (134, 1),
   (9, 7),
   (14, 13),
   (15, 14),
@@ -379,10 +563,11 @@ VALUES
   (62, 63),
   (48, 65),
   (73, 68),
-  (79, 69);
+  (79, 69),
+  (135, 82);
 
 INSERT INTO
-  `shoot_photographers` (`shoot_id`, `photographer_id`)
+  shoot_photographer (shoot_id, photographer_id)
 VALUES
   (9, 5),
   (14, 7),
@@ -394,15 +579,19 @@ VALUES
   (48, 17),
   (62, 20),
   (81, 25),
-  (73, 27);
+  (134, 25),
+  (73, 27),
+  (135, 37);
 
 INSERT INTO
-  `shoot_tags` (`shoot_id`, `tag_id`)
+  shoot_tag (shoot_id, tag_id)
 VALUES
   (14, 8),
   (20, 8),
+  (135, 8),
   (54, 9),
   (81, 9),
+  (134, 9),
   (9, 10),
   (15, 10),
   (44, 10),
@@ -410,18 +599,11 @@ VALUES
   (62, 10),
   (79, 10),
   (81, 10),
+  (135, 10),
   (20, 11),
   (81, 11),
   (54, 12),
+  (134, 12),
   (79, 16),
   (48, 17),
   (73, 18);
-
-INSERT INTO
-  `users` (`id`, `email`, `password`)
-VALUES
-  (
-    1,
-    'amithamillensuwanta@gmail.com',
-    '$2b$10$rJVO3mFssaBrTOfwTRq0z.0gE7/qKgRYp2PLQf0WsecaJxuykWbcG'
-  );

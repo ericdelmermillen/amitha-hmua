@@ -1,114 +1,132 @@
-DROP DATABASE IF EXISTS shoots_db;
-
-CREATE DATABASE shoots_db;
-
-SET
-  GLOBAL group_concat_max_len = 2560;
-
-USE shoots_db;
+DROP TABLE IF EXISTS users CASCADE;
 
 CREATE TABLE users (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  email VARCHAR(255),
-  password VARCHAR(255)
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  password TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE UNIQUE INDEX idx_users_email_lower ON users (LOWER(email));
+
+DROP TABLE IF EXISTS bio CASCADE;
 
 CREATE TABLE bio (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  bio_name VARCHAR(100),
-  bio_img_url VARCHAR(255) NOT NULL,
-  bio_text VARCHAR(2000) NOT NULL
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name TEXT NOT NULL,
+  img_url TEXT NOT NULL,
+  text TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE models (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL
+DROP TABLE IF EXISTS model CASCADE;
+
+CREATE TABLE model (
+  id INT generated always as identity primary key,
+  name text NOT null unique,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE photographers (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL
+CREATE UNIQUE INDEX model_name_lower_unique ON model (LOWER(name));
+
+DROP TABLE IF EXISTS photographer CASCADE;
+
+CREATE TABLE photographer (
+  id INT generated always as identity primary key,
+  name text NOT null unique,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE tags (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL
+CREATE UNIQUE INDEX photographer_name_lower_unique ON photographer (LOWER(name));
+
+DROP TABLE IF EXISTS tag CASCADE;
+
+CREATE TABLE tag (
+  id INT generated always as identity primary key,
+  name text NOT null unique,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE shoots (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  shoot_date DATE,
-  display_order INT DEFAULT NULL
+CREATE UNIQUE INDEX tag_name_lower_unique ON tag (LOWER(name));
+
+DROP TABLE IF EXISTS shoot CASCADE;
+
+CREATE TABLE shoot (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  date DATE NOT NULL,
+  display_order INT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE photos (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+CREATE INDEX idx_shoot_display_order ON shoot(display_order);
+
+DROP TABLE IF EXISTS photo CASCADE;
+
+CREATE TABLE photo (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   shoot_id INT NOT NULL,
-  photo_url VARCHAR(255) NOT NULL,
-  display_order INT DEFAULT NULL,
-  FOREIGN KEY (shoot_id) REFERENCES shoots(id) ON DELETE CASCADE
+  img_url TEXT NOT NULL,
+  display_order INT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (shoot_id) REFERENCES shoot(id) ON DELETE CASCADE
 );
 
-CREATE TABLE shoot_photographers (
-  shoot_id INT NOT NULL,
-  photographer_id INT NOT NULL,
-  PRIMARY KEY (shoot_id, photographer_id),
-  FOREIGN KEY (shoot_id) REFERENCES shoots(id) ON DELETE CASCADE,
-  FOREIGN KEY (photographer_id) REFERENCES photographers(id) ON DELETE CASCADE
-);
+CREATE INDEX idx_photo_shoot_id ON photo(shoot_id);
 
-CREATE TABLE shoot_models (
+DROP TABLE IF EXISTS shoot_model CASCADE;
+
+CREATE TABLE shoot_model (
   shoot_id INT NOT NULL,
   model_id INT NOT NULL,
   PRIMARY KEY (shoot_id, model_id),
-  FOREIGN KEY (shoot_id) REFERENCES shoots(id) ON DELETE CASCADE,
-  FOREIGN KEY (model_id) REFERENCES models(id) ON DELETE CASCADE
+  FOREIGN KEY (shoot_id) REFERENCES shoot(id) ON DELETE CASCADE,
+  FOREIGN KEY (model_id) REFERENCES model(id) ON DELETE CASCADE
 );
 
-CREATE TABLE shoot_tags (
+-- Index the secondary foreign key for reverse lookups and cascade deletes
+CREATE INDEX idx_shoot_model_model_id ON shoot_model(model_id);
+
+DROP TABLE IF EXISTS shoot_photographer CASCADE;
+
+CREATE TABLE shoot_photographer (
+  shoot_id INT NOT NULL,
+  photographer_id INT NOT NULL,
+  PRIMARY KEY (shoot_id, photographer_id),
+  FOREIGN KEY (shoot_id) REFERENCES shoot(id) ON DELETE CASCADE,
+  FOREIGN KEY (photographer_id) REFERENCES photographer(id) ON DELETE CASCADE
+);
+
+-- Index the secondary foreign key for reverse lookups and cascade deletes
+CREATE INDEX idx_shoot_photographer_photographer_id ON shoot_photographer(photographer_id);
+
+DROP TABLE IF EXISTS shoot_tag CASCADE;
+
+CREATE TABLE shoot_tag (
   shoot_id INT NOT NULL,
   tag_id INT NOT NULL,
   PRIMARY KEY (shoot_id, tag_id),
-  FOREIGN KEY (shoot_id) REFERENCES shoots(id) ON DELETE CASCADE,
-  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+  FOREIGN KEY (shoot_id) REFERENCES shoot(id) ON DELETE CASCADE,
+  FOREIGN KEY (tag_id) REFERENCES tag(id) ON DELETE CASCADE
 );
 
-CREATE TABLE revoked_tokens (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  token_signature VARCHAR(255) NOT NULL UNIQUE,
-  expires_at TIMESTAMP NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_expires_at (expires_at)
+-- Index the secondary foreign key for reverse lookups and cascade deletes
+CREATE INDEX idx_shoot_tag_tag_id ON shoot_tag(tag_id);
+
+DROP TABLE IF EXISTS revoked_token CASCADE;
+
+CREATE TABLE revoked_token (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  token_signature TEXT NOT NULL UNIQUE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- automating deletion of revoked tokens: runs every 5 mins (DEV VERSION), purges tokens older than 2 mins
-SET
-  GLOBAL event_scheduler = ON;
+CREATE INDEX idx_revoked_token_expires_at ON revoked_token (expires_at);
 
-DROP EVENT IF EXISTS purge_expired_revoked_tokens;
-
-CREATE EVENT purge_expired_revoked_tokens ON SCHEDULE EVERY 5 MINUTE STARTS CURRENT_TIMESTAMP DO
-DELETE FROM
-  revoked_tokens
-WHERE
-  created_at < NOW() - INTERVAL 2 MINUTE;
-
--- automating deletion of revoked tokens: runs every 24 hours (PROD VERSION), purges tokens older than 7 days
--- CREATE EVENT purge_expired_revoked_tokens
--- ON SCHEDULE EVERY 1 DAY
--- STARTS CURRENT_TIMESTAMP
--- DO
---   DELETE FROM revoked_tokens
---   WHERE created_at < NOW() - INTERVAL 7 DAY;
--- select statement to see how many times the purge has run
-SELECT
-  EVENT_NAME,
-  STATUS,
-  INTERVAL_VALUE,
-  INTERVAL_FIELD,
-  STARTS,
-  LAST_EXECUTED
-FROM
-  information_schema.EVENTS
-WHERE
-  EVENT_NAME = "purge_expired_revoked_tokens";
+-- requires a chron job to run to periodically delete the expired tokens: 
+-- probabilistic clean up strategy preferred
