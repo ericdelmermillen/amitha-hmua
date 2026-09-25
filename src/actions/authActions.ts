@@ -10,10 +10,10 @@ import {
 } from "@/typing/interfaces";
 import { authSchema } from "@/validation/authValidation";
 import { 
-  extractTokenRevocationDetails,
   generateAccessToken, 
   generateRefreshToken, 
   isTokenRevoked, 
+  revokeToken, 
   setAuthCookies, 
   verifyAccessToken, 
   verifyRefreshToken 
@@ -165,26 +165,6 @@ const checkUserSession = async (): Promise<SessionResponse> => {
   };
 };
 
-// revokeToken
-// add probalbistist clean up here
-const revokeToken = async (token: string): Promise<void> => {
-  const tokenDetails = extractTokenRevocationDetails(token);
-
-  if (!tokenDetails) {
-    return;
-  }
-
-  const { signature, expiresAt } = tokenDetails;
-
-  const query = `
-    INSERT INTO revoked_token (token_signature, expires_at)
-    VALUES ($1, $2)
-    ON CONFLICT (token_signature) DO UPDATE SET expires_at = EXCLUDED.expires_at
-  `;
-
-  await pool.query(query, [signature, expiresAt]);
-};
-
 // logoutUser
 const logoutUser = async (message = ""): Promise<AuthResponse> => {
   try {
@@ -219,6 +199,5 @@ export {
   createUser,
   loginUser,
   checkUserSession,
-  revokeToken,
   logoutUser
 };

@@ -1,10 +1,13 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { 
+  type EntityRow, 
+  type SessionResponse, 
+  type TokenDetails, 
+  type TokenPayload, 
+} from "@/typing/interfaces";
 import { decodeJwt, jwtVerify, SignJWT } from "jose";
-import type { SessionResponse, TokenDetails, TokenPayload } from "@/typing/interfaces";
-import { RowDataPacket } from "mysql2";
-import { pool } from "@/db/dbClient";
-import { revokeToken } from "@/actions/authActions";
+import { pool } from "@/db/dbClient_pg";
 
 const JWT_SECRET_STRING = process.env.JWT_SECRET ?? "";
 const JWT_REFRESH_SECRET_STRING = process.env.JWT_REFRESH_SECRET ?? "";
@@ -73,6 +76,81 @@ const setAuthCookies = async (accessToken: string, refreshToken: string): Promis
   });
 };
 
+const cleanupExpiredTokens = async (): Promise<void> => {
+  try {
+    await pool.query(
+      "DELETE FROM revoked_token WHERE expires_at < CURRENT_TIMESTAMP"
+    );
+  } catch (error) {
+    console.error("Error cleaning up expired tokens:", error);
+  }
+};
+
+const extractTokenRevocationDetails = (token: string): TokenDetails | null => {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      return null;
+    }
+
+    const signature = parts[2];
+    const decoded = decodeJwt(token);
+
+    if (!decoded.exp) {
+      return null;
+    }
+
+    const expiresAt = new Date(decoded.exp * 1000);
+    return { signature, expiresAt };
+  } catch {
+    return null;
+  }
+};
+
+const revokeToken = async (token: string): Promise<void> => {
+  const tokenDetails = extractTokenRevocationDetails(token);
+
+  if (!tokenDetails) {
+    return;
+  }
+
+  const { signature, expiresAt } = tokenDetails;
+
+  try {
+    await pool.query(
+      "INSERT INTO revoked_token (token_signature, expires_at) VALUES ($1, $2) ON CONFLICT (token_signature) DO UPDATE SET expires_at = EXCLUDED.expires_at",
+      [signature, expiresAt]
+    );
+
+    if (Math.random() < 0.1) {
+      void cleanupExpiredTokens();
+    }
+  } catch (error) {
+    console.error("Error revoking token:", error);
+  }
+};
+
+const isTokenRevoked = async (token: string): Promise<boolean> => {
+  const parts = token.split(".");
+  if (parts.length !== 3) {
+    return true;
+  }
+
+  const signature = parts[2];
+
+  try {
+    const { rows } = await pool.query<EntityRow>(
+      "SELECT id FROM revoked_token WHERE token_signature = $1 LIMIT 1",
+      [signature]
+    );
+
+    return rows.length > 0;
+  } catch (error) {
+    console.error("Error checking token revocation:", error);
+    return true;
+  }
+};
+
 const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
@@ -87,7 +165,7 @@ const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
       if (payload) {
         return {
           isAuthenticated: true,
-          userId: payload.userId
+          userId: payload.userId,
         };
       }
     }
@@ -126,43 +204,6 @@ const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
   redirect("/work?auth=false");
 };
 
-const extractTokenRevocationDetails = (token: string): TokenDetails | null => {
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) {
-      return null;
-    }
-
-    const signature = parts[2];
-    const decoded = decodeJwt(token);
-
-    if (!decoded.exp) {
-      return null;
-    }
-
-    const expiresAt = new Date(decoded.exp * 1000);
-    return { signature, expiresAt };
-  } catch {
-    return null;
-  }
-};
-
-const isTokenRevoked = async (token: string): Promise<boolean> => {
-  const parts = token.split(".");
-  if (parts.length !== 3) {
-    return true;
-  }
-
-  const signature = parts[2];
-
-  const [ rows ] = await pool.query<RowDataPacket[]>(
-    "SELECT id FROM revoked_tokens WHERE token_signature = ? LIMIT 1",
-    [signature]
-  );
-
-  return rows.length > 0;
-};
-
 export {
   generateAccessToken,
   generateRefreshToken,
@@ -171,5 +212,6 @@ export {
   setAuthCookies,
   verifyAndRefreshSession,
   extractTokenRevocationDetails,
-  isTokenRevoked
+  revokeToken,
+  isTokenRevoked,
 };
