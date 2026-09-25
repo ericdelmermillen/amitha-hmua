@@ -70,7 +70,7 @@ const Nav = () => {
                 </li>
               ) 
             : (
-                <li key={href} className={`nav__link nav__link${modifierClass}`}>
+                <li key={href} className={`nav__link nav__link--${modifierClass}`}>
                   <a
                     href={href}
                     target="_blank"
