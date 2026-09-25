@@ -18,7 +18,7 @@ import {
   verifyAccessToken, 
   verifyRefreshToken 
 } from "@/utils/tokenUtils";
-import { pool } from "@/db/dbClient_pg";
+import { pool } from "@/db/dbClient";
 import bcrypt from "bcrypt";
 
 // createUser

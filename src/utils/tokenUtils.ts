@@ -7,7 +7,7 @@ import {
   type TokenPayload, 
 } from "@/typing/interfaces";
 import { decodeJwt, jwtVerify, SignJWT } from "jose";
-import { pool } from "@/db/dbClient_pg";
+import { pool } from "@/db/dbClient";
 
 const JWT_SECRET_STRING = process.env.JWT_SECRET ?? "";
 const JWT_REFRESH_SECRET_STRING = process.env.JWT_REFRESH_SECRET ?? "";

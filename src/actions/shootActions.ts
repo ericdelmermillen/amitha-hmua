@@ -9,7 +9,7 @@ import {
   type ShootSummary,
   type ShootEntity,
 } from "@/typing/interfaces";
-import { pool } from "@/db/dbClient_pg";
+import { pool } from "@/db/dbClient";
 import { deleteFiles } from "@/s3/s3";
 import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 

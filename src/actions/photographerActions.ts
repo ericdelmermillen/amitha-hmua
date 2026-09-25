@@ -9,7 +9,7 @@ import {
   type ShootEntity, 
   type EntityRow, 
 } from "@/typing/interfaces";
-import { pool } from "@/db/dbClient_pg";
+import { pool } from "@/db/dbClient";
 import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
 // getAllPhotographers
