@@ -7,6 +7,8 @@ CREATE TABLE users (
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE UNIQUE INDEX idx_users_email_lower ON users (LOWER(email));
+
 DROP TABLE IF EXISTS bio CASCADE;
 
 CREATE TABLE bio (
