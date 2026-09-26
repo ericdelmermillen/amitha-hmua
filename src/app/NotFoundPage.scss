@@ -9,6 +9,9 @@
 
 	&__inner {
 		@include mx.inner;
+		& {
+			justify-content: center;
+		}
 	}
 
 	&__heading,
