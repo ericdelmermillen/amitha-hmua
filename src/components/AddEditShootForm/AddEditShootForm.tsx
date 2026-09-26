@@ -463,6 +463,7 @@ const AddEditShootForm = () => {
             setShootDate={setShootDate}
             className={"addEditShootForm__calendarIcon"}
             rawDate={rawDate}
+            setRawDate={setRawDate}
           />
         </div>
       </div>

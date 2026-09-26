@@ -203,6 +203,7 @@ interface ShootDatePickerProps {
   setShootDate: (date: Date | null) => void;
   className?: string;
   rawDate?: Date | null;
+  setRawDate: (date: Date | null) => void;
 };
 
 interface CustomSelectProps {

@@ -4,16 +4,17 @@ import CalendarIcon from "@/assets/icons/CalendarIcon";
 import "react-datepicker/dist/react-datepicker.css";
 import "./ShootDatePicker.scss";
 
-const ShootDatePicker = ({ shootDate, setShootDate, className, rawDate }: ShootDatePickerProps) => {
+const ShootDatePicker = ({ shootDate, setShootDate, className, rawDate, setRawDate }: ShootDatePickerProps) => {
   
   const handleChange = (date: Date | null) => {
     setShootDate(date);
+    setRawDate(date);
   };
 
   return (
     <div className="shootDatePicker">
       <DatePicker
-        selected={rawDate? rawDate : shootDate}
+        selected={rawDate ? rawDate : shootDate}
         onChange={handleChange}
         className="shootDatePicker__selector"
         dateFormat="MM/dd/yyyy"
