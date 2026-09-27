@@ -1,9 +1,9 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { type MouseEvent, type TransitionEvent, useEffect } from "react";
+import { type MouseEvent, type TransitionEvent, useEffect, useState, useRef } from "react";
 import { NavSelectProps, ShootEntity } from "@/typing/interfaces";
-import { useAppContext } from "@/hooks/hooks";
+import { useAppContext, useOutsideClick } from "@/hooks/hooks";
 import { scrollToTop } from "@/utils/utils";
 import DownIcon from "@/assets/icons/DownIcon";
 import "./NavSelect.scss";
@@ -11,6 +11,8 @@ import "./NavSelect.scss";
 const MIN_LOADING_INTERVAL = parseInt(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL || "250", 10);
 
 const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
+  const navSelectRef = useRef<HTMLDivElement>(null);
+
   const {
     setSelectedTag,
     handleNavigateHome,
@@ -18,11 +20,18 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     navSelectValue, 
     setNavSelectValue,
     setAppIsLoading,
-    setShowTouchOffDiv,
     showNavSelectOptions, 
     setShowNavSelectOptions,
   } = useAppContext();
   
+  
+  const handleOnOutsideClick = () => {
+    setShowNavSelectOptions(false);
+    setShowSideNav(false);
+  };
+  
+  useOutsideClick({targetRef: navSelectRef, onOutsideClick: handleOnOutsideClick, componentIsActive: showNavSelectOptions})
+
   const searchParams = useSearchParams();
 
   const safeModifierClass = typeof modifierClass === "string" ? modifierClass : "";
@@ -48,15 +57,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     
   const handleDownArrowClick = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
-
-    const nextState = !showNavSelectOptions;
-    setShowNavSelectOptions(nextState);
-
-    if (nextState) {
-      setShowTouchOffDiv(true);
-    } else {
-      setShowTouchOffDiv(false);
-    }
+    setShowNavSelectOptions(prev => !prev);
   };
 
   const handleUpdateSelectValue = (option: ShootEntity) => {
@@ -65,7 +66,6 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     setAppIsLoading(true);
     setNavSelectValue(option.name);
     setShowNavSelectOptions(false);
-    setShowTouchOffDiv(false);    
     handleNavigateHome(option);
     
     setTimeout(() => {
@@ -112,9 +112,12 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     const locationTagName = searchParams.get("tag");
     setNavSelectValue(locationTagName ? locationTagName.toUpperCase() : null);
   }, [searchParams, setNavSelectValue]);
-  
+
   return (
-    <div className={`navSelect ${showNavSelectOptions ? "tall" : "short"}`}>
+    <div 
+      className={`navSelect ${showNavSelectOptions ? "tall" : "short"}`}
+      ref={navSelectRef}
+    >
       <div 
         className={`navSelect__inner ${showNavSelectOptions ? "tall" : ""}`}
         onTransitionEnd={handleTransitionEnd}

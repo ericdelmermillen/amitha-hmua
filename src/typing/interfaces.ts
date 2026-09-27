@@ -190,6 +190,7 @@ interface ClientButtonProps {
 interface NavSelectProps {
   selectOptions: ShootEntity[];
   modifierClass?: string;
+  // handleShowTouchOffDiv: Dispatch<SetStateAction<boolean>>;
 }
 
 interface NavLinkProps {

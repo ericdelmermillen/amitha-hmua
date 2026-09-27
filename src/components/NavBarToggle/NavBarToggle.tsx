@@ -11,8 +11,9 @@ const NavBarToggle = () => {
   } = useAppContext();
 
   const handleToggle = () => {
-    setShowTouchOffDiv(true);
+    setShowTouchOffDiv(prev => !prev);
     handleToggleSideNav();
+    console.log("navBarToggle")
   };
 
   return (

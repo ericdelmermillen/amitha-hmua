@@ -16,14 +16,17 @@ const SideNav = () => {
   const { 
     showSideNav, 
     setShowSideNav,
+    setShowTouchOffDiv,
     handleIsOnSamePage,
     tags
   } = useAppContext();
   
   const pathname = usePathname();
 
-  const handleSetShowSideNav = () => {
+  const handleToggleShowSideNav = () => {
+    console.log("set false")
     setShowSideNav(false);
+    setShowTouchOffDiv(prev => !prev);
   };
 
   const handleSideNavLinkClick = () => {
@@ -66,7 +69,7 @@ const SideNav = () => {
 
         <button 
           className="sideNav__close-button" 
-          onClick={handleSetShowSideNav}
+          onClick={handleToggleShowSideNav}
           type="button"
         >
           <div className="sideNav__close-icon"></div>
