@@ -9,9 +9,7 @@ const NavBarToggle = () => {
     setShowSideNav, 
   } = useAppContext();
 
-  const handleToggle = () => {
-    setShowSideNav(prev => !prev)
-  };
+  const handleToggle = () => setShowSideNav(prev => !prev);
 
   return (
     <button 
