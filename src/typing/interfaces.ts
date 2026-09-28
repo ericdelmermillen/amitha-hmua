@@ -31,8 +31,6 @@ interface AppContextValue {
   // Layout & Navigation State
   showSideNav: boolean;
   setShowSideNav: Dispatch<SetStateAction<boolean>>;  
-  showTouchOffDiv: boolean;
-  setShowTouchOffDiv: Dispatch<SetStateAction<boolean>>;
   scrollYPos: number;
   setScrollYPos: Dispatch<SetStateAction<number>>;
   navSelectValue: string | null;
@@ -71,8 +69,6 @@ interface AppContextValue {
   setShootOrderIsEditable: Dispatch<SetStateAction<boolean>>;
 
   // UI & Action Handlers
-  // handleToggleSideNav: () => void;
-  handleTouchOffDiv: () => void;
   handleSetShowSideNavFalse: () => void;
   handleIsOnSamePage: (e?: MouseEvent<HTMLElement>) => void;
   handleSideNavLinkClick: (e: MouseEvent<HTMLAnchorElement>) => void;
@@ -190,7 +186,6 @@ interface ClientButtonProps {
 interface NavSelectProps {
   selectOptions: ShootEntity[];
   modifierClass?: string;
-  // handleShowTouchOffDiv: Dispatch<SetStateAction<boolean>>;
 }
 
 interface NavLinkProps {

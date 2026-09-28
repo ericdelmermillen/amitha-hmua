@@ -10,7 +10,6 @@ import IsLoading from "@/components/IsLoading/IsLoading";
 import Modal from "@/components/Modal/Modal";
 import Nav from "@/components/Nav/Nav";
 import SideNav from "@/components/SideNav/SideNav";
-import TouchOffDiv from "@/components/TouchOffDiv/TouchOffDiv";
 import "./globals.scss";
 
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
@@ -25,7 +24,6 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
           <ThemeProvider>
             <ModalContextProvider>
               <IsLoading />
-              <TouchOffDiv />
               <ToastProvider />
               <Nav />
               <SideNav />

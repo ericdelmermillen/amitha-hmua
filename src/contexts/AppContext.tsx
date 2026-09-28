@@ -15,8 +15,6 @@ import { ShootEntity } from "@/typing/interfaces";
 import { checkUserSession, logoutUser } from "@/actions/authActions";
 import { getAllTags } from "@/actions/tagActions";
 
-// ***here
-
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
 
@@ -31,7 +29,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const [ appIsLoading, setAppIsLoading ] = useState(true)
   
   const [ showSideNav, setShowSideNav ] = useState(false);
-  const [ showTouchOffDiv, setShowTouchOffDiv ] = useState(false);
   
   const [ selectedTag, setSelectedTag ] = useState<ShootEntity | null>(null);
   const [ navSelectValue, setNavSelectValue ] = useState<string | null>(null);
@@ -100,13 +97,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     router.push(`/shoot/edit/${id}`);
   };
 
-  const handleTouchOffDiv = () => {
-    setShowTouchOffDiv(false);
-    setShowSideNav(false);
-    setShowNavSelectOptions(false);
-    setAppIsLoading(false);
-  };
-
   const handleNavigateHome = (tagObj?: ShootEntity) => {
     if (!tagObj) {
       router.push("/work");
@@ -158,7 +148,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       setIsLoggedIn(false);
     }
     
-    setShowTouchOffDiv(false);
     setTagChoosers([{ number: 1, id: null, name: null }]);
     setNavSelectValue(null);
     setShowNavSelectOptions(false);
@@ -247,7 +236,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
           });
           
           handleSetShowSideNavFalse();
-          setShowTouchOffDiv(false);
           setShowNavSelectOptions(false);
           ticking = false;
         });
@@ -304,9 +292,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setShowSideNav,
     handleSetShowSideNavFalse,
     handleSideNavLinkClick,
-    showTouchOffDiv, 
-    setShowTouchOffDiv,
-    handleTouchOffDiv,
     showFloatingButton, 
     setShowFloatingButton,
 
