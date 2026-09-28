@@ -18,7 +18,7 @@ const CustomSelect = ({
   setSelectChoosers 
 }: CustomSelectProps) => {
   
-  const { setShowTouchOffDiv, appIsLoading } = useAppContext();
+  const { appIsLoading } = useAppContext();
   const { handleOpenModal } = useModalContext();
 
   const [ showSelectOptions, setShowSelectOptions ] = useState(false);
@@ -41,7 +41,7 @@ const CustomSelect = ({
     e.stopPropagation();
 
     if (appIsLoading) {
-      return
+      return;
     }
 
     setShowSelectOptions(prev => !prev);
@@ -61,7 +61,6 @@ const CustomSelect = ({
       });
     });
     setShowSelectOptions(false);
-    setShowTouchOffDiv(false);
   };
 
   const handleTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {

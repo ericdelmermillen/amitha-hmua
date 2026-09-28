@@ -61,8 +61,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     
   const getPrevScrollYPosValue = () => prevScrollYPosRef.current ?? 0;
 
-  const handleToggleSideNav = () => setShowSideNav(prev => !prev);
-
   const handleSideNavLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (isModifiedClick(e)) {
       return;
@@ -304,7 +302,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     // ui navigation & drawers
     showSideNav, 
     setShowSideNav,
-    handleToggleSideNav,
     handleSetShowSideNavFalse,
     handleSideNavLinkClick,
     showTouchOffDiv, 

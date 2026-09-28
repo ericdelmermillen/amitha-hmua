@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
-import { useAppContext } from "@/hooks/hooks";
+import { useRef, useEffect } from "react";
+import { useAppContext, useOutsideClick } from "@/hooks/hooks";
 import { navPages } from "@/constants/navPages";
 import ClientButton from "@/components/ClientButton/ClientButton";
 import ColorModeToggle from "@/components/ColorModeToggle/ColorModeToggle";
@@ -16,17 +16,29 @@ const SideNav = () => {
   const { 
     showSideNav, 
     setShowSideNav,
-    setShowTouchOffDiv,
     handleIsOnSamePage,
     tags
   } = useAppContext();
   
   const pathname = usePathname();
 
+  const sideNavRef = useRef<HTMLDivElement>(null);
+
+  const handleOnOutsideClick = () => {
+    setShowSideNav(false);
+  };
+  
+  const outsideClickArgs = {
+    targetRef: sideNavRef, 
+    onOutsideClick: handleOnOutsideClick, 
+    componentIsActive: showSideNav
+  };
+
+  useOutsideClick(outsideClickArgs);
+
   const handleToggleShowSideNav = () => {
     console.log("set false")
     setShowSideNav(false);
-    setShowTouchOffDiv(prev => !prev);
   };
 
   const handleSideNavLinkClick = () => {
@@ -64,7 +76,10 @@ const SideNav = () => {
   }, [showSideNav, setShowSideNav]);
 
   return (
-    <div className={`sideNav ${showSideNav ? "show" : ""}`}>
+    <div 
+      className={`sideNav ${showSideNav ? "show" : ""}`}
+      ref={sideNavRef}
+    >
       <div className="sideNav__inner">
 
         <button 

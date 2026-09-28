@@ -71,7 +71,7 @@ interface AppContextValue {
   setShootOrderIsEditable: Dispatch<SetStateAction<boolean>>;
 
   // UI & Action Handlers
-  handleToggleSideNav: () => void;
+  // handleToggleSideNav: () => void;
   handleTouchOffDiv: () => void;
   handleSetShowSideNavFalse: () => void;
   handleIsOnSamePage: (e?: MouseEvent<HTMLElement>) => void;

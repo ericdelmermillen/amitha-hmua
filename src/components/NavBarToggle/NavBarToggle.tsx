@@ -6,14 +6,11 @@ import "./NavBarToggle.scss";
 const NavBarToggle = () => {
   const { 
     showSideNav, 
-    handleToggleSideNav,
-    setShowTouchOffDiv
+    setShowSideNav, 
   } = useAppContext();
 
   const handleToggle = () => {
-    setShowTouchOffDiv(prev => !prev);
-    handleToggleSideNav();
-    console.log("navBarToggle")
+    setShowSideNav(prev => !prev)
   };
 
   return (
