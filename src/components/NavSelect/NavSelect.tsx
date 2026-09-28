@@ -30,7 +30,13 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
     setShowSideNav(false);
   };
   
-  useOutsideClick({targetRef: navSelectRef, onOutsideClick: handleOnOutsideClick, componentIsActive: showNavSelectOptions})
+  const outsideClickArgs = {
+    targetRef: navSelectRef, 
+    onOutsideClick: handleOnOutsideClick, 
+    componentIsActive: showNavSelectOptions
+  };
+
+  useOutsideClick(outsideClickArgs);
 
   const searchParams = useSearchParams();
 

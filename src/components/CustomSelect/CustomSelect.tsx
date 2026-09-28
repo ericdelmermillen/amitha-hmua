@@ -1,7 +1,7 @@
 "use client";
 
-import { type MouseEvent, type TransitionEvent, useState } from "react";
-import { useAppContext, useModalContext } from "@/hooks/hooks";
+import { type MouseEvent, type TransitionEvent, useState, useRef } from "react";
+import { useAppContext, useModalContext , useOutsideClick} from "@/hooks/hooks";
 import { CustomSelectProps, ShootEntity } from "@/typing/interfaces";
 import { normalizeCasing } from "@/utils/utils";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
@@ -17,14 +17,25 @@ const CustomSelect = ({
   selectChoosers, 
   setSelectChoosers 
 }: CustomSelectProps) => {
-  const {
-    setShowTouchOffDiv,
-    appIsLoading
-  } = useAppContext();
-
+  
+  const { setShowTouchOffDiv, appIsLoading } = useAppContext();
   const { handleOpenModal } = useModalContext();
 
   const [ showSelectOptions, setShowSelectOptions ] = useState(false);
+
+  const customSelectRef = useRef<HTMLDivElement>(null);
+
+  const handleOnOutsideClick = () => {
+    setShowSelectOptions(false);
+  };
+  
+  const outsideClickArgs = {
+    targetRef: customSelectRef, 
+    onOutsideClick: handleOnOutsideClick, 
+    componentIsActive: showSelectOptions
+  };
+  
+  useOutsideClick(outsideClickArgs);
 
   const handleTopRowClick = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -84,107 +95,99 @@ const CustomSelect = ({
     handleOpenModal({e, action: "delete", entityType: entityType, entityName: option.name, entityID: option.id});
   };
 
-  const handleTouchOff = () => {
-    setShowSelectOptions(false);
-    setShowTouchOffDiv(false);
-  };
-  
   return (
-    <>
-      <div className={`customSelect ${showSelectOptions ? "tall" : "short"}`}>
-        <div 
-          className={`customSelect__inner ${showSelectOptions ? "tall" : ""}`}
-          onTransitionEnd={handleTransitionEnd}
-        >
-          <div className={`customSelect__select ${showSelectOptions ? "tall" : ""}`} >
-            <button 
-              className="customSelect__selectValue"
-              onClick={handleTopRowClick}
-              type="button"
+    <div 
+      className={`customSelect ${showSelectOptions ? "tall" : "short"}`}
+      ref={customSelectRef}
+    >
+      <div 
+        className={`customSelect__inner ${showSelectOptions ? "tall" : ""}`}
+        onTransitionEnd={handleTransitionEnd}
+      >
+        <div className={`customSelect__select ${showSelectOptions ? "tall" : ""}`} >
+          <button 
+            className="customSelect__selectValue"
+            onClick={handleTopRowClick}
+            type="button"
+          >
+            <span 
+              className={`customSelect__default-option 
+              ${(!showSelectOptions && !selectValue) 
+                || (showSelectOptions && !selectValue) 
+                || (showSelectOptions && selectValue)
+                ? "show" 
+                : "hide"}`}
             >
-              <span 
-                className={`customSelect__default-option 
-                ${(!showSelectOptions && !selectValue) 
-                  || (showSelectOptions && !selectValue) 
-                  || (showSelectOptions && selectValue)
-                  ? "show" 
-                  : "hide"}`}
-              >
-                --Select {normalizeCasing(entityType ?? "")}--
-              </span>
-              <span 
-                className={`customSelect__default-option 
-                ${
-                  (showSelectOptions && !selectValue) || (!showSelectOptions && selectValue) 
-                  ? "show" 
-                  : "hide"}`}
-              >
-                {selectValue}
-              </span>
+              --Select {normalizeCasing(entityType ?? "")}--
+            </span>
+            <span 
+              className={`customSelect__default-option 
+              ${
+                (showSelectOptions && !selectValue) || (!showSelectOptions && selectValue) 
+                ? "show" 
+                : "hide"}`}
+            >
+              {selectValue}
+            </span>
+            <div 
+              className="customSelect__down"
+            >
+              <DownIcon 
+                className={"customSelect__down-icon"}
+                strokeClassName={"customSelect__down-stroke"}
+              />
+            </div>
+          </button>
+
+          {selectOptions.map((option) => {
+          
+            const isOptionSelected = selectChoosers?.some(
+              (chooser) => chooser.name?.toLowerCase() === option.name?.toLowerCase()
+            );
+
+            return (
               <div 
-                className="customSelect__down"
+                className={`customSelect__option`}
+                key={option.id} 
+                onClick={isOptionSelected ? undefined : () => handleUpdateSelectValue(option)}
               >
-                <DownIcon 
-                  className={"customSelect__down-icon"}
-                  strokeClassName={"customSelect__down-stroke"}
-                />
-              </div>
-            </button>
-
-            {selectOptions.map((option) => {
-            
-              const isOptionSelected = selectChoosers?.some(
-                (chooser) => chooser.name?.toLowerCase() === option.name?.toLowerCase()
-              );
-
-              return (
-                <div 
-                  className={`customSelect__option`}
-                  key={option.id} 
-                  onClick={isOptionSelected ? undefined : () => handleUpdateSelectValue(option)}
+                <button 
+                  className="customSelect__inline-button customSelect__inline-button--delete"
+                  onClick={(e) => handleDeleteEntry(e, option)}
+                  type="button"
                 >
-                  <button 
-                    className="customSelect__inline-button customSelect__inline-button--delete"
-                    onClick={(e) => handleDeleteEntry(e, option)}
-                    type="button"
-                  >
-                    <DeleteIcon 
-                      className={"customSelect__icon customSelect__icon--delete"}
-                      strokeClassName={"customSelect__icon-stroke"}
-                    />
-                  </button>
-                  <span className={`customSelect__option-value ${isOptionSelected ? "disabled" : ""}`}>
-                    {option.name}
-                  </span>
-                  <button 
-                    className="customSelect__inline-button customSelect__inline-button--edit"
-                    onClick={(e) => handleEditEntry(e, option)}
-                    type="button"
-                  >
-                    <EditIcon 
-                      className={"customSelect__icon customSelect__icon--edit"}
-                      strokeClassName={"customSelect__icon-stroke"}
-                    />
-                  </button>
-                </div>
-              );
-            })}     
+                  <DeleteIcon 
+                    className={"customSelect__icon customSelect__icon--delete"}
+                    strokeClassName={"customSelect__icon-stroke"}
+                  />
+                </button>
+                <span className={`customSelect__option-value ${isOptionSelected ? "disabled" : ""}`}>
+                  {option.name}
+                </span>
+                <button 
+                  className="customSelect__inline-button customSelect__inline-button--edit"
+                  onClick={(e) => handleEditEntry(e, option)}
+                  type="button"
+                >
+                  <EditIcon 
+                    className={"customSelect__icon customSelect__icon--edit"}
+                    strokeClassName={"customSelect__icon-stroke"}
+                  />
+                </button>
+              </div>
+            );
+          })}     
 
-            <button 
-              className="customSelect__option customSelect__option--add"
-              onClick={handleAddNewOption}
-              type="button"
-            >
-              Add New Entry
-            </button>
-          </div>
+          <button 
+            className="customSelect__option customSelect__option--add"
+            onClick={handleAddNewOption}
+            type="button"
+          >
+            Add New Entry
+          </button>
         </div>
       </div>
-      <div 
-        className={`customSelect__touchOffDiv ${showSelectOptions ? "show" : ""}`} 
-        onClick={handleTouchOff}
-      ></div>
-    </>
+    </div>
   );
 };
 
