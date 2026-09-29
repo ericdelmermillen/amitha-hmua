@@ -1,6 +1,8 @@
 "use client";
 
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { usePathname, 
+  // useSearchParams,
+  useRouter } from "next/navigation";
 import { 
   type MouseEvent, 
   useState,  
@@ -22,7 +24,7 @@ const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 const AppContextProvider = ({ children }: ContextProviderProps) => {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const router = useRouter();
 
   const [ scrollYPos, setScrollYPos ] = useState(0);
@@ -189,14 +191,26 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   }, [shouldRefreshTags]);
 
   // useEffect for tracking if user gets logged out on navigating to a protected rout and then redirected to /work?auth=false
-  useEffect(() => {
-    const authStatus = searchParams.get("auth");
+  // useEffect(() => {
+  //   const authStatus = searchParams.get("auth");
 
-    // auth checking for when user who was logged in attempts to navigae to a protected route but has had their token expire or be revoked in the meantime: middleware triggers the redirect and the client catches it based on the pathname
-    if (authStatus === "false") {
-      handleLogoutUser("Authentication failed. Logging you out...", "error");
-    }
-  }, [searchParams, pathname]);
+  //   // auth checking for when user who was logged in attempts to navigae to a protected route but has had their token expire or be revoked in the meantime: middleware triggers the redirect and the client catches it based on the pathname
+  //   if (authStatus === "false") {
+  //     handleLogoutUser("Authentication failed. Logging you out...", "error");
+  //   }
+  // }, [searchParams, pathname]);
+  useEffect(() => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const authStatus = urlParams.get("auth");
+
+  if (authStatus === "false") {
+    handleLogoutUser("Authentication failed. Logging you out...", "error");
+  }
+}, [pathname]);
 
 
   // useEffect to turn off appIsLoading on page load or after navigation

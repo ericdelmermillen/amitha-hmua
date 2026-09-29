@@ -22,6 +22,16 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "amitha-hmua-images.s3.ca-central-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
   env: {
     EMAIL: process.env.EMAIL,
     PASSWORD: process.env.PASSWORD,

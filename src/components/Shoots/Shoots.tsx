@@ -38,10 +38,6 @@ const Shoots = () => {
     handleRefreshShoots
   } = useAppContext();
 
-  // console.log("selectedTag", selectedTag?.name)
-  
-  
-
   const searchParams = useSearchParams();
   const tagParam = searchParams.get("tag");
   const params = useParams();

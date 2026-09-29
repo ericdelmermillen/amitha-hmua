@@ -203,14 +203,6 @@ const EditBioPage = () => {
     }
   };
 
-  // const handleCancel = () => {
-  //   setAppIsLoading(true);
-  //   setCancelling(true);
-  //   setTimeout(() => {
-  //     router.push("/bio");
-  //   }, MIN_LOADING_INTERVAL);
-  // };
-
   const handleCancel = () => {
     setAppIsLoading(true);
     setCancelling(true);
