@@ -1,6 +1,383 @@
+// "use client";
+
+// import { usePathname, useParams, useSearchParams, useRouter } from "next/navigation";
+// import { useState, useRef, useEffect, DragEvent, MouseEvent } from "react";
+// import { ShootSummary } from "@/typing/interfaces";
+// import { useAppContext } from "@/hooks/hooks";
+// import { getShootSummaries } from "@/actions/shootActions";
+// import { normalizeCasing } from "@/utils/utils";
+// import { toast } from "react-toastify";
+// import ClientLink from "@/components/ClientLink/ClientLink";
+// import Shoot from "@/components/Shoot/Shoot";
+// import "./Shoots.scss";
+
+// // ***Uncancelled in-flight request / dangling promise race condition:
+// // If a fetch is in flight and the user navigates away or switches tags, the promise resolution 
+// // can execute after unmount/cleanup, dirtying global AppContext with stale shoot data.
+
+// // const itemsPerPage = 12;
+// const itemsPerPage = 3;
+
+// const Shoots = () => {
+//   const { 
+//     isLoggedIn,
+//     tags,
+//     selectedTag, 
+//     setSelectedTag, 
+//     shootOrderIsEditable, 
+//     setShootOrderIsEditable,
+//     setAppIsLoading,
+//     shoots, 
+//     setShoots,
+//     shouldUpdateShoots, 
+//     setShouldUpdateShoots,
+//     currentShootsPage, 
+//     setCurrentShootsPage,
+//     finalShootsPageLoaded, 
+//     setFinalShootsPageLoaded,
+//     handleRefreshShoots
+//   } = useAppContext();
+
+//   const searchParams = useSearchParams();
+//   const tagParam = searchParams.get("tag");
+//   const params = useParams();
+//   const shootID = params?.id ? Number(params.id) : null;
+
+//   const pathname = usePathname();
+//   const isOnShootDetails = pathname.startsWith("/shoot/");
+  
+//   const router = useRouter();
+
+//   const [ activeDragShoot, setActiveDragShoot ] = useState<ShootSummary | null>(null);
+
+//   const sentinelRef = useRef<HTMLDivElement | null>(null);
+//   const isFetchingRef = useRef(false);
+
+//   const finalShootsPageLoadedRef = useRef(finalShootsPageLoaded);
+//   finalShootsPageLoadedRef.current = finalShootsPageLoaded;
+
+//   const handleShootDragStart = (e: DragEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>, shootID: number) => {
+//     const selectedShoot = shoots.find(shoot => shoot.shootID === shootID);
+//     setActiveDragShoot(selectedShoot || null);
+//   };
+  
+//   const makeOrderEditable = () => {
+//     setShootOrderIsEditable(true);
+//     setActiveDragShoot(null);
+//     toast.info("Drag shoots into desired order then Save to update");
+//   };
+
+//   const saveNewOrder = async () => {
+//     setShootOrderIsEditable(false);
+//     setAppIsLoading(true);
+    
+//     if (isLoggedIn) {      
+//       toast.info("Updating database. One sec...");
+
+//       // const new_shoot_order = [];
+  
+//       // for (const shoot of shoots) {
+//       //   const updateObj = {};
+//       //   updateObj.shoot_id = shoot.shoot_id;
+//       //   updateObj.display_order = shoot.display_order;
+//       //   new_shoot_order.push(updateObj);
+//       // };
+
+//       // try {
+//       //   const response = await fetch(`${BASE_URL}/shoots/updateorder`, {
+//       //     method: "PATCH",
+//       //     headers: {
+//       //       "Content-Type": "application/json",
+//       //       "Authorization": `Bearer ${localStorage.getItem("token")}`
+//       //     },
+//       //     body: JSON.stringify({ new_shoot_order})
+//       //   });
+
+//       //   if (response.ok) {
+//       //     toast.success("Database updated.");
+//       //     setIsLoading(false);
+//       //   };
+        
+//       // } catch(error) {
+//       //   console.log(error);
+//       //   toast.error("Error updating database...");
+//       //   setIsLoading(false);
+//       // };
+//     };
+
+//     // setShootOrderIsEditable(false);
+//     setActiveDragShoot(null);
+//   };
+
+//   const handleDropShootTarget = (dropTargetShootID: number, dropTargetShootDisplayOrder: number) => {
+//     if (!activeDragShoot) {
+//       return;
+//     }
+
+//     setShoots((prevShoots) => {
+//       const activeDraggedShootID = activeDragShoot.shootID;
+//       const activeDraggedShootOldDisplayOrder = activeDragShoot.displayOrder;
+
+//       const highestDisplayOrder = prevShoots.reduce((maxDisplayOrder, shoot) => {
+//         const currentOrder = parseInt(shoot.displayOrder as any, 10) || 0;
+//         return currentOrder > maxDisplayOrder ? currentOrder : maxDisplayOrder;
+//       }, 0);
+
+//       const updatedShoots = prevShoots.map((shoot) => ({ ...shoot }));
+
+//       for (const shoot of updatedShoots) {
+//         if (dropTargetShootID !== activeDraggedShootID) {
+//           if (dropTargetShootDisplayOrder === highestDisplayOrder) {
+//             if (shoot.shootID === dropTargetShootID) {
+//               shoot.displayOrder = dropTargetShootDisplayOrder - 1;
+//             } else if (shoot.shootID === activeDraggedShootID) {
+//               shoot.displayOrder = dropTargetShootDisplayOrder;
+//             } else if (
+//               shoot.displayOrder < dropTargetShootDisplayOrder &&
+//               shoot.displayOrder >= activeDraggedShootOldDisplayOrder
+//             ) {
+//               shoot.displayOrder = shoot.displayOrder - 1;
+//             }
+//           } else if (activeDraggedShootOldDisplayOrder > dropTargetShootDisplayOrder) {
+//             if (shoot.shootID === dropTargetShootID) {
+//               shoot.displayOrder = dropTargetShootDisplayOrder + 1;
+//             } else if (shoot.shootID === activeDraggedShootID) {
+//               shoot.displayOrder = dropTargetShootDisplayOrder;
+//             } else if (
+//               shoot.displayOrder > dropTargetShootDisplayOrder &&
+//               shoot.displayOrder <= activeDraggedShootOldDisplayOrder
+//             ) {
+//               shoot.displayOrder = shoot.displayOrder + 1;
+//             }
+//           } else if (dropTargetShootDisplayOrder > activeDraggedShootOldDisplayOrder) {
+//             if (shoot.shootID === dropTargetShootID) {
+//               shoot.displayOrder = dropTargetShootDisplayOrder - 1;
+//             } else if (shoot.shootID === activeDraggedShootID) {
+//               shoot.displayOrder = dropTargetShootDisplayOrder;
+//             } else if (
+//               shoot.displayOrder <= dropTargetShootDisplayOrder &&
+//               shoot.displayOrder > activeDraggedShootOldDisplayOrder
+//             ) {
+//               shoot.displayOrder = shoot.displayOrder - 1;
+//             }
+//           }
+//         }
+//       }
+
+//       updatedShoots.sort((a, b) => a.displayOrder - b.displayOrder);
+//       return updatedShoots;
+//     });
+
+//     setActiveDragShoot(null);
+//   };
+
+//   // useEffect to fetch shoots
+//   useEffect(() => {
+//     if (tagParam && selectedTag === null) {
+//       return;
+//     }
+
+//     // Guard: Ensure selectedTag in state matches tagParam in URL to avoid stale tag fetches
+//     if (tagParam && selectedTag && selectedTag.name.toLowerCase() !== tagParam.toLowerCase()) {
+//       return;
+//     }
+
+//     if (!tagParam && selectedTag !== null && !isOnShootDetails) {
+//       return;
+//     }
+
+//     if (!finalShootsPageLoaded && shouldUpdateShoots) {
+//       const fetchShoots = async () => {
+//         isFetchingRef.current = true;
+//         setAppIsLoading(true);
+
+//         try {
+//           const data = await getShootSummaries({
+//             tagID: selectedTag?.id || undefined,
+//             page: currentShootsPage,
+//             limit: itemsPerPage,
+//           });
+
+//           const { shootSummaries, isFinalPage } = data;
+
+//           let filteredShoots = [...shootSummaries];
+
+//           if (isOnShootDetails && shootID) {
+//             filteredShoots = shootSummaries.filter((shoot) => shoot.shootID !== shootID);
+//           }
+
+//           setShoots((prevShoots) => {
+//             if (currentShootsPage === 1) {
+//               return filteredShoots;
+//             }
+
+//             return [
+//               ...prevShoots,
+//               ...filteredShoots.filter(
+//                 (shoot) => !prevShoots.some((prev) => prev.shootID === shoot.shootID)
+//               ),
+//             ];
+//           });
+
+//           if (isFinalPage || shootSummaries.length < itemsPerPage) {
+//             setFinalShootsPageLoaded(true);
+//           }
+//         } catch (error) {
+//           console.error(`Error loading shoots for page ${currentShootsPage}:`, error);
+//         } finally {
+//           isFetchingRef.current = false;
+//           setAppIsLoading(false);
+//           setShouldUpdateShoots(false);
+//         }
+//       };
+
+//       fetchShoots();
+//     }
+//   }, [shouldUpdateShoots, selectedTag, currentShootsPage, isOnShootDetails, shootID, tagParam, setAppIsLoading]);
+
+//   // useEffect for IntersectionObserver infinite scroll pagination
+//   useEffect(() => {
+//     const sentinel = sentinelRef.current;
+
+//     if (!sentinel) {
+//       return;
+//     }
+
+//     const observer = new IntersectionObserver(entries => {
+//       const target = entries[0];
+
+//       if (target.isIntersecting && !isFetchingRef.current && !finalShootsPageLoadedRef.current) {
+//         setCurrentShootsPage((prevPage) => prevPage + 1);
+//         setShouldUpdateShoots(true);
+//       }
+//     }, { rootMargin: "200px" });
+
+//     observer.observe(sentinel);
+
+//     return () => {
+//       observer.disconnect();
+//     };
+//   }, [setCurrentShootsPage, setShouldUpdateShoots]);
+
+//   // useEffect to sync URL tag param with AppContext
+//   useEffect(() => {
+//     if (!tags.length) {
+//       return;
+//     }
+
+//     if (tagParam) {
+//       const matchedTag = tags.find(
+//         (tag) => tag.name.toLowerCase() === tagParam.toLowerCase()
+//       );
+
+//       if (matchedTag) {
+//         if (matchedTag.id !== selectedTag?.id) {
+//           setSelectedTag(matchedTag);
+//           handleRefreshShoots();
+//         }
+//       } else {
+//         // Tag param exists in URL but does not match any valid tag from DB
+//         setSelectedTag(null);
+//         router.push("/notfound");
+//       }
+//     } else if (selectedTag !== null && !isOnShootDetails) {
+//       setSelectedTag(null);
+//       handleRefreshShoots();
+//     }
+//   }, [tagParam, tags, selectedTag, isOnShootDetails, router]);
+
+//   // Clear shoots and selectedTag on unmount so leaving /work doesn't leave stale data in context
+//   useEffect(() => {
+//     handleRefreshShoots();
+
+//     return () => {
+//       setSelectedTag(null);
+//       setShootOrderIsEditable(false);
+//       handleRefreshShoots();
+//     };
+//   }, []);
+  
+//   return (
+//     <div className="shoots">
+
+//       {isOnShootDetails &&
+
+//         <h3 className="shoots__shootDetailsHeading">
+//           Other {selectedTag ? normalizeCasing(selectedTag.name || "") : null} Shoots
+//         </h3>
+
+//       }
+      
+//       <div className={`shoots__inner ${isOnShootDetails ? "onShootDetails" : ""}`}>
+
+//         {shoots.map(({ shootID, displayOrder, thumbnailURL, models, photographers }) => (
+
+//           <ClientLink 
+//             key={shootID} 
+//             href={tagParam ? `/shoot/${shootID}?tag=${tagParam}` : `/shoot/${shootID}`}
+//           >
+//             <Shoot
+//               shootID={shootID}
+//               displayOrder={displayOrder}
+//               thumbnailURL={thumbnailURL}
+//               models={models}
+//               photographers={photographers}
+//               isOnShootDetails={isOnShootDetails}
+//               shootOrderIsEditable={shootOrderIsEditable}
+//               handleShootDragStart={handleShootDragStart}
+//               handleDropShootTarget={handleDropShootTarget}
+//             />
+//           </ClientLink>
+
+//         ))}
+
+//       </div>
+      
+//       {isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && !shootOrderIsEditable && !selectedTag 
+
+//         ? (
+//             <div className="shoots__button-container">
+//               <button
+//                 className="shoots__editShootOrder"
+//                 onClick={makeOrderEditable}
+//               >
+//                 Edit Order
+//               </button>
+//             </div>
+//           )
+
+//         : isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && shootOrderIsEditable && !selectedTag ? 
+
+//           (
+//             <div className="shoots__button-container">
+//               <button
+//                 className="shoots__editShootOrder"
+//                 onClick={saveNewOrder}
+//                 >
+//                 Save Order
+//               </button>
+//             </div>
+//           )
+//         : null
+//       }
+
+    
+//       {!finalShootsPageLoaded 
+    
+//         ? <div className="shoots__sentinel" ref={sentinelRef}></div> 
+//         : null
+//       }
+
+//     <div className="shoots__sentinel" ref={sentinelRef}></div> 
+//     </div>
+//   );
+// };
+
+// export default Shoots; 
+
 "use client";
 
-import { usePathname, useParams, useSearchParams, useRouter } from "next/navigation";
+import { usePathname, useParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect, DragEvent, MouseEvent } from "react";
 import { ShootSummary } from "@/typing/interfaces";
 import { useAppContext } from "@/hooks/hooks";
@@ -10,10 +387,6 @@ import { toast } from "react-toastify";
 import ClientLink from "@/components/ClientLink/ClientLink";
 import Shoot from "@/components/Shoot/Shoot";
 import "./Shoots.scss";
-
-// ***Uncancelled in-flight request / dangling promise race condition:
-// If a fetch is in flight and the user navigates away or switches tags, the promise resolution 
-// can execute after unmount/cleanup, dirtying global AppContext with stale shoot data.
 
 // const itemsPerPage = 12;
 const itemsPerPage = 3;
@@ -38,8 +411,8 @@ const Shoots = () => {
     handleRefreshShoots
   } = useAppContext();
 
-  const searchParams = useSearchParams();
-  const tagParam = searchParams.get("tag");
+  const [tagParam, setTagParam] = useState<string | null>(null);
+
   const params = useParams();
   const shootID = params?.id ? Number(params.id) : null;
 
@@ -56,8 +429,27 @@ const Shoots = () => {
   const finalShootsPageLoadedRef = useRef(finalShootsPageLoaded);
   finalShootsPageLoadedRef.current = finalShootsPageLoaded;
 
+  // Sync tagParam from window.location on route changes or browser navigation
+  useEffect(() => {
+    const syncTag = () => {
+      if (typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        setTagParam(urlParams.get("tag"));
+      }
+    };
+
+    syncTag();
+    window.addEventListener("popstate", syncTag);
+
+    return () => {
+      window.removeEventListener("popstate", syncTag);
+    };
+  }, [pathname]);
+
   const handleShootDragStart = (e: DragEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>, shootID: number) => {
-    const selectedShoot = shoots.find(shoot => shoot.shootID === shootID);
+    const selectedShoot = shoots.find((shoot) => {
+      return shoot.shootID === shootID;
+    });
     setActiveDragShoot(selectedShoot || null);
   };
   
@@ -73,39 +465,8 @@ const Shoots = () => {
     
     if (isLoggedIn) {      
       toast.info("Updating database. One sec...");
+    }
 
-      // const new_shoot_order = [];
-  
-      // for (const shoot of shoots) {
-      //   const updateObj = {};
-      //   updateObj.shoot_id = shoot.shoot_id;
-      //   updateObj.display_order = shoot.display_order;
-      //   new_shoot_order.push(updateObj);
-      // };
-
-      // try {
-      //   const response = await fetch(`${BASE_URL}/shoots/updateorder`, {
-      //     method: "PATCH",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       "Authorization": `Bearer ${localStorage.getItem("token")}`
-      //     },
-      //     body: JSON.stringify({ new_shoot_order})
-      //   });
-
-      //   if (response.ok) {
-      //     toast.success("Database updated.");
-      //     setIsLoading(false);
-      //   };
-        
-      // } catch(error) {
-      //   console.log(error);
-      //   toast.error("Error updating database...");
-      //   setIsLoading(false);
-      // };
-    };
-
-    // setShootOrderIsEditable(false);
     setActiveDragShoot(null);
   };
 
@@ -120,10 +481,15 @@ const Shoots = () => {
 
       const highestDisplayOrder = prevShoots.reduce((maxDisplayOrder, shoot) => {
         const currentOrder = parseInt(shoot.displayOrder as any, 10) || 0;
-        return currentOrder > maxDisplayOrder ? currentOrder : maxDisplayOrder;
+        if (currentOrder > maxDisplayOrder) {
+          return currentOrder;
+        }
+        return maxDisplayOrder;
       }, 0);
 
-      const updatedShoots = prevShoots.map((shoot) => ({ ...shoot }));
+      const updatedShoots = prevShoots.map((shoot) => {
+        return { ...shoot };
+      });
 
       for (const shoot of updatedShoots) {
         if (dropTargetShootID !== activeDraggedShootID) {
@@ -164,7 +530,9 @@ const Shoots = () => {
         }
       }
 
-      updatedShoots.sort((a, b) => a.displayOrder - b.displayOrder);
+      updatedShoots.sort((a, b) => {
+        return a.displayOrder - b.displayOrder;
+      });
       return updatedShoots;
     });
 
@@ -203,7 +571,9 @@ const Shoots = () => {
           let filteredShoots = [...shootSummaries];
 
           if (isOnShootDetails && shootID) {
-            filteredShoots = shootSummaries.filter((shoot) => shoot.shootID !== shootID);
+            filteredShoots = shootSummaries.filter((shoot) => {
+              return shoot.shootID !== shootID;
+            });
           }
 
           setShoots((prevShoots) => {
@@ -213,9 +583,11 @@ const Shoots = () => {
 
             return [
               ...prevShoots,
-              ...filteredShoots.filter(
-                (shoot) => !prevShoots.some((prev) => prev.shootID === shoot.shootID)
-              ),
+              ...filteredShoots.filter((shoot) => {
+                return !prevShoots.some((prev) => {
+                  return prev.shootID === shoot.shootID;
+                });
+              }),
             ];
           });
 
@@ -243,11 +615,13 @@ const Shoots = () => {
       return;
     }
 
-    const observer = new IntersectionObserver(entries => {
+    const observer = new IntersectionObserver((entries) => {
       const target = entries[0];
 
       if (target.isIntersecting && !isFetchingRef.current && !finalShootsPageLoadedRef.current) {
-        setCurrentShootsPage((prevPage) => prevPage + 1);
+        setCurrentShootsPage((prevPage) => {
+          return prevPage + 1;
+        });
         setShouldUpdateShoots(true);
       }
     }, { rootMargin: "200px" });
@@ -266,9 +640,9 @@ const Shoots = () => {
     }
 
     if (tagParam) {
-      const matchedTag = tags.find(
-        (tag) => tag.name.toLowerCase() === tagParam.toLowerCase()
-      );
+      const matchedTag = tags.find((tag) => {
+        return tag.name.toLowerCase() === tagParam.toLowerCase();
+      });
 
       if (matchedTag) {
         if (matchedTag.id !== selectedTag?.id) {
@@ -276,7 +650,6 @@ const Shoots = () => {
           handleRefreshShoots();
         }
       } else {
-        // Tag param exists in URL but does not match any valid tag from DB
         setSelectedTag(null);
         router.push("/notfound");
       }
@@ -299,78 +672,62 @@ const Shoots = () => {
   
   return (
     <div className="shoots">
-
-      {isOnShootDetails &&
-
+      {isOnShootDetails && (
         <h3 className="shoots__shootDetailsHeading">
           Other {selectedTag ? normalizeCasing(selectedTag.name || "") : null} Shoots
         </h3>
-
-      }
+      )}
       
       <div className={`shoots__inner ${isOnShootDetails ? "onShootDetails" : ""}`}>
-
-        {shoots.map(({ shootID, displayOrder, thumbnailURL, models, photographers }) => (
-
-          <ClientLink 
-            key={shootID} 
-            href={tagParam ? `/shoot/${shootID}?tag=${tagParam}` : `/shoot/${shootID}`}
-          >
-            <Shoot
-              shootID={shootID}
-              displayOrder={displayOrder}
-              thumbnailURL={thumbnailURL}
-              models={models}
-              photographers={photographers}
-              isOnShootDetails={isOnShootDetails}
-              shootOrderIsEditable={shootOrderIsEditable}
-              handleShootDragStart={handleShootDragStart}
-              handleDropShootTarget={handleDropShootTarget}
-            />
-          </ClientLink>
-
-        ))}
-
+        {shoots.map(({ shootID, displayOrder, thumbnailURL, models, photographers }) => {
+          return (
+            <ClientLink 
+              key={shootID} 
+              href={tagParam ? `/shoot/${shootID}?tag=${tagParam}` : `/shoot/${shootID}`}
+            >
+              <Shoot
+                shootID={shootID}
+                displayOrder={displayOrder}
+                thumbnailURL={thumbnailURL}
+                models={models}
+                photographers={photographers}
+                isOnShootDetails={isOnShootDetails}
+                shootOrderIsEditable={shootOrderIsEditable}
+                handleShootDragStart={handleShootDragStart}
+                handleDropShootTarget={handleDropShootTarget}
+              />
+            </ClientLink>
+          );
+        })}
       </div>
       
-      {isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && !shootOrderIsEditable && !selectedTag 
+      {isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && !shootOrderIsEditable && !selectedTag ? (
+        <div className="shoots__button-container">
+          <button
+            className="shoots__editShootOrder"
+            onClick={makeOrderEditable}
+          >
+            Edit Order
+          </button>
+        </div>
+      ) : isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && shootOrderIsEditable && !selectedTag ? (
+        <div className="shoots__button-container">
+          <button
+            className="shoots__editShootOrder"
+            onClick={saveNewOrder}
+          >
+            Save Order
+          </button>
+        </div>
+      ) : null}
 
-        ? (
-            <div className="shoots__button-container">
-              <button
-                className="shoots__editShootOrder"
-                onClick={makeOrderEditable}
-              >
-                Edit Order
-              </button>
-            </div>
-          )
+      {!finalShootsPageLoaded ? (
+        <div className="shoots__sentinel" ref={sentinelRef}></div> 
+      ) : null}
 
-        : isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && shootOrderIsEditable && !selectedTag ? 
-
-          (
-            <div className="shoots__button-container">
-              <button
-                className="shoots__editShootOrder"
-                onClick={saveNewOrder}
-                >
-                Save Order
-              </button>
-            </div>
-          )
-        : null
-      }
-
-    
-      {!finalShootsPageLoaded 
-    
-        ? <div className="shoots__sentinel" ref={sentinelRef}></div> 
-        : null
-      }
-
-    <div className="shoots__sentinel" ref={sentinelRef}></div> 
+      <div className="shoots__sentinel" ref={sentinelRef}></div> 
     </div>
   );
 };
 
-export default Shoots; 
+export default Shoots;
