@@ -6,9 +6,6 @@ import { splitOnNewLine } from "@/utils/utils";
 import ClientButton from "@/components/ClientButton/ClientButton";
 import "./BioPage.scss";
 
-// test to see if amplify build passes
-export const dynamic = "force-dynamic";
-
 const BioPage = async () => {
   let response: BioResponse;
 
@@ -30,8 +27,6 @@ const BioPage = async () => {
     bioImageNotSet
   } = response.data;
 
-
-  
 return (
     <div className="bioPage">
       <div className="bioPage__inner">
