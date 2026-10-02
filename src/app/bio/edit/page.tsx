@@ -102,7 +102,6 @@ const EditBioPage = () => {
     }
   }, []);
 
-  // const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
   const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
 

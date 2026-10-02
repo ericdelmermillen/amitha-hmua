@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { Metadata } from "next";
+import { type Metadata } from "next";
 import { BioResponse } from "@/typing/interfaces";
 import { getBio } from "@/actions/bioActions";
 import { splitOnNewLine } from "@/utils/utils";

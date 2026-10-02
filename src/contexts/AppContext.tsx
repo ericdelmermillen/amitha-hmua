@@ -1,8 +1,6 @@
 "use client";
 
-import { usePathname, 
-  // useSearchParams,
-  useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
   type MouseEvent, 
   useState,  
@@ -24,7 +22,6 @@ const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 const AppContextProvider = ({ children }: ContextProviderProps) => {
   const pathname = usePathname();
-  // const searchParams = useSearchParams();
   const router = useRouter();
 
   const [ scrollYPos, setScrollYPos ] = useState(0);
@@ -291,7 +288,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     isLoggedIn, 
     setIsLoggedIn,
     handleLogoutUser,
-
     // route & app loading state
     appIsLoading, 
     setAppIsLoading,
@@ -300,7 +296,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     handleNavigateToAddShoot,
     handleNavigateToEditShoot,
     handleIsOnSamePage,
-
     // ui navigation & drawers
     showSideNav, 
     setShowSideNav,
@@ -308,7 +303,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     handleSideNavLinkClick,
     showFloatingButton, 
     setShowFloatingButton,
-
     // nav select & tag filtering
     navSelectValue, 
     setNavSelectValue,
@@ -316,12 +310,10 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setShowNavSelectOptions,
     selectedTag, 
     setSelectedTag,
-    
     // scroll position tracking
     scrollYPos, 
     setScrollYPos,
     getPrevScrollYPosValue,
-    
     // tags data
     tags, 
     setTags,
@@ -329,7 +321,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     setTagChoosers,
     shouldRefreshTags,
     setShouldRefreshTags,
-
     // shoots data & pagination
     shoots, 
     setShoots,
@@ -342,7 +333,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     shootOrderIsEditable, 
     setShootOrderIsEditable,
     handleRefreshShoots,
-
     // related entity refresh flags
     shouldRefreshModels, 
     setShouldRefreshModels,

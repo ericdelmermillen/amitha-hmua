@@ -1,21 +1,3 @@
-// import type { NextConfig } from "next";
-
-// const nextConfig: NextConfig = {
-//   /* config options here */
-//   images: {
-// 		remotePatterns: [
-// 			{
-// 				protocol: "https",
-// 				hostname: "amitha-hmua-images.s3.ca-central-1.amazonaws.com",
-//         // probably need to restrict the pathname to bioimages and shoots to matdh AWS dirname
-// 				pathname: "/**",
-// 			},
-// 		],
-// 	},
-// };
-
-// export default nextConfig;
-
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
@@ -36,7 +18,6 @@ const nextConfig = {
     EMAIL: process.env.EMAIL,
     PASSWORD: process.env.PASSWORD,
     COMPANY_NAME: process.env.COMPANY_NAME,
-    SITE_URL: process.env.SITE_URL,
 
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,

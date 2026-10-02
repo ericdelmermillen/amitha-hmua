@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { type Metadata } from "next";
 import  { ReactNode } from "react";
 import { AppContextProvider } from "@/contexts/AppContext";
 import { ThemeProvider } from "@/providers/ThemeProvider";

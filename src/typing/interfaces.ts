@@ -467,6 +467,12 @@ interface BioRow extends QueryResultRow {
   img_url: string | null;
 }
 
+interface UseOutsideClickProps {
+  targetRef: React.RefObject<HTMLElement | null>;
+  onOutsideClick: (event: globalThis.MouseEvent) => void;
+  componentIsActive?: boolean;
+}
+
 export {
   type ContextProviderProps,
   type AppContextValue,
@@ -528,4 +534,5 @@ export {
   type PhotographerShoot,
   // 
   type BioRow,
+  type UseOutsideClickProps,
 };

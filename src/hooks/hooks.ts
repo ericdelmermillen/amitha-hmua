@@ -1,6 +1,10 @@
 "use client";
 
-import type { AppContextValue, ModalContextValue } from "@/typing/interfaces";
+import { 
+  type AppContextValue, 
+  type ModalContextValue, 
+  type UseOutsideClickProps 
+} from "@/typing/interfaces";
 import { useState, useEffect, useContext, useRef } from "react";
 import { AppContext } from "@/contexts/AppContext";
 import { ModalContext } from "@/contexts/ModalContext";
@@ -21,14 +25,6 @@ const useModalContext = (): ModalContextValue => {
   }
   return context;
 };
-
-
-
-interface UseOutsideClickProps {
-  targetRef: React.RefObject<HTMLElement | null>;
-  onOutsideClick: (event: globalThis.MouseEvent) => void;
-  componentIsActive?: boolean;
-}
 
 const useOutsideClick = ({targetRef, onOutsideClick, componentIsActive = true,}: UseOutsideClickProps) => {
   const handlerRef = useRef(onOutsideClick);
