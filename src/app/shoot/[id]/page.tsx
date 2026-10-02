@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { ShootDetailsPageProps } from "@/typing/interfaces";
 import { Suspense } from "react";
 import { getShootByID } from "@/actions/shootActions"
@@ -55,13 +55,13 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
 
             <div key={photo.id} className="shootDetailsPage__photo-container">
               
-              {idx === 0 && 
-
+              {idx === 0 && (
+                
                 <h4 className="shootDetailsPage__date">
                   {formattedDate}
                 </h4>
 
-              }
+              )}
 
               <div className="shootDetailsPage__imageBox">
                 <Image 
@@ -153,8 +153,5 @@ const generateMetadata = async ( {params }: ShootDetailsPageProps): Promise<Meta
   }
 };
 
-
 export default ShootDetailsPage;
-export {
-  generateMetadata
-};
+export { generateMetadata };

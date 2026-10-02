@@ -4,7 +4,6 @@ import Shoots, { ShootsFallback } from "@/components/Shoots/Shoots";
 import "./WorkPage.scss";
 
 const WorkPage = () => {
-
   return (
     <div className="workPage">
       <div className="workPage__inner">
@@ -13,7 +12,7 @@ const WorkPage = () => {
         </Suspense>
       </div>
     </div>
-  )
+  );
 };
 
 const metadata: Metadata = {
@@ -37,7 +36,6 @@ const metadata: Metadata = {
       "Explore editorial, bridal, and creative hair and makeup artistry by Amitha Millen-Suwanta.",
   },
 };
-
 
 export { metadata };
 export default WorkPage;

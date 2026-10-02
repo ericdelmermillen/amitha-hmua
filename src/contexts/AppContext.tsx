@@ -181,27 +181,20 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
     }
   }, [shouldRefreshTags]);
 
-  // useEffect for tracking if user gets logged out on navigating to a protected rout and then redirected to /work?auth=false
-  // useEffect(() => {
-  //   const authStatus = searchParams.get("auth");
-
-  //   // auth checking for when user who was logged in attempts to navigae to a protected route but has had their token expire or be revoked in the meantime: middleware triggers the redirect and the client catches it based on the pathname
-  //   if (authStatus === "false") {
-  //     handleLogoutUser("Authentication failed. Logging you out...", "error");
-  //   }
-  // }, [searchParams, pathname]);
+  // useEffect to catch auth failures triggered by middleware redirect
   useEffect(() => {
-  if (typeof window === "undefined") {
-    return;
-  }
+    if (typeof document === "undefined") {
+      return;
+    }
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const authStatus = urlParams.get("auth");
+    const match = document.cookie.match(/(?:^|; )\s*auth_flash=([^;]*)/);
 
-  if (authStatus === "false") {
-    handleLogoutUser("Authentication failed. Logging you out...", "error");
-  }
-}, [pathname]);
+    if (match && match[1] === "expired") {
+      // Immediately clear the cookie so it only triggers once
+      document.cookie = "auth_flash=; path=/; max-age=0";
+      handleLogoutUser("Authentication failed. Logging you out...", "error");
+    }
+  }, [pathname]);
 
 
   // useEffect to turn off appIsLoading on page load or after navigation

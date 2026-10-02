@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import  { ReactNode } from "react";
+import { ReactNode } from "react";
 import { AppContextProvider } from "@/contexts/AppContext";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ModalContextProvider } from "@/contexts/ModalContext";
@@ -49,5 +49,5 @@ const metadata: Metadata = {
   }
 };
 
-export  { metadata };
 export default RootLayout;
+export  { metadata };

@@ -6,6 +6,7 @@ const JWT_REFRESH_SECRET = new TextEncoder().encode(process.env.JWT_REFRESH_SECR
 
 const protectedRoutes = ["/bio/edit", "/shoot/add", "/shoot/edit"];
 
+// helper function to check access or refresh tokens, returning a boolean
 const verifyTokenEdge = async (token: string, secret: Uint8Array): Promise<boolean> => {
   try {
     await jwtVerify(token, secret);
@@ -18,9 +19,7 @@ const verifyTokenEdge = async (token: string, secret: Uint8Array): Promise<boole
 const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
 
-  const isProtected = protectedRoutes.some(route => {
-    return pathname.startsWith(route);
-  });
+  const isProtected = protectedRoutes.some(route => pathname.startsWith(route));
 
   if (!isProtected) {
     return NextResponse.next();
@@ -43,10 +42,21 @@ const middleware = async (request: NextRequest) => {
     }
   }
 
-  const redirectUrl = new URL("/work", request.url);
-  redirectUrl.searchParams.set("auth", "false");
+  // Tokens missing or invalid: redirect cleanly to /work
+  const response = NextResponse.redirect(new URL("/work", request.url));
 
-  return NextResponse.redirect(redirectUrl);
+  response.cookies.set("auth_flash", "expired", {
+    path: "/",
+    maxAge: 10,       // Lives 10 seconds—just long enough for client hydration
+    httpOnly: false,  // Must be accessible to document.cookie
+    sameSite: "lax",
+  });
+
+  // Clear any invalid or expired session cookies immediately
+  response.cookies.delete("accessToken");
+  response.cookies.delete("refreshToken");
+
+  return response;
 };
 
 const config = {

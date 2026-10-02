@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useParams, useSearchParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useState, useRef, useEffect, DragEvent, MouseEvent } from "react";
 import { ShootSummary } from "@/typing/interfaces";
 import { useAppContext } from "@/hooks/hooks";
@@ -15,34 +15,22 @@ import "./Shoots.scss";
 // If a fetch is in flight and the user navigates away or switches tags, the promise resolution 
 // can execute after unmount/cleanup, dirtying global AppContext with stale shoot data.
 
-// const itemsPerPage = 12;
-const itemsPerPage = 3;
+const itemsPerPage = 12;
 
 const ShootsFallback = ({ isOnShootDetails = false, itemsPerPage = 12 }) => {
   return (
     <div className="shoots">
+      
       {isOnShootDetails && (
-        <h3 className="shoots__shootDetailsHeading" style={{ opacity: 0 }}>
+        <h3 className="shoots__shootDetailsHeading">
           Loading Shoots...
         </h3>
       )}
 
       <div className={`shoots__inner ${isOnShootDetails ? "onShootDetails" : ""}`}>
-        {Array.from({ length: itemsPerPage }).map((_, index) => {
-          return (
-            <div
-              key={index}
-              className="shoot"
-              style={{
-                width: "100%",
-                aspectRatio: "3 / 4",
-                backgroundColor: "var(--color-bg-secondary, #ececec)",
-                borderRadius: "4px",
-                opacity: 0.5,
-              }}
-            />
-          );
-        })}
+        
+        {Array.from({ length: itemsPerPage }).map((_, index) => <div key={index} className="shoot" />)}
+      
       </div>
     </div>
   );
