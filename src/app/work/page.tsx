@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Shoots from "@/components/Shoots/Shoots";
+import { Suspense } from "react";
+import Shoots, { ShootsFallback } from "@/components/Shoots/Shoots";
 import "./WorkPage.scss";
 
 const WorkPage = () => {
@@ -7,12 +8,13 @@ const WorkPage = () => {
   return (
     <div className="workPage">
       <div className="workPage__inner">
-        <Shoots />
+        <Suspense fallback={<ShootsFallback />}>
+          <Shoots />
+        </Suspense>
       </div>
     </div>
   )
 };
-
 
 const metadata: Metadata = {
   title: "Portfolio | Amitha HMUA",

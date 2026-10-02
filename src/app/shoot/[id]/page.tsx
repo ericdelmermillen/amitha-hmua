@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { ShootDetailsPageProps } from "@/typing/interfaces";
+import { Suspense } from "react";
 import { getShootByID } from "@/actions/shootActions"
 import Image from "next/image";
-import Shoots from "@/components/Shoots/Shoots";
+import Shoots, { ShootsFallback } from "@/components/Shoots/Shoots";
 import "./ShootDetailsPage.scss";
 
 const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
@@ -101,12 +102,13 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
       </div>
       <div className="shootDetailsPage__divider"></div>
       <div className="shootDetailsPage__bottom">
-        <Shoots />
+        <Suspense fallback={<ShootsFallback isOnShootDetails={true} />}>
+          <Shoots />
+        </Suspense>
       </div>
     </div>
   );
 };
-
 
 const generateMetadata = async ( {params }: ShootDetailsPageProps): Promise<Metadata> => {
   const { id } = await params;
