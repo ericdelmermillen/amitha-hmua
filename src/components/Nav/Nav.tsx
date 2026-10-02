@@ -9,22 +9,8 @@ import ClientLink from "@/components/ClientLink/ClientLink";
 import ColorModeToggle from "@/components/ColorModeToggle/ColorModeToggle";
 import Logo from "@/assets/icons/Logo";
 import NavBarToggle from "@/components/NavBarToggle/NavBarToggle";
-import NavSelect from "@/components/NavSelect/NavSelect"
+import NavSelect, { NavSelectFallback } from "@/components/NavSelect/NavSelect"
 import "./Nav.scss";
-
-const NavSelectFallback = () => {
-  return (
-    <div className="navSelect short">
-      <div className="navSelect__inner">
-        <div className="navSelect__select">
-          <div className="navSelect__selectValue short">
-            <span className="navSelect__default-option show">WORK</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const Nav = () => {
   const { 
@@ -36,7 +22,7 @@ const Nav = () => {
     setShowNavSelectOptions,
     setShowSideNav,
     tags
-    } = useAppContext();
+  } = useAppContext();
 
   const pathname = usePathname();
   const isOnHome = pathname === "/work";
@@ -72,31 +58,28 @@ const Nav = () => {
 
           {navPages.map(({ href, modifierClass, pageName, icon: Icon }) => href.startsWith("/") 
             
-            ? (
-                <li key={href} className={`nav__link nav__link${modifierClass}`}>
-                  <ClientLink 
-                    href={href}
-                    onClick={pathname === href
-                      ? handleIsOnSamePage
-                      : undefined
-                    }
-                  >
-                    {pageName}
-                  </ClientLink>
-                </li>
-              ) 
-            : (
-                <li key={href} className={`nav__link nav__link--${modifierClass}`}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="nav__link-anchor"
-                  >
-                    {Icon && <Icon className={`nav__icon nav__icon${modifierClass}`} />}
-                  </a>
-                </li>
-              )
+            ? <li key={href} className={`nav__link nav__link${modifierClass}`}>
+                <ClientLink 
+                  href={href}
+                  onClick={pathname === href
+                    ? handleIsOnSamePage
+                    : undefined
+                  }
+                >
+                  {pageName}
+                </ClientLink>
+              </li>
+            
+            : <li key={href} className={`nav__link nav__link--${modifierClass}`}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nav__link-anchor"
+                >
+                  {Icon && <Icon className={`nav__icon nav__icon${modifierClass}`} />}
+                </a>
+              </li>
           )}
           
           <li className="nav__link nav__link--colorMode">

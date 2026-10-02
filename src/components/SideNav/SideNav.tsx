@@ -1,13 +1,13 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, Suspense } from "react";
 import { useAppContext, useOutsideClick } from "@/hooks/hooks";
 import { navPages } from "@/constants/navPages";
 import ClientButton from "@/components/ClientButton/ClientButton";
 import ColorModeToggle from "@/components/ColorModeToggle/ColorModeToggle";
 import ClientLink from "@/components/ClientLink/ClientLink";
-import NavSelect from "@/components/NavSelect/NavSelect";
+import NavSelect, { NavSelectFallback } from "@/components/NavSelect/NavSelect";
 import "./SideNav.scss";
 
 const NAV_CLICK_DELAY = parseInt(process.env.NEXT_PUBLIC_NAV_CLICK_DELAY || "250", 10);
@@ -94,16 +94,17 @@ const SideNav = () => {
         <div className="sideNav__menu">
           <ul className="sideNav__links">
             <li className="sideNav__link">
-              <NavSelect 
-                selectOptions={tags} 
-                modifierClass="side-nav"
-              />
+              <Suspense fallback={<NavSelectFallback/>}>
+                <NavSelect 
+                  selectOptions={tags} 
+                  modifierClass="side-nav"
+                />
+              </Suspense>
             </li>
 
             {navPages.map(({ href, modifierClass, pageName }) => href.startsWith("/") 
             
-              ? (
-                <li 
+              ? <li 
                   key={href} 
                   className={`sideNav__link sideNav__link--${modifierClass}`}
                   onClick={pathname !== href
@@ -115,17 +116,14 @@ const SideNav = () => {
                     {pageName}
                   </ClientLink>
                 </li>
-                ) 
-              : (
-                  <li 
-                    className={`sideNav__link sideNav__link--${modifierClass}`}
-                    key={href}
-                  >
-                    <a href={href} target="_blank" rel="noopener noreferrer">
-                      {pageName}
-                    </a>
-                  </li>
-                )
+              : <li 
+                  className={`sideNav__link sideNav__link--${modifierClass}`}
+                  key={href}
+                >
+                  <a href={href} target="_blank" rel="noopener noreferrer">
+                    {pageName}
+                  </a>
+                </li>
             )}
 
             <li className="sideNav__logOut">

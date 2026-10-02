@@ -10,6 +10,20 @@ import "./NavSelect.scss";
 
 const MIN_LOADING_INTERVAL = parseInt(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL || "250", 10);
 
+const NavSelectFallback = () => {
+  return (
+    <div className="navSelect short">
+      <div className="navSelect__inner">
+        <div className="navSelect__select">
+          <div className="navSelect__selectValue short">
+            <span className="navSelect__default-option show">WORK</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
   const navSelectRef = useRef<HTMLDivElement>(null);
 
@@ -169,6 +183,7 @@ const NavSelect = ({ selectOptions, modifierClass }: NavSelectProps) => {
 };
 
 export default NavSelect;
+export { NavSelectFallback };
 
 // "use client";
 

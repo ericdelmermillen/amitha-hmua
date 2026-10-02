@@ -26,7 +26,7 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
               <IsLoading />
               <ToastProvider />
               <Nav />
-              {/* <SideNav /> */}
+              <SideNav />
               <Modal />
                 <main className="app">
                   {children}
