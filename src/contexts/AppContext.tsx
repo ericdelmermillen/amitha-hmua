@@ -66,13 +66,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   };
 
   const handleSetShowSideNavFalse = () => {
-    setShowSideNav((prev) => {
-      if (prev === false) {
-        return prev;
-      }
-      
-      return false;
-    });
+    setShowSideNav(false);
   };
 
   const handleRefreshShoots = () => {

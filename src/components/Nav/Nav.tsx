@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useState, type MouseEvent } from "react";
+import { type MouseEvent, Suspense } from "react";
 import { useAppContext } from "@/hooks/hooks";
 import { navPages } from "@/constants/navPages";
 import ClientButton from "@/components/ClientButton/ClientButton";
@@ -11,6 +11,20 @@ import Logo from "@/assets/icons/Logo";
 import NavBarToggle from "@/components/NavBarToggle/NavBarToggle";
 import NavSelect from "@/components/NavSelect/NavSelect"
 import "./Nav.scss";
+
+const NavSelectFallback = () => {
+  return (
+    <div className="navSelect short">
+      <div className="navSelect__inner">
+        <div className="navSelect__select">
+          <div className="navSelect__selectValue short">
+            <span className="navSelect__default-option show">WORK</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Nav = () => {
   const { 
@@ -37,69 +51,69 @@ const Nav = () => {
   const navIsHidden = getPrevScrollYPosValue() < scrollYPos && scrollYPos > 50;
 
   return (
-    <>
-      <nav className={`nav ${navIsHidden ? "hide" : ""}`}>
-        <div className="nav__content">
+    <nav className={`nav ${navIsHidden ? "hide" : ""}`}>
+      <div className="nav__content">
 
-          <ClientLink 
-            href="/work" 
-            scroll={false}
-            onClick={isOnHome ? handleIsOnHome : () => handleNavigateHome()}
-          >
-            <div className="nav__logo">
-              <Logo className={"nav__logo--icon"}/>
-            </div>
-          </ClientLink>
-
-          <ul className="nav__links">
-
-            <NavSelect selectOptions={tags} />
-
-            {navPages.map(({ href, modifierClass, pageName, icon: Icon }) => href.startsWith("/") 
-              
-              ? (
-                  <li key={href} className={`nav__link nav__link${modifierClass}`}>
-                    <ClientLink 
-                      href={href}
-                      onClick={pathname === href
-                        ? handleIsOnSamePage
-                        : undefined
-                      }
-                    >
-                      {pageName}
-                    </ClientLink>
-                  </li>
-                ) 
-              : (
-                  <li key={href} className={`nav__link nav__link--${modifierClass}`}>
-                    <a
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="nav__link-anchor"
-                    >
-                      {Icon && <Icon className={`nav__icon nav__icon${modifierClass}`} />}
-                    </a>
-                  </li>
-                )
-            )}
-            
-            <li className="nav__link nav__link--colorMode">
-              <ColorModeToggle inputId={"navColorModeToggle"}/>
-            </li>
-
-          </ul>
-          <div className="nav__logOut">
-            <ClientButton 
-              text="Logout"
-              variant="rounded"
-              buttonType="logOut"
-            />
+        <ClientLink 
+          href="/work" 
+          scroll={false}
+          onClick={isOnHome ? handleIsOnHome : () => handleNavigateHome()}
+        >
+          <div className="nav__logo">
+            <Logo className={"nav__logo--icon"}/>
           </div>
-          <NavBarToggle />
+        </ClientLink>
+
+        <ul className="nav__links">
+
+          <Suspense fallback={<NavSelectFallback />}>
+            <NavSelect selectOptions={tags} />
+          </Suspense>
+
+          {navPages.map(({ href, modifierClass, pageName, icon: Icon }) => href.startsWith("/") 
+            
+            ? (
+                <li key={href} className={`nav__link nav__link${modifierClass}`}>
+                  <ClientLink 
+                    href={href}
+                    onClick={pathname === href
+                      ? handleIsOnSamePage
+                      : undefined
+                    }
+                  >
+                    {pageName}
+                  </ClientLink>
+                </li>
+              ) 
+            : (
+                <li key={href} className={`nav__link nav__link--${modifierClass}`}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="nav__link-anchor"
+                  >
+                    {Icon && <Icon className={`nav__icon nav__icon${modifierClass}`} />}
+                  </a>
+                </li>
+              )
+          )}
+          
+          <li className="nav__link nav__link--colorMode">
+            <ColorModeToggle inputId={"navColorModeToggle"}/>
+          </li>
+
+        </ul>
+        <div className="nav__logOut">
+          <ClientButton 
+            text="Logout"
+            variant="rounded"
+            buttonType="logOut"
+          />
         </div>
-      </nav>
-    </>
+        <NavBarToggle />
+      </div>
+    </nav>
   );
 };
 
