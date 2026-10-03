@@ -163,7 +163,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
         if (response?.success && Array.isArray(response.tags)) {
           setTags(response.tags);
-          // basically spreading in new tags
           setTagChoosers(prev => syncChoosers(prev, response.tags));
         } else {
           throw new Error(response?.message || "Failed to retrieve tags");
@@ -268,7 +267,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
     verifySession();
   }, []);
-
 
   const contextValues: AppContextValue = {
     // auth & session

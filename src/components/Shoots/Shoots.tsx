@@ -257,7 +257,7 @@ const Shoots = () => {
   useEffect(() => {
     const sentinel = sentinelRef.current;
 
-    if (!sentinel) {
+    if (!sentinel || shoots.length === 0) {
       return;
     }
 
@@ -265,7 +265,7 @@ const Shoots = () => {
       const target = entries[0];
 
       if (target.isIntersecting && !isFetchingRef.current && !finalShootsPageLoadedRef.current) {
-        setCurrentShootsPage((prevPage) => prevPage + 1);
+        setCurrentShootsPage(prevPage => prevPage + 1);
         setShouldUpdateShoots(true);
       }
     }, { rootMargin: "200px" });
@@ -275,7 +275,7 @@ const Shoots = () => {
     return () => {
       observer.disconnect();
     };
-  }, [setCurrentShootsPage, setShouldUpdateShoots]);
+  }, [shoots.length, setCurrentShootsPage, setShouldUpdateShoots]);
 
   // useEffect to sync URL tag param with AppContext
   useEffect(() => {
@@ -385,7 +385,6 @@ const Shoots = () => {
         : null
       }
 
-    <div className="shoots__sentinel" ref={sentinelRef}></div> 
     </div>
   );
 };
