@@ -208,7 +208,7 @@ interface ShootDatePickerProps {
 };
 
 interface CustomSelectProps {
-  selectOptions: EntityRow[];
+  selectOptions: ShootEntity[];
   entityType: EntryNameType;
   selectValue: string | null;
   chooserNumber: number;
