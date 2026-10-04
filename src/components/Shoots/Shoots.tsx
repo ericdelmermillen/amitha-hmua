@@ -1,11 +1,24 @@
 "use client";
 
 import { useParams, usePathname, useSearchParams, useRouter } from "next/navigation";
-import { useState, useRef, useEffect, DragEvent, MouseEvent } from "react";
+import { useRef, useEffect } from "react";
 import { ShootSummary } from "@/typing/interfaces";
 import { useAppContext } from "@/hooks/hooks";
-import { getShootSummaries } from "@/actions/shootActions";
+import { getShootSummaries, updateShootOrder } from "@/actions/shootActions";
 import { normalizeCasing } from "@/utils/utils";
+import { 
+  type DragEndEvent,
+  DndContext, 
+  closestCenter, 
+  PointerSensor,
+  useSensor,
+  useSensors
+} from "@dnd-kit/core";
+import { 
+  SortableContext, 
+  rectSortingStrategy, 
+  arrayMove 
+} from "@dnd-kit/sortable";
 import { toast } from "react-toastify";
 import ClientLink from "@/components/ClientLink/ClientLink";
 import Shoot from "@/components/Shoot/Shoot";
@@ -15,6 +28,7 @@ import "./Shoots.scss";
 // If a fetch is in flight and the user navigates away or switches tags, the promise resolution 
 // can execute after unmount/cleanup, dirtying global AppContext with stale shoot data.
 
+const DND_ACTIVATION_DISTANCE = parseInt(process.env.NEXT_PUBLIC_DND_ACTIVATION_DISTANCE || "8", 10);
 const itemsPerPage = 12;
 
 const ShootsFallback = ({ isOnShootDetails = false, itemsPerPage = 12 }) => {
@@ -56,6 +70,8 @@ const Shoots = () => {
     handleRefreshShoots
   } = useAppContext();
 
+  // console.log(shoots.map(shoot => shoot.shootID))
+
   const searchParams = useSearchParams();
   const tagParam = searchParams.get("tag");
   const params = useParams();
@@ -66,22 +82,45 @@ const Shoots = () => {
   
   const router = useRouter();
 
-  const [ activeDragShoot, setActiveDragShoot ] = useState<ShootSummary | null>(null);
-
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const isFetchingRef = useRef(false);
 
   const finalShootsPageLoadedRef = useRef(finalShootsPageLoaded);
   finalShootsPageLoadedRef.current = finalShootsPageLoaded;
 
-  const handleShootDragStart = (e: DragEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>, shootID: number) => {
-    const selectedShoot = shoots.find(shoot => shoot.shootID === shootID);
-    setActiveDragShoot(selectedShoot || null);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: DND_ACTIVATION_DISTANCE }
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    setShoots((prevShoots) => {
+      const oldIndex = prevShoots.findIndex((shoot) => shoot.shootID === active.id);
+      const newIndex = prevShoots.findIndex((shoot) => shoot.shootID === over.id);
+
+      if (oldIndex === -1 || newIndex === -1) {
+        return prevShoots;
+      }
+
+      const reordered = arrayMove(prevShoots, oldIndex, newIndex);
+
+      // Resynchronize displayOrder to match new 1-based order
+      return reordered.map((shoot, idx) => ({
+        ...shoot,
+        displayOrder: idx + 1,
+      }));
+    });
   };
-  
+
   const makeOrderEditable = () => {
     setShootOrderIsEditable(true);
-    setActiveDragShoot(null);
     toast.info("Drag shoots into desired order then Save to update");
   };
 
@@ -92,101 +131,23 @@ const Shoots = () => {
     if (isLoggedIn) {      
       toast.info("Updating database. One sec...");
 
-      // const new_shoot_order = [];
-  
-      // for (const shoot of shoots) {
-      //   const updateObj = {};
-      //   updateObj.shoot_id = shoot.shoot_id;
-      //   updateObj.display_order = shoot.display_order;
-      //   new_shoot_order.push(updateObj);
-      // };
+      try {
+        const orderedIDs = shoots.map((shoot) => shoot.shootID);
 
-      // try {
-      //   const response = await fetch(`${BASE_URL}/shoots/updateorder`, {
-      //     method: "PATCH",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       "Authorization": `Bearer ${localStorage.getItem("token")}`
-      //     },
-      //     body: JSON.stringify({ new_shoot_order})
-      //   });
+        const response = await updateShootOrder(orderedIDs);
 
-      //   if (response.ok) {
-      //     toast.success("Database updated.");
-      //     setIsLoading(false);
-      //   };
-        
-      // } catch(error) {
-      //   console.log(error);
-      //   toast.error("Error updating database...");
-      //   setIsLoading(false);
-      // };
+        if (response.success) {
+          toast.success("Database updated.");
+        }
+      } catch(error) {
+        console.log(error);
+        toast.error("Error updating database...");
+      } finally {
+        setAppIsLoading(false);
+      }
     };
 
-    // setShootOrderIsEditable(false);
-    setActiveDragShoot(null);
-  };
-
-  const handleDropShootTarget = (dropTargetShootID: number, dropTargetShootDisplayOrder: number) => {
-    if (!activeDragShoot) {
-      return;
-    }
-
-    setShoots((prevShoots) => {
-      const activeDraggedShootID = activeDragShoot.shootID;
-      const activeDraggedShootOldDisplayOrder = activeDragShoot.displayOrder;
-
-      const highestDisplayOrder = prevShoots.reduce((maxDisplayOrder, shoot) => {
-        const currentOrder = parseInt(shoot.displayOrder as any, 10) || 0;
-        return currentOrder > maxDisplayOrder ? currentOrder : maxDisplayOrder;
-      }, 0);
-
-      const updatedShoots = prevShoots.map((shoot) => ({ ...shoot }));
-
-      for (const shoot of updatedShoots) {
-        if (dropTargetShootID !== activeDraggedShootID) {
-          if (dropTargetShootDisplayOrder === highestDisplayOrder) {
-            if (shoot.shootID === dropTargetShootID) {
-              shoot.displayOrder = dropTargetShootDisplayOrder - 1;
-            } else if (shoot.shootID === activeDraggedShootID) {
-              shoot.displayOrder = dropTargetShootDisplayOrder;
-            } else if (
-              shoot.displayOrder < dropTargetShootDisplayOrder &&
-              shoot.displayOrder >= activeDraggedShootOldDisplayOrder
-            ) {
-              shoot.displayOrder = shoot.displayOrder - 1;
-            }
-          } else if (activeDraggedShootOldDisplayOrder > dropTargetShootDisplayOrder) {
-            if (shoot.shootID === dropTargetShootID) {
-              shoot.displayOrder = dropTargetShootDisplayOrder + 1;
-            } else if (shoot.shootID === activeDraggedShootID) {
-              shoot.displayOrder = dropTargetShootDisplayOrder;
-            } else if (
-              shoot.displayOrder > dropTargetShootDisplayOrder &&
-              shoot.displayOrder <= activeDraggedShootOldDisplayOrder
-            ) {
-              shoot.displayOrder = shoot.displayOrder + 1;
-            }
-          } else if (dropTargetShootDisplayOrder > activeDraggedShootOldDisplayOrder) {
-            if (shoot.shootID === dropTargetShootID) {
-              shoot.displayOrder = dropTargetShootDisplayOrder - 1;
-            } else if (shoot.shootID === activeDraggedShootID) {
-              shoot.displayOrder = dropTargetShootDisplayOrder;
-            } else if (
-              shoot.displayOrder <= dropTargetShootDisplayOrder &&
-              shoot.displayOrder > activeDraggedShootOldDisplayOrder
-            ) {
-              shoot.displayOrder = shoot.displayOrder - 1;
-            }
-          }
-        }
-      }
-
-      updatedShoots.sort((a, b) => a.displayOrder - b.displayOrder);
-      return updatedShoots;
-    });
-
-    setActiveDragShoot(null);
+    setShootOrderIsEditable(false);
   };
 
   // useEffect to fetch shoots
@@ -328,26 +289,40 @@ const Shoots = () => {
       
       <div className={`shoots__inner ${isOnShootDetails ? "onShootDetails" : ""}`}>
 
-        {shoots.map(({ shootID, displayOrder, thumbnailURL, models, photographers }) => (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
 
-          <ClientLink 
-            key={shootID} 
-            href={tagParam ? `/shoot/${shootID}?tag=${tagParam}` : `/shoot/${shootID}`}
-          >
-            <Shoot
-              shootID={shootID}
-              displayOrder={displayOrder}
-              thumbnailURL={thumbnailURL}
-              models={models}
-              photographers={photographers}
-              isOnShootDetails={isOnShootDetails}
-              shootOrderIsEditable={shootOrderIsEditable}
-              handleShootDragStart={handleShootDragStart}
-              handleDropShootTarget={handleDropShootTarget}
-            />
-          </ClientLink>
+          <SortableContext
+            items={shoots.map(shoot => shoot.shootID)}
+            strategy={rectSortingStrategy}
+          >          
 
-        ))}
+            {shoots.map(({ shootID, displayOrder, thumbnailURL, models, photographers }) => (
+
+              <ClientLink 
+                key={shootID} 
+                href={tagParam ? `/shoot/${shootID}?tag=${tagParam}` : `/shoot/${shootID}`}
+                // onClick={shootOrderIsEditable ? (e) => e.preventDefault() : undefined}
+              >
+                <Shoot
+                  shootID={shootID}
+                  displayOrder={displayOrder}
+                  thumbnailURL={thumbnailURL}
+                  models={models}
+                  photographers={photographers}
+                  isOnShootDetails={isOnShootDetails}
+                  shootOrderIsEditable={shootOrderIsEditable}
+                />
+              </ClientLink>
+
+            ))}
+          </SortableContext>
+
+        </DndContext>
+
 
       </div>
       

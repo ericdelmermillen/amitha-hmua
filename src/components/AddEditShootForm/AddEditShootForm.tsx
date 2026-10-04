@@ -1,5 +1,14 @@
 "use client";
 
+import { useParams } from "next/navigation";
+import { ChooserItem, InputPhoto, ShootEntity } from "@/typing/interfaces";
+import { EntryNameType } from "@/typing/types";
+import { type ChangeEvent, type SubmitEvent, useState, useEffect } from "react";
+import { useAppContext } from "@/hooks/hooks";
+import { getAllModels } from "@/actions/modelActions";
+import { getAllPhotographers } from "@/actions/photographerActions";
+import { getShootByID, addShoot, editShootByID } from "@/actions/shootActions";
+import { getSignedURL } from "@/actions/s3Actions";
 import { 
   type DragEndEvent,
   DndContext, 
@@ -13,16 +22,6 @@ import {
   rectSortingStrategy, 
   arrayMove 
 } from "@dnd-kit/sortable";
-
-import { useParams } from "next/navigation";
-import { ChooserItem, InputPhoto, ShootEntity } from "@/typing/interfaces";
-import { EntryNameType } from "@/typing/types";
-import { type ChangeEvent, type SubmitEvent, useState, useEffect } from "react";
-import { useAppContext } from "@/hooks/hooks";
-import { getAllModels } from "@/actions/modelActions";
-import { getAllPhotographers } from "@/actions/photographerActions";
-import { getShootByID, addShoot, editShootByID } from "@/actions/shootActions";
-import { getSignedURL } from "@/actions/s3Actions";
 import { normalizeCasing, staggerToastsByN, syncChoosers } from "@/utils/utils";
 import { toast } from "react-toastify";
 import AddIcon from "@/assets/icons/AddIcon";
@@ -34,6 +33,7 @@ import PhotoInput from "@/components/PhotoInput/PhotoInput";
 import "./AddEditShootForm.scss"
 
 const SHOOTS_DIRNAME = process.env.NEXT_PUBLIC_AWS_SHOOTS_DIRNAME || "shootimages";
+const DND_ACTIVATION_DISTANCE = parseInt(process.env.NEXT_PUBLIC_DND_ACTIVATION_DISTANCE || "8", 10);
 const numberOfPhotoUploads = 10;
 
 const AddEditShootForm = () => {
@@ -73,7 +73,7 @@ const AddEditShootForm = () => {
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 }
+      activationConstraint: { distance: DND_ACTIVATION_DISTANCE }
     })
   );
 

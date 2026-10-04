@@ -4,52 +4,59 @@ import Image from "next/image";
 import { useState, DragEvent } from "react";
 import { ShootProps } from "@/typing/interfaces";
 import { useAppContext, useIsFirefox, useModalContext } from "@/hooks/hooks";
+import { CSS } from "@dnd-kit/utilities";
+import { useSortable } from "@dnd-kit/sortable";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
 import EditIcon from "@/assets/icons/EditIcon";
 import "./Shoot.scss";
 
+const DND_OPACITY = Number(process.env.NEXT_PUBLIC_DND_OPACITY || "0.5");
+console.log(DND_OPACITY)
+
 const Shoot = ({ 
   shootID, 
-  displayOrder,
   thumbnailURL, 
   models, 
   photographers, 
   isOnShootDetails,
   shootOrderIsEditable, 
-  handleShootDragStart,
-  handleDropShootTarget
 }: ShootProps) => {
 
   const { isLoggedIn } = useAppContext();
   const { handleOpenModal } = useModalContext();
-  const isFirefox = useIsFirefox();
 
   const [ imageIsLoaded, setImageIsLoaded ] = useState(false);
 
-  const handleUpdateImageIsLoaded = () => setImageIsLoaded(true);
+const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ 
+    id: shootID,
+    disabled: !shootOrderIsEditable || shootID === undefined,
+  });
+  
+  const sortableStyle = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? DND_OPACITY : 1,
+    zIndex: isDragging ? 999 : "auto",
+    position: isDragging ? ("relative" as const) : undefined,
 
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
   };
+
+  const handleUpdateImageIsLoaded = () => setImageIsLoaded(true);
 
   return (
     <div 
-      draggable={shootOrderIsEditable}
-      className={shootOrderIsEditable 
-        ? "shoot draggable" 
-        : "shoot"}
-      onDragStart={shootOrderIsEditable && !isFirefox && handleShootDragStart && shootID !== undefined
-        ? (e) => handleShootDragStart(e, shootID)
-        : undefined}
-      onMouseDown={shootOrderIsEditable && isFirefox && handleShootDragStart && shootID !== undefined
-        ? (e) => handleShootDragStart(e, shootID)
-        : undefined}
-      onDragOver={shootOrderIsEditable
-        ? handleDragOver
-        : undefined}
-      onDrop={shootOrderIsEditable && handleDropShootTarget && shootID !== undefined && displayOrder !== undefined
-        ? (e) => handleDropShootTarget(shootID, displayOrder)
-        : undefined}
+      className={shootOrderIsEditable ? "shoot draggable" : "shoot"}
+      ref={setNodeRef}
+      style={sortableStyle}
+      {...attributes}
+      {...listeners}
     >
       
       <div className="shoot__overlay"></div>
@@ -86,13 +93,8 @@ const Shoot = ({
                 src={thumbnailURL}
                 alt={`Thumbnail for shoot ${shootID ?? ""}`}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                draggable={shootOrderIsEditable}
+                draggable={false}
                 onLoad={handleUpdateImageIsLoaded}
-                onDragStart={
-                  shootOrderIsEditable && handleShootDragStart && shootID !== undefined
-                  ? (e) => handleShootDragStart(e, shootID)
-                  : undefined
-                }
                 fill
               />
             ) 

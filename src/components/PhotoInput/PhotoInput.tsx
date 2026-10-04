@@ -14,6 +14,7 @@ import PhotoPlaceholder from "@/assets/icons/PhotoPlaceholder";
 import "./PhotoInput.scss";
 
 const MIN_LOADING_INTERVAL = parseInt(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL || "250", 10);
+const DND_OPACITY = Number(process.env.NEXT_PUBLIC_DND_OPACITY || "0.5");
 
 // *** revisit placeholders once I implement suspense
 
@@ -41,7 +42,7 @@ const PhotoInput = ({
   const sortableStyle = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? DND_OPACITY : 1,
   };
 
   const handleFileInputChange = () => {
