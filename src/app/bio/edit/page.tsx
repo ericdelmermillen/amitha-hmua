@@ -176,7 +176,7 @@ const EditBioPage = () => {
         bio_name: bioName,
         bio_img_url: newImageName,
         bio_text: bioText,
-        updated_Photo: isPhotoUpdated,
+        updated_photo: isPhotoUpdated,
       });
 
       if (!response.success) {
