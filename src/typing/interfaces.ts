@@ -229,6 +229,7 @@ interface PhotoInputProps {
 
 interface ShootProps {
   shootID: number;
+  tagParam: string | null;
   displayOrder?: number;
   thumbnailURL?: string;
   models?: string[];

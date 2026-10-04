@@ -2,7 +2,6 @@
 
 import { useParams, usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useRef, useEffect } from "react";
-import { ShootSummary } from "@/typing/interfaces";
 import { useAppContext } from "@/hooks/hooks";
 import { getShootSummaries, updateShootOrder } from "@/actions/shootActions";
 import { normalizeCasing } from "@/utils/utils";
@@ -20,7 +19,6 @@ import {
   arrayMove 
 } from "@dnd-kit/sortable";
 import { toast } from "react-toastify";
-import ClientLink from "@/components/ClientLink/ClientLink";
 import Shoot from "@/components/Shoot/Shoot";
 import "./Shoots.scss";
 
@@ -70,8 +68,6 @@ const Shoots = () => {
     handleRefreshShoots
   } = useAppContext();
 
-  // console.log(shoots.map(shoot => shoot.shootID))
-
   const searchParams = useSearchParams();
   const tagParam = searchParams.get("tag");
   const params = useParams();
@@ -87,6 +83,10 @@ const Shoots = () => {
 
   const finalShootsPageLoadedRef = useRef(finalShootsPageLoaded);
   finalShootsPageLoadedRef.current = finalShootsPageLoaded;
+
+  const showSaveOrder = isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && shootOrderIsEditable && !selectedTag;
+
+  const showEditOrder = isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && !shootOrderIsEditable && !selectedTag;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -296,29 +296,24 @@ const Shoots = () => {
         >
 
           <SortableContext
-            items={shoots.map(shoot => shoot.shootID)}
+            items={shoots.map((shoot) => shoot.shootID)}
             strategy={rectSortingStrategy}
           >          
+            {shoots.map(({ shootID, displayOrder, thumbnailURL, models, photographers }) => 
 
-            {shoots.map(({ shootID, displayOrder, thumbnailURL, models, photographers }) => (
-
-              <ClientLink 
+              <Shoot
                 key={shootID} 
-                href={tagParam ? `/shoot/${shootID}?tag=${tagParam}` : `/shoot/${shootID}`}
-                // onClick={shootOrderIsEditable ? (e) => e.preventDefault() : undefined}
-              >
-                <Shoot
-                  shootID={shootID}
-                  displayOrder={displayOrder}
-                  thumbnailURL={thumbnailURL}
-                  models={models}
-                  photographers={photographers}
-                  isOnShootDetails={isOnShootDetails}
-                  shootOrderIsEditable={shootOrderIsEditable}
-                />
-              </ClientLink>
+                shootID={shootID}
+                tagParam={tagParam}
+                displayOrder={displayOrder}
+                thumbnailURL={thumbnailURL}
+                models={models}
+                photographers={photographers}
+                isOnShootDetails={isOnShootDetails}
+                shootOrderIsEditable={shootOrderIsEditable}
+              />
 
-            ))}
+            )}
           </SortableContext>
 
         </DndContext>
@@ -326,7 +321,7 @@ const Shoots = () => {
 
       </div>
       
-      {isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && !shootOrderIsEditable && !selectedTag 
+      {showEditOrder
 
         ? (
             <div className="shoots__button-container">
@@ -339,7 +334,7 @@ const Shoots = () => {
             </div>
           )
 
-        : isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && shootOrderIsEditable && !selectedTag ? 
+        : showSaveOrder ? 
 
           (
             <div className="shoots__button-container">

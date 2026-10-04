@@ -19,6 +19,11 @@
 	&.draggable {
 		animation: shake 0.45s infinite;
 		cursor: grab;
+
+		&:active {
+			animation: none;
+			cursor: grabbing;
+		}
 	}
 
 	&__placeholder {

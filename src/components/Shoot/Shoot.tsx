@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useState, DragEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { ShootProps } from "@/typing/interfaces";
-import { useAppContext, useIsFirefox, useModalContext } from "@/hooks/hooks";
+import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
@@ -15,6 +16,7 @@ console.log(DND_OPACITY)
 
 const Shoot = ({ 
   shootID, 
+  tagParam,
   thumbnailURL, 
   models, 
   photographers, 
@@ -22,8 +24,10 @@ const Shoot = ({
   shootOrderIsEditable, 
 }: ShootProps) => {
 
-  const { isLoggedIn } = useAppContext();
+  const { isLoggedIn, setAppIsLoading } = useAppContext();
   const { handleOpenModal } = useModalContext();
+
+  const router = useRouter();
 
   const [ imageIsLoaded, setImageIsLoaded ] = useState(false);
 
@@ -43,16 +47,25 @@ const {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? DND_OPACITY : 1,
-    zIndex: isDragging ? 999 : "auto",
     position: isDragging ? ("relative" as const) : undefined,
 
   };
 
   const handleUpdateImageIsLoaded = () => setImageIsLoaded(true);
 
+  const handleCardClick = () => {
+    if (shootOrderIsEditable || !shootID) {
+      return;
+    }
+    setAppIsLoading(true);
+    const destination = tagParam ? `/shoot/${shootID}?tag=${tagParam}` : `/shoot/${shootID}`;
+    router.push(destination);
+  };
+
   return (
     <div 
       className={shootOrderIsEditable ? "shoot draggable" : "shoot"}
+      onClick={handleCardClick}
       ref={setNodeRef}
       style={sortableStyle}
       {...attributes}
@@ -65,13 +78,12 @@ const {
 
         ? 
           <>
-            <div 
+            <div
               className="shoot__deleteBtn"
               onClick={(e) => handleOpenModal({e, action: "delete", entityType: "shoot", entityID: shootID})}
             >
               <DeleteIcon className={"shoot__deleteBtn--icon"} />
             </div>
-
             <div 
               className="shoot__editBtn"
               onClick={(e) => handleOpenModal({e, action: "edit", entityType: "shoot", entityID: shootID})}
@@ -87,6 +99,7 @@ const {
       <div className="shoot__imgBox">
             
         {thumbnailURL 
+
           ? (
               <Image
                 className={`shoot__img ${imageIsLoaded ? "show" : ""}`}
@@ -98,7 +111,8 @@ const {
                 fill
               />
             ) 
-        : null}
+          : null
+        }
         
       </div>
 

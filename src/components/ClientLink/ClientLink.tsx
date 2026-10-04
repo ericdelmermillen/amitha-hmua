@@ -11,6 +11,7 @@ interface ClientLinkProps {
   onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
   children?: ReactNode;
   scroll?: boolean;
+  skipIsLoading? : boolean;
 }
 
 const ClientLink = ({
@@ -19,12 +20,14 @@ const ClientLink = ({
   onClick, 
   children,
   scroll = false,
+  skipIsLoading = false,
 }: ClientLinkProps ) => {
 
   const { setAppIsLoading } = useAppContext();
 
+
   const handleLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!isModifiedClick(e)) {
+    if (!isModifiedClick(e) && !skipIsLoading) {
       setAppIsLoading(true);
     }
 
