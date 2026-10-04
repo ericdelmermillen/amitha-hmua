@@ -117,7 +117,6 @@ interface EntityRow extends RowDataPacket {
   id: number;
   name: string;
 }
-
 interface ChooserItem {
   number: number;
   id: number | null;
@@ -189,7 +188,7 @@ interface ClientLinkProps {
 }
 
 interface NavSelectProps {
-  selectOptions: EntityRow[];
+  selectOptions: ShootEntity[];
   modifierClass?: string;
 }
 
