@@ -117,6 +117,7 @@ interface EntityRow extends RowDataPacket {
   id: number;
   name: string;
 }
+
 interface ChooserItem {
   number: number;
   id: number | null;
