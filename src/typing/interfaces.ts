@@ -370,19 +370,19 @@ interface ActionResponse {
 interface GetAllTagsResponse {
   success: boolean;
   message: string;
-  tags: EntityRow[];
+  tags: ShootEntity[];
 }
 
 interface AddTagResponse {
   success: boolean;
   message: string;
-  tags?: EntityRow[];
+  tags?: ShootEntity[];
 }
 
 interface EditTagResponse {
   success: boolean;
   message: string;
-  updatedTag?: EntityRow;
+  updatedTag?: ShootEntity;
 }
 
 interface ShootLinkRow extends RowDataPacket {
@@ -408,20 +408,20 @@ interface ShootSummaryRow {
 interface DeleteTagResponse {
   success: boolean;
   message: string;
-  tags?: EntityRow[];
+  tags?: ShootEntity[];
   tagShoots?: number[];
 }
 
 interface GetAllModelsResponse {
   success: boolean;
   message: string;
-  models: EntityRow[];
+  models: ShootEntity[];
 }
 
 interface AddModelResponse {
   success: boolean;
   message: string;
-  models?: EntityRow[];
+  models?: ShootEntity[];
 }
 
 interface EditModelResponse {
