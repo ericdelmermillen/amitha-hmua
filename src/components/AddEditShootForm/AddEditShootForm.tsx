@@ -1,5 +1,19 @@
 "use client";
 
+import { 
+  type DragEndEvent,
+  DndContext, 
+  closestCenter, 
+  PointerSensor,
+  useSensor,
+  useSensors
+} from "@dnd-kit/core";
+import { 
+  SortableContext, 
+  rectSortingStrategy, 
+  arrayMove 
+} from "@dnd-kit/sortable";
+
 import { useParams } from "next/navigation";
 import { ChooserItem, InputPhoto, ShootEntity } from "@/typing/interfaces";
 import { EntryNameType } from "@/typing/types";
@@ -56,6 +70,37 @@ const AddEditShootForm = () => {
       displayOrder: idx + 1
     }))
   );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 }
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    setShootPhotos((prev) => {
+      const oldIndex = prev.findIndex(item => item.photoNo === active.id);
+      const newIndex = prev.findIndex(item => item.photoNo === over.id);
+
+      if (oldIndex === -1 || newIndex === -1) {
+        return prev;
+      }
+
+      const reordered = arrayMove(prev, oldIndex, newIndex);
+
+      // Resynchronize displayOrder to match new array positions (1-based)
+      return reordered.map((item, idx) => ({
+        ...item,
+        displayOrder: idx + 1,
+      }));
+    });
+  };
   
   const handleAddCustomSelect = (entryType: EntryNameType, choosers: ChooserItem[]) => {
     const hasNullChooser = choosers.some(chooser => chooser.id === null);
@@ -350,7 +395,7 @@ const AddEditShootForm = () => {
     }
   }, [shouldRefreshPhotographers]);
 
-    // useEffect to fetch shoot data and populate form in edit mode
+  // useEffect to fetch shoot data and populate form in edit mode
   useEffect(() => {
     if (!isEditMode || !shootID) {
       return;
@@ -517,22 +562,36 @@ const AddEditShootForm = () => {
         <h3 className="addEditShootForm__photos-heading">
           Select up to 10 Photos
         </h3>
-        
-        <div className="addEditShootForm__photoInputs">
 
-          {shootPhotos.map(photo => 
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={shootPhotos.map(photo => photo.photoNo)}
+            strategy={rectSortingStrategy}
+          >
+            <div className="addEditShootForm__photoInputs">
 
-            <div key={photo.photoNo} className="addEditShootForm__photoInput">
-              <PhotoInput
-                shootPhoto={photo}
-                setShootPhotos={setShootPhotos}
-                handleImageChange={handleImageChange}
-              />
+              {shootPhotos.map(photo => (
+
+                <div key={photo.photoNo} className="addEditShootForm__photoInput">
+                  <PhotoInput
+                    shootPhoto={photo}
+                    setShootPhotos={setShootPhotos}
+                    handleImageChange={handleImageChange}
+                  />
+                </div>
+
+              ))}
+
             </div>
-            
-          )}
 
-        </div>
+          </SortableContext>
+        </DndContext>
+
+
         <p className="addEditShootForm__photos-explainer">
           *All shoots need at least one photo
         </p>

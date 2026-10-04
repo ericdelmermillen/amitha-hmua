@@ -1,15 +1,15 @@
 "use client";
 
 import { 
-  ChangeEvent,
-  DragEvent, 
-  MouseEvent, 
+  type ChangeEvent,
+  type MouseEvent, 
   useEffect, 
   useRef, 
   useState 
 } from "react";
 import { PhotoInputProps } from "@/typing/interfaces";
-import { useIsFirefox } from "@/hooks/hooks";
+import { CSS } from "@dnd-kit/utilities";
+import { useSortable } from "@dnd-kit/sortable";
 import PhotoPlaceholder from "@/assets/icons/PhotoPlaceholder";
 import "./PhotoInput.scss";
 
@@ -21,17 +21,28 @@ const PhotoInput = ({
   shootPhoto, 
   setShootPhotos, 
   handleImageChange,
-  handleInputDragStart,
-  handleDropInputTarget
 }: PhotoInputProps) => {
 
   const [ showImage, setShowImage ] = useState(false);
-  const isFirefox = useIsFirefox();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const inputNo = shootPhoto.photoNo;
-  const displayOrder = shootPhoto.displayOrder;
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: shootPhoto.photoNo });
+  
+  const sortableStyle = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
 
   const handleFileInputChange = () => {
     fileInputRef.current?.click();
@@ -76,10 +87,6 @@ const PhotoInput = ({
     setShowImage(false);
   };
 
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
   const handleImageLoad = () => {
     setShowImage(true);
   };
@@ -98,24 +105,13 @@ const PhotoInput = ({
   return (
     <div 
       className="photoInput"
-      onClick={showImage 
-        ? undefined
-        : handleFileInputChange}
-      onDragStart={!isFirefox && handleInputDragStart
-        ? () => handleInputDragStart(inputNo)
-        : undefined}
-      onMouseDown={isFirefox && handleInputDragStart
-        ? () => handleInputDragStart(inputNo)
-        : undefined}
-      onDragOver={handleDragOver}
-      onDrop={handleDropInputTarget
-        ? () => handleDropInputTarget(inputNo, displayOrder)
-        : undefined}
-      draggable
+      ref={setNodeRef}
+      style={sortableStyle}
+      {...attributes}
+      {...listeners}
+      onClick={showImage ? undefined : handleFileInputChange}
     >
-      <div className={`photoInput__box ${showImage ? "disabled" : ""}`} 
-      // draggable
-      >
+      <div className={`photoInput__box ${showImage ? "disabled" : ""}`} >
 
         {shootPhoto.photoPreview 
 
