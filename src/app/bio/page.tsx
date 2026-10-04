@@ -1,9 +1,9 @@
-import Image from "next/image";
 import { type Metadata } from "next";
-import { BioResponse } from "@/typing/interfaces";
+import { type BioResponse } from "@/typing/interfaces";
 import { getBio } from "@/actions/bioActions";
 import { splitOnNewLine } from "@/utils/utils";
 import ClientButton from "@/components/ClientButton/ClientButton";
+import LightboxGallery from "@/components/LightboxGallery/LightboxGallery";
 import "./BioPage.scss";
 
 const BioPage = async () => {
@@ -28,66 +28,61 @@ const BioPage = async () => {
   } = response.data;
 
 return (
-    <div className="bioPage">
-      <div className="bioPage__inner">
+  <div className="bioPage">
+    <div className="bioPage__inner">
 
-        <div className="bioPage__hero-container">
+      <div className="bioPage__hero-container">
 
-          <div className="bioPage__heroImg-container">
+        <div className="bioPage__heroImg-container">
 
-            {bioImageNotSet
+          {bioImageNotSet
 
-              ? (
-                  <div className="bioPage__heroImg--missing">
-                    <h3 className="bioPage__missingImg">
-                      No Image Set
-                    </h3>
-                  </div>
-                )
-              : (
-                <Image
-                  className="bioPage__heroImg"
-                  src={bioImgURL}
-                  alt={`Hero Image of ${bioName}`}
+            ? (
+                <div className="bioPage__heroImg--missing">
+                  <h3 className="bioPage__missingImg">
+                    No Image Set
+                  </h3>
+                </div>
+              )
+            : (
+                <LightboxGallery
+                  slides={[{ src: bioImgURL, alt: `Hero Image of ${bioName}` }]}
+                  priorityFirst
                   sizes="(max-width: 768px) calc(100vw - 4rem), 50vw"
-                  fill
-                  priority
-                  // onClick={handleSetLightBox}
+                  imageClassName="bioPage__heroImg"
                 />
               )
-
-            }
-
-          </div>
-          <h3 className="bioPage__heroName">
-            {bioName}
-          </h3>
-
-          <div className="bioPage__button-container">
-            <ClientButton text="Edit Bio" buttonType="editBio" />
-          </div>
+          }
 
         </div>
-        <div className="bioPage__divider"></div>
+        <h3 className="bioPage__heroName">
+          {bioName}
+        </h3>
 
-        <div className="bioPage__text-container">
-
-          {bioText.length > 0 && splitOnNewLine(bioText).map((paragraph, idx) => 
-
-            <p key={idx} className={"bioPage__text"}>
-              {paragraph}
-            </p>
-
-          )}
-
+        <div className="bioPage__button-container">
+          <ClientButton text="Edit Bio" buttonType="editBio" />
         </div>
+
+      </div>
+      <div className="bioPage__divider"></div>
+
+      <div className="bioPage__text-container">
+
+        {bioText.length > 0 && splitOnNewLine(bioText).map((paragraph, idx) => 
+
+          <p key={idx} className={"bioPage__text"}>
+            {paragraph}
+          </p>
+
+        )}
 
       </div>
 
     </div>
+
+  </div>
   );
 };
-
 
 const generateMetadata = async (): Promise<Metadata> => {
   try {

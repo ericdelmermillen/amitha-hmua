@@ -16,6 +16,7 @@ import {
   type EntryNameType, 
   type ModalActionType, 
 } from "./types";
+import { SlideImage } from "yet-another-react-lightbox";
 
 interface ContextProviderProps {
   children: ReactNode;
@@ -483,6 +484,14 @@ interface UseOutsideClickProps {
   componentIsActive?: boolean;
 }
 
+interface LightboxGalleryProps {
+  slides: SlideImage[];
+  priorityFirst?: boolean;
+  sizes?: string;
+  imageClassName?: string;
+  containerClassName?: string;
+}
+
 export {
   type ContextProviderProps,
   type AppContextValue,
@@ -543,4 +552,5 @@ export {
   type ColorModeToggleProps,
   type BioRow,
   type UseOutsideClickProps,
+  type LightboxGalleryProps,
 };
