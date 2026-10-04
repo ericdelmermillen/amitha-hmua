@@ -7,11 +7,10 @@ const ModalContext = createContext<ModalContextValue | undefined>(undefined);
 
 const ModalContextProvider = ({ children }: ContextProviderProps) => {
   const [ showModal, setShowModal ] = useState(false);
-  
   const [ modalAction, setModalAction ] = useState<string | null>(null);
   const [ modalEntityID, setModalEntityID ] = useState<number | null>(null);
-  const [ modalEntityType, setModalEntityType ] = useState<string | null>(null);
   const [ modalEntityName, setModalEntityName ] = useState<string | null>(null);
+  const [ modalEntityType, setModalEntityType ] = useState<string | null>(null);
 
   const handleOpenModal = ({ e, action, entityType, entityName = null, entityID = null }: ModalData) => {
     e?.preventDefault();

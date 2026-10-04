@@ -6,8 +6,11 @@ import {
   type GetShootSummariesResponse, 
   type ShootData, 
   type ShootDetailResponse, 
-  type ShootSummary,
   type ShootEntity,
+  type ShootSummary,
+  PhotoRow,
+  ShootRow,
+  ShootSummaryRow,
 } from "@/typing/interfaces";
 import { pool } from "@/db/dbClient";
 import { deleteFiles } from "@/s3/s3";
@@ -15,27 +18,6 @@ import { verifyAndRefreshSession } from "@/utils/tokenUtils";
 
 const BUCKET_PATH = process.env.BUCKET_PATH ?? "";
 const DIRNAME = process.env.SHOOTS_DIRNAME ?? "";
-
-interface ShootSummaryRow {
-  shoot_id: number;
-  shoot_date: string | null;
-  display_order: number;
-  photographers: string[] | null;
-  models: string[] | null;
-  tags: string[] | null;
-  img_url: string | null;
-}
-
-interface ShootRow {
-  shoot_id: number;
-  shoot_date: string | null;
-}
-
-interface PhotoRow {
-  id: number;
-  display_order: number;
-  img_url: string;
-}
 
 // getShootSummaries
 const getShootSummaries = async ({

@@ -23,6 +23,7 @@
 		&:active {
 			animation: none;
 			cursor: grabbing;
+			z-index: 1;
 		}
 	}
 

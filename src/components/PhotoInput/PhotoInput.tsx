@@ -3,9 +3,9 @@
 import { 
   type ChangeEvent,
   type MouseEvent, 
-  useEffect, 
   useRef, 
-  useState 
+  useState,
+  useEffect
 } from "react";
 import { PhotoInputProps } from "@/typing/interfaces";
 import { CSS } from "@dnd-kit/utilities";
@@ -133,7 +133,6 @@ const PhotoInput = ({
         <div
           className={`photoInput__clearButton ${showImage ? "show" : ""}`}
           onClick={handleClearInput}
-          // onMouseDown is attempt to prevent click hijacking
           onMouseDown={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}
           draggable={false}
         >

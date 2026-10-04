@@ -85,10 +85,6 @@ const normalizeCasing = (string: string | undefined): string => {
     : ""
 };
 
-const checkIfIsFirefox = () => {
-  return navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
-};
-
 const syncChoosers = (prevChoosers: ChooserItem[], freshEntities: ShootEntity[]): ChooserItem[] => {
   const updated = prevChoosers.reduce<ChooserItem[]>((acc, chooser) => {
     if (chooser.id === null) {
@@ -106,7 +102,6 @@ const syncChoosers = (prevChoosers: ChooserItem[], freshEntities: ShootEntity[])
   return updated.length > 0 ? updated : [{ number: 1, id: null, name: null }];
 };
 
-
 export {
   scrollToTop,
   addClassToDiv,
@@ -121,6 +116,5 @@ export {
   staggerToastsByN,
   splitOnNewLine,
   normalizeCasing,
-  checkIfIsFirefox,
   syncChoosers
 };

@@ -17,7 +17,6 @@ import {
 import { COPYRIGHT } from "@/textCopy/emailCopy";
 import { splitOnNewLine } from "@/utils/utils";
 
-
 const COMPANY_NAME = process.env.COMPANY_NAME;
 
 const notificationEmailTemplate = (

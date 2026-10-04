@@ -38,30 +38,6 @@ const generateUploadURL = async (
   return uploadURL;
 };
 
-// const deleteFiles = async (fileNames: string[]): Promise<void> => {
-//   if (fileNames.length === 0) {
-//     return;
-//   }
-
-//   try {
-//     const command = new DeleteObjectsCommand({
-//       Bucket: BUCKET_NAME,
-//       Delete: {
-//         Objects: fileNames.map((fileName) => {
-//           return { Key: fileName };
-//         }),
-//         Quiet: true,
-//       },
-//     });
-
-//     await s3Client.send(command);
-//   } catch (error) {
-//     console.error("Error deleting files:", error);
-//     throw error;
-//   }
-// };
-
-
 const deleteFiles = async (fileNames: string[]): Promise<boolean> => {
   if (fileNames.length === 0) {
     return true;

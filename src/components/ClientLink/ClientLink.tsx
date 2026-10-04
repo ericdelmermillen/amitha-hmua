@@ -1,18 +1,10 @@
 "use client";
 
-import type { ReactNode, MouseEvent } from "react";
+import { type  MouseEvent } from "react";
+import { ClientLinkProps } from "@/typing/interfaces";
 import { useAppContext } from "@/hooks/hooks";
 import { isModifiedClick } from "@/utils/utils";
 import Link from "next/link";
-
-interface ClientLinkProps {
-  href: string;
-  className?: string;
-  onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
-  children?: ReactNode;
-  scroll?: boolean;
-  skipIsLoading? : boolean;
-}
 
 const ClientLink = ({
   href,
@@ -20,14 +12,12 @@ const ClientLink = ({
   onClick, 
   children,
   scroll = false,
-  skipIsLoading = false,
 }: ClientLinkProps ) => {
 
   const { setAppIsLoading } = useAppContext();
 
-
   const handleLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!isModifiedClick(e) && !skipIsLoading) {
+    if (!isModifiedClick(e)) {
       setAppIsLoading(true);
     }
 

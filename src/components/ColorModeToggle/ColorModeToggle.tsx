@@ -15,11 +15,10 @@ const ColorModeToggle = ({ inputId }: ColorModeToggleProps) => {
 
   const isDarkMode = isMounted && resolvedTheme === "dark";
 
-  // useEffect to handle updating of ismounted
+  // useEffect to handle updating of isMounted
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
 
   return (
     <button

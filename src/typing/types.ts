@@ -5,7 +5,6 @@ type ToastType =
   | "info"
   | "warning";
 
-
 type ChooserType = "Photographer" | "Model" | "Tag";
 
 type EntryNameType = "model" | "photographer" | "tag";

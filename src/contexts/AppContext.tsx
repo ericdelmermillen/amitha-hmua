@@ -8,12 +8,17 @@ import {
   useEffect, 
   createContext 
 } from "react";
+import { 
+  type AppContextValue, 
+  type ChooserItem, 
+  type ContextProviderProps, 
+  type ShootEntity,
+  type ShootSummary,
+} from "@/typing/interfaces";
 import { type TypeOptions, toast } from "react-toastify";
-import { AppContextValue, ChooserItem, ContextProviderProps, ShootSummary } from "@/typing/interfaces";
-import { isModifiedClick, normalizeCasing, scrollToTop, syncChoosers } from "@/utils/utils";
-import { ShootEntity } from "@/typing/interfaces";
 import { checkUserSession, logoutUser } from "@/actions/authActions";
 import { getAllTags } from "@/actions/tagActions";
+import { isModifiedClick, normalizeCasing, scrollToTop, syncChoosers } from "@/utils/utils";
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
@@ -194,7 +199,6 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
       handleLogoutUser("Authentication failed. Logging you out...", "error");
     }
   }, [pathname]);
-
 
   // useEffect to turn off appIsLoading on page load or after navigation
   useEffect(() => {

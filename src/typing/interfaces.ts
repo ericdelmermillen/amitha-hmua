@@ -113,6 +113,11 @@ interface ShootEntity {
   name: string;
 }
 
+interface EntityRow extends RowDataPacket {
+  id: number;
+  name: string;
+}
+
 interface ChooserItem {
   number: number;
   id: number | null;
@@ -139,24 +144,16 @@ interface ShootSummary {
   thumbnailURL: string;
 }
 
+interface PhotoRow {
+  id: number;
+  display_order: number;
+  img_url: string;
+}
+
 interface ShootDetailPhoto {
   id: number;
   display_order: number;
   photo_url: string;
-}
-
-interface BioData {
-	bioName: string;
-	bioText: string;
-	bioImgURL: string;
-	bioImageNotSet: boolean;
-}
-
-interface UpdatedBioData {
-  bio_name: string;
-  bio_img_url: string;
-  bio_text: string;
-  updated_Photo: boolean;
 }
 
 interface ShootDetailData {
@@ -183,8 +180,16 @@ interface ClientButtonProps {
   modifierClass?: string;
 }
 
+interface ClientLinkProps {
+  href: string;
+  className?: string;
+  onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
+  children?: ReactNode;
+  scroll?: boolean;
+}
+
 interface NavSelectProps {
-  selectOptions: ShootEntity[];
+  selectOptions: EntityRow[];
   modifierClass?: string;
 }
 
@@ -203,7 +208,7 @@ interface ShootDatePickerProps {
 };
 
 interface CustomSelectProps {
-  selectOptions: ShootEntity[];
+  selectOptions: EntityRow[];
   entityType: EntryNameType;
   selectValue: string | null;
   chooserNumber: number;
@@ -309,22 +314,24 @@ interface UserRow extends RowDataPacket {
   password: string;
 }
 
-interface EntityRow extends RowDataPacket {
-  id: number;
-  name: string;
+interface BioData {
+	bioName: string;
+	bioText: string;
+	bioImgURL: string;
+	bioImageNotSet: boolean;
 }
 
-interface BioResponseData {
-  bioName: string;
-  bioText: string;
-  bioImgURL: string;
-  bioImageNotSet: boolean;
+interface UpdatedBioData {
+  bio_name: string;
+  bio_img_url: string;
+  bio_text: string;
+  updated_photo: boolean;
 }
 
 interface BioResponse {
   success: boolean;
   message?: string;
-  data?: BioResponseData;
+  data?: BioData;
 }
 
 interface GetShootSummariesParams {
@@ -363,47 +370,58 @@ interface ActionResponse {
 interface GetAllTagsResponse {
   success: boolean;
   message: string;
-  tags: ShootEntity[];
+  tags: EntityRow[];
 }
 
 interface AddTagResponse {
   success: boolean;
   message: string;
-  tags?: ShootEntity[];
+  tags?: EntityRow[];
 }
 
 interface EditTagResponse {
   success: boolean;
   message: string;
-  updatedTag?: ShootEntity;
+  updatedTag?: EntityRow;
 }
 
 interface ShootLinkRow extends RowDataPacket {
   shoot_id: number;
 }
 
-interface ShootRow extends RowDataPacket {
-  id: number;
+interface ShootRow {
+  shoot_id: number;
+  shoot_date: string | null;
 }
+
+interface ShootSummaryRow {
+  shoot_id: number;
+  shoot_date: string | null;
+  display_order: number;
+  photographers: string[] | null;
+  models: string[] | null;
+  tags: string[] | null;
+  img_url: string | null;
+}
+
 
 interface DeleteTagResponse {
   success: boolean;
   message: string;
-  tags?: ShootEntity[];
-  // tagShoots?: TagShoot[];
+  tags?: EntityRow[];
   tagShoots?: number[];
 }
 
 interface GetAllModelsResponse {
   success: boolean;
   message: string;
-  models: ShootEntity[];
+  models: EntityRow[];
 }
 
 interface AddModelResponse {
   success: boolean;
   message: string;
-  models?: ShootEntity[];
+  models?: EntityRow[];
 }
 
 interface EditModelResponse {
@@ -416,7 +434,7 @@ interface DeleteModelResponse {
   success: boolean;
   message: string;
   models?: ShootEntity[];
-  modelShoots?: ModelShoot[];
+  modelShoots?: ShootEntityRelation[];
 }
 
 interface GetAllPhotographersResponse {
@@ -441,26 +459,17 @@ interface DeletePhotographerResponse {
   success: boolean;
   message: string;
   photographers?: ShootEntity[];
-  photographerShoots?: PhotographerShoot[];
+  photographerShoots?: ShootEntityRelation[];
 }
 
 interface ColorModeToggleProps {
   inputId?: string;
 }
 
-interface TagShoot {
+interface ShootEntityRelation {
   shoot_id: number;
 }
 
-interface ModelShoot {
-  shoot_id: number;
-}
-
-interface PhotographerShoot {
-  shoot_id: number;
-}
-
-// from action refactor
 interface BioRow extends QueryResultRow {
   id: number;
   name: string;
@@ -489,6 +498,7 @@ export {
   type IconProps,
   type NavPage,
   type ClientButtonProps,
+  type ClientLinkProps,
   type NavSelectProps,
   type NavLinkProps,
   type ShootDatePickerProps,
@@ -507,7 +517,6 @@ export {
   type TokenDetails,
   type UserRow,
   type EntityRow,
-  type BioResponseData,
   type BioResponse,
   type GetShootSummariesParams,
   type GetShootSummariesResponse,
@@ -520,6 +529,8 @@ export {
   type EditTagResponse,
   type ShootLinkRow,
   type ShootRow,
+  type ShootSummaryRow,
+  type PhotoRow,
   type DeleteTagResponse,
   type GetAllModelsResponse,
   type AddModelResponse,
@@ -530,10 +541,6 @@ export {
   type EditPhotographerResponse,
   type DeletePhotographerResponse,
   type ColorModeToggleProps,
-  type TagShoot,
-  type ModelShoot,
-  type PhotographerShoot,
-  // 
   type BioRow,
   type UseOutsideClickProps,
 };

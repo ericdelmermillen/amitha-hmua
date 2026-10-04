@@ -5,10 +5,9 @@ import {
   type ModalContextValue, 
   type UseOutsideClickProps 
 } from "@/typing/interfaces";
-import { useState, useEffect, useContext, useRef } from "react";
+import { useEffect, useContext, useRef } from "react";
 import { AppContext } from "@/contexts/AppContext";
 import { ModalContext } from "@/contexts/ModalContext";
-import { checkIfIsFirefox } from "@/utils/utils";
 
 const useAppContext = (): AppContextValue => {
   const context = useContext(AppContext);
@@ -55,19 +54,8 @@ const useOutsideClick = ({targetRef, onOutsideClick, componentIsActive = true,}:
   }, [componentIsActive, targetRef]);
 };
 
-const useIsFirefox = () => {
-  const [ isFirefox, setIsFirefox ] = useState(false);
-
-  useEffect(() => {
-    setIsFirefox(checkIfIsFirefox());
-  }, []);
-
-  return isFirefox;
-};
-
 export { 
   useAppContext,
   useModalContext,
-  useOutsideClick,
-  useIsFirefox
+  useOutsideClick
 };

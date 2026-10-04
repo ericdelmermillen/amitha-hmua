@@ -44,10 +44,7 @@ const IsLoading = () => {
   }
 
   return (
-    <div
-      id="appIsLoading"
-      className={`isLoading ${show ? "show" : ""}`}
-    />
+    <div className={`isLoading ${show ? "show" : ""}`}/>
   );
 };
 

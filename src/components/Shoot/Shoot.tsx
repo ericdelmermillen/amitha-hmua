@@ -12,7 +12,6 @@ import EditIcon from "@/assets/icons/EditIcon";
 import "./Shoot.scss";
 
 const DND_OPACITY = Number(process.env.NEXT_PUBLIC_DND_OPACITY || "0.5");
-console.log(DND_OPACITY)
 
 const Shoot = ({ 
   shootID, 

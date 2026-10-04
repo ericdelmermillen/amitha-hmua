@@ -61,7 +61,7 @@ const updateBio = async ({
   bio_name,
   bio_img_url,
   bio_text,
-  updated_Photo,
+  updated_photo,
 }: UpdatedBioData): Promise<ActionResponse> => {
   await verifyAndRefreshSession();
 
@@ -113,7 +113,7 @@ const updateBio = async ({
     revalidatePath("/bio");
 
     // Clean up old photo after successful DB update
-    if (updated_Photo && previousBioImg && previousBioImg !== bio_img_url) {
+    if (updated_photo && previousBioImg && previousBioImg !== bio_img_url) {
       try {
         await deleteFiles([`${BIO_DIRNAME}/${previousBioImg}`]);
       } catch (error) {
@@ -133,7 +133,7 @@ const updateBio = async ({
     console.error("Error updating Bio:", error);
 
     // Remove newly uploaded image if DB write failed
-    if (updated_Photo && bio_img_url) {
+    if (updated_photo && bio_img_url) {
       try {
         await deleteFiles([`${BIO_DIRNAME}/${bio_img_url}`]);
       } catch (deleteError) {
