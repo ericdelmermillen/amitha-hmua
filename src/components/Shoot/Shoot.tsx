@@ -42,12 +42,25 @@ const {
     disabled: !shootOrderIsEditable || shootID === undefined,
   });
 
+  // const sortableStyle = {
+  //   transform: CSS.Transform.toString(transform),
+  //   transition,
+  //   opacity: isDragging ? DND_OPACITY : 1,
+  //   position: isDragging ? ("relative" as const) : undefined,
+  //   zIndex: isDragging ? 999 : undefined,
+  //   touchAction: shootOrderIsEditable ? "none" : "auto",
+  //   userSelect: "none" as const,
+  //   WebkitUserSelect: "none" as const,
+  // };
+
   const sortableStyle = {
-    transform: CSS.Transform.toString(transform),
-    transition,
+    // CSS.Translate outputs translate(x, y) instead of matrix3d/translate3d,
+    // avoiding mobile WebKit compositing drops on Next.js fill images.
+    transform: CSS.Translate.toString(transform),
+    transition: isDragging ? undefined : transition,
     opacity: isDragging ? DND_OPACITY : 1,
-    position: isDragging ? ("relative" as const) : undefined,
-    zIndex: isDragging ? 999 : undefined,
+    // position: isDragging ? ("relative" as const) : undefined,
+    // zIndex: isDragging ? 9999 : 1,
     touchAction: shootOrderIsEditable ? "none" : "auto",
     userSelect: "none" as const,
     WebkitUserSelect: "none" as const,

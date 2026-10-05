@@ -17,7 +17,7 @@
 	}
 
 	&.draggable {
-		// animation: shake 0.45s infinite;
+		animation: shake 0.45s infinite;
 		cursor: grab;
 
 		&:active {
