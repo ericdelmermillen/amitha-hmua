@@ -3,9 +3,9 @@ import { redirect } from "next/navigation";
 import { ShootDetailsPageProps } from "@/typing/interfaces";
 import { Suspense } from "react";
 import { getShootByID } from "@/actions/shootActions"
-import Image from "next/image";
 import Shoots, { ShootsFallback } from "@/components/Shoots/Shoots";
 import "./ShootDetailsPage.scss";
+import ShootPhotosGallery from "@/components/ShootPhotosGalery/ShootPhotosGalery";
 
 const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
   const { id } = await params;
@@ -49,55 +49,13 @@ const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
     <div className="shootDetailsPage">
       <div className="shootDetailsPage__inner">
 
-        <div className="shootDetailsPage__photos">   
-          
-          {photos && photos.map((photo, idx) => 
-
-            <div key={photo.id} className="shootDetailsPage__photo-container">
-              
-              {idx === 0 && (
-                
-                <h4 className="shootDetailsPage__date">
-                  {formattedDate}
-                </h4>
-
-              )}
-
-              <div className="shootDetailsPage__imageBox">
-                <Image 
-                  className="shootDetailsPage__image"
-                  src={photo.photo_url} 
-                  alt={`Photo from photo shoot ${shootID}`} 
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority={idx === 0}
-                  fill
-                />
-              </div>
-
-              {idx === 0 && 
-
-                (
-                  <div className="shootDetailsPage__info">
-                    <h3 className="shootDetailsPage__models">
-                    <span className={"shootDetailsPage__models-label"}>
-                      {models.length > 1 ? "Models: " : "Model: "}
-                    </span>
-                      {models.join(", ")}
-                    </h3>
-
-                    <h3 className="shootDetailsPage__photographers">
-                      <span className="shootDetailsPage__photographers-label">
-                        {"Photos: "}
-                      </span>              
-                      {photographers.join(", ")}
-                    </h3>
-                  </div>
-                )}
-
-            </div>
-          )}  
-
-        </div>
+        <ShootPhotosGallery 
+          photos={photos}
+          formattedDate={formattedDate}
+          models={models}
+          photographers={photographers}
+          shootID={id}
+        />
 
       </div>
       <div className="shootDetailsPage__divider"></div>

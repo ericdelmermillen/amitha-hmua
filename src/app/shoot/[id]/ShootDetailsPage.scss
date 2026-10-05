@@ -10,96 +10,17 @@
 		@include mx.inner;
 		& {
 			align-self: stretch;
-			margin-top: vars.$nav-height;
+			margin-top: calc(vars.$nav-height + 1rem);
+			padding-bottom: 0;
 			width: 100%;
 		}
 	}
 
-	&__photos {
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-		margin-top: 1.5rem;
-		min-height: 100vh;
-		position: relative;
-		width: 85%;
-	}
-
-	@media (min-width: vars.$tablet) {
-		width: 70%;
-	}
-
-	&__photo-placeholders {
-		position: sticky;
-		opacity: 1;
-		width: 100%;
-	}
-
-	// &__photo-container {
-
+	// &__photo-placeholders {
+	// 	opacity: 1;
+	// 	position: sticky;
+	// 	width: 100%;
 	// }
-
-	&__info {
-		display: flex;
-		flex-direction: column;
-		letter-spacing: 2.5px;
-		margin-top: 1.25rem;
-		width: 100%;
-	}
-
-	&__date {
-		color: var(--text-color);
-		font-size: 1.125rem;
-		font-weight: normal;
-		margin-bottom: 0.125rem;
-		min-height: 2rem;
-		padding-inline-end: 0.25rem;
-		text-align: right;
-		width: 100%;
-
-		@media (min-width: vars.$tablet) {
-			margin-bottom: 0.75rem;
-		}
-	}
-
-	&__photographers {
-		color: var(--text-color);
-		display: block;
-		font-size: 1.125rem;
-		font-weight: normal;
-		height: 2rem;
-		margin-inline: auto;
-		min-width: 70%;
-		text-align: center;
-		transition: color 0.2s ease-out;
-	}
-
-	&__models {
-		color: var(--text-color);
-		display: block;
-		font-size: 1.125rem;
-		font-weight: normal;
-		height: 2rem;
-		margin-inline: auto;
-		max-width: 90%;
-		min-width: 50%;
-		text-align: center;
-		transition: color 0.2s ease-out;
-	}
-
-	&__imageBox {
-		@include mx.imageBox;
-		& {
-			aspect-ratio: 4 / 5;
-			cursor: pointer;
-			width: 100%;
-		}
-	}
-
-	&__image {
-		object-fit: cover;
-		object-position: top center;
-	}
 
 	&__divider {
 		background-color: var(--text-color);
@@ -114,10 +35,5 @@
 		display: flex;
 		flex-direction: column;
 		margin-top: 1.5rem;
-	}
-
-	&__models-label,
-	&__photographers-label {
-		display: none;
 	}
 }
