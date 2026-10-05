@@ -13,7 +13,11 @@ import {
   type DragEndEvent,
   DndContext, 
   closestCenter, 
+  MouseSensor,
+  TouchSensor,
+
   PointerSensor,
+
   useSensor,
   useSensors
 } from "@dnd-kit/core";
@@ -71,9 +75,23 @@ const AddEditShootForm = () => {
     }))
   );
 
+  // const sensors = useSensors(
+  //   useSensor(PointerSensor, {
+  //     activationConstraint: { distance: DND_ACTIVATION_DISTANCE }
+  //   })
+  // );
+
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: DND_ACTIVATION_DISTANCE }
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: DND_ACTIVATION_DISTANCE,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
     })
   );
 

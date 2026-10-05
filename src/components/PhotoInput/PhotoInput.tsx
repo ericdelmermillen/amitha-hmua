@@ -39,10 +39,19 @@ const PhotoInput = ({
     isDragging,
   } = useSortable({ id: shootPhoto.photoNo });
   
+  // const sortableStyle = {
+  //   transform: CSS.Transform.toString(transform),
+  //   transition,
+  //   opacity: isDragging ? DND_OPACITY : 1,
+  // };
+
   const sortableStyle = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? DND_OPACITY : 1,
+    touchAction: shootPhoto.photoPreview ? "none" : "auto",
+    userSelect: "none" as const,
+    WebkitUserSelect: "none" as const,
   };
 
   const handleFileInputChange = () => {
@@ -130,12 +139,22 @@ const PhotoInput = ({
           className={`photoInput__placeholder ${showImage ? "behind" : ""}`}
           strokeClassName="photoInput__placeholderStroke"
         />
-        <div
+        {/* <div
           className={`photoInput__clearButton ${showImage ? "show" : ""}`}
           onClick={handleClearInput}
           onMouseDown={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}
           draggable={false}
+        > */}
+
+        <div
+          className={`photoInput__clearButton ${showImage ? "show" : ""}`}
+          onClick={handleClearInput}
+          onMouseDown={(e: MouseEvent<HTMLDivElement>) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          draggable={false}
         >
+
+        
           <div className="photoInput__clear">
             <div className="photoInput__close-icon"></div>
             <div className="photoInput__close-icon"></div>
