@@ -7,7 +7,7 @@ import { type ChangeEvent, type SubmitEvent, useState, useEffect } from "react";
 import { useAppContext } from "@/hooks/hooks";
 import { getAllModels } from "@/actions/modelActions";
 import { getAllPhotographers } from "@/actions/photographerActions";
-import { getShootByID, addShoot, editShootByID } from "@/actions/shootActions";
+import { addShoot, editShootByID, getShootByID } from "@/actions/shootActions";
 import { getSignedURL } from "@/actions/s3Actions";
 import { 
   type DragEndEvent,
@@ -136,9 +136,9 @@ const AddEditShootForm = () => {
     const resetChooser = [{ number: 1, id: null, name: null }];
 
     if (chooserType === "tag") {
-      setTagChoosers((prev) => 
+      setTagChoosers(prev => 
       prev.filter(chooser => chooser.number !== number).length > 0
-        ? prev.filter((chooser) => chooser.number !== number)
+        ? prev.filter(chooser => chooser.number !== number)
         : resetChooser
       );
     } else if (chooserType === "model") {
@@ -217,8 +217,8 @@ const AddEditShootForm = () => {
     }
 
     const selectedTagIDs = tagChoosers
-      .filter((chooser) => chooser.id !== null)
-      .map((chooser) => chooser.id as number);
+      .filter(chooser => chooser.id !== null)
+      .map(chooser => chooser.id as number);
 
     if (selectedTagIDs.length === 0) {
       staggerToastsByN("Select at least one tag", "error", errors);
@@ -226,8 +226,8 @@ const AddEditShootForm = () => {
     }
 
     const selectedModelIDs = modelChoosers
-      .filter((chooser) => chooser.id !== null)
-      .map((chooser) => chooser.id as number);
+      .filter(chooser => chooser.id !== null)
+      .map(chooser => chooser.id as number);
 
     if (selectedModelIDs.length === 0) {
       staggerToastsByN("Select at least one model", "error", errors);
@@ -235,15 +235,15 @@ const AddEditShootForm = () => {
     }
 
     const selectedPhotographerIDs = photographerChoosers
-      .filter((chooser) => chooser.id !== null)
-      .map((chooser) => chooser.id as number);
+      .filter(chooser => chooser.id !== null)
+      .map(chooser => chooser.id as number);
 
     if (selectedPhotographerIDs.length === 0) {
       staggerToastsByN("Select at least one photographer", "error", errors);
       errors++;
     }
 
-    const photos = shootPhotos.filter((photo) => photo.photoPreview !== null || photo.photoData !== null);
+    const photos = shootPhotos.filter(photo => photo.photoPreview !== null || photo.photoData !== null);
 
     if (photos.length === 0) {
       staggerToastsByN("Upload at least one photo", "error", errors);
@@ -344,9 +344,9 @@ const AddEditShootForm = () => {
   };
 
   const handleCancel = () => {
-    shootPhotos.forEach((photo) => {
-      if (photo.photoPreview && photo.photoPreview.startsWith("blob:")) {
-        URL.revokeObjectURL(photo.photoPreview);
+    shootPhotos.forEach(({ photoPreview }) => {
+      if (photoPreview && photoPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(photoPreview);
       }
     });
 
@@ -429,7 +429,7 @@ const AddEditShootForm = () => {
 
         if (data.shoot_date) {
           // probably broken. Fix after getting shoot publishing working
-          const [year, month, day] = data.shoot_date.split("-").map(Number);
+          const [ year, month, day ] = data.shoot_date.split("-").map(Number);
           // Note: month index is 0-based (month - 1)
           const parsedDate = new Date(year, month - 1, day);
           
