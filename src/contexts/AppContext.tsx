@@ -129,7 +129,13 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
         toast(response.message, { type: messageType });
         handleClearAppState(true);
         handleRefreshShoots();
-        router.replace("/work");
+
+        if (pathname === "/work") {
+          router.refresh();
+        } else {
+          router.replace("/work");
+        }
+        
       } else {
         console.error(response.message);
         toast.error(response.message);
