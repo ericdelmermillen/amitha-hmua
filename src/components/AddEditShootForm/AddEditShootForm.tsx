@@ -15,9 +15,6 @@ import {
   closestCenter, 
   MouseSensor,
   TouchSensor,
-
-  PointerSensor,
-
   useSensor,
   useSensors
 } from "@dnd-kit/core";
@@ -74,12 +71,6 @@ const AddEditShootForm = () => {
       displayOrder: idx + 1
     }))
   );
-
-  // const sensors = useSensors(
-  //   useSensor(PointerSensor, {
-  //     activationConstraint: { distance: DND_ACTIVATION_DISTANCE }
-  //   })
-  // );
 
   const sensors = useSensors(
     useSensor(MouseSensor, {

@@ -8,8 +8,9 @@ import { normalizeCasing } from "@/utils/utils";
 import { 
   type DragEndEvent,
   DndContext, 
-  closestCenter, 
-  PointerSensor,
+  closestCenter,
+  MouseSensor,
+  TouchSensor, 
   useSensor,
   useSensors
 } from "@dnd-kit/core";
@@ -89,8 +90,16 @@ const Shoots = () => {
   const showEditOrder = isLoggedIn && !isOnShootDetails && finalShootsPageLoaded && !shootOrderIsEditable && !selectedTag;
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: DND_ACTIVATION_DISTANCE }
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: DND_ACTIVATION_DISTANCE,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
     })
   );
 
