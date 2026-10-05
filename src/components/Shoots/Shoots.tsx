@@ -242,7 +242,7 @@ const Shoots = () => {
 
       fetchShoots();
     }
-  }, [shouldUpdateShoots, selectedTag, currentShootsPage, isOnShootDetails, shootID, tagParam, setAppIsLoading]);
+  }, [shouldUpdateShoots, selectedTag, currentShootsPage, isOnShootDetails, shootID, tagParam, setAppIsLoading, isLoggedIn]);
 
   // useEffect for IntersectionObserver infinite scroll pagination
   useEffect(() => {

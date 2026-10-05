@@ -53,4 +53,4 @@ const metadata: Metadata = {
 };
 
 export default RootLayout;
-export  { metadata };
+export { metadata };
