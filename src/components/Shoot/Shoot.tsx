@@ -30,7 +30,7 @@ const Shoot = ({
 
   const [ imageIsLoaded, setImageIsLoaded ] = useState(false);
 
-const {
+  const {
     attributes,
     listeners,
     setNodeRef,
@@ -42,25 +42,10 @@ const {
     disabled: !shootOrderIsEditable || shootID === undefined,
   });
 
-  // const sortableStyle = {
-  //   transform: CSS.Transform.toString(transform),
-  //   transition,
-  //   opacity: isDragging ? DND_OPACITY : 1,
-  //   position: isDragging ? ("relative" as const) : undefined,
-  //   zIndex: isDragging ? 999 : undefined,
-  //   touchAction: shootOrderIsEditable ? "none" : "auto",
-  //   userSelect: "none" as const,
-  //   WebkitUserSelect: "none" as const,
-  // };
-
   const sortableStyle = {
-    // CSS.Translate outputs translate(x, y) instead of matrix3d/translate3d,
-    // avoiding mobile WebKit compositing drops on Next.js fill images.
     transform: CSS.Translate.toString(transform),
     transition: isDragging ? undefined : transition,
     opacity: isDragging ? DND_OPACITY : 1,
-    // position: isDragging ? ("relative" as const) : undefined,
-    // zIndex: isDragging ? 9999 : 1,
     touchAction: shootOrderIsEditable ? "none" : "auto",
     userSelect: "none" as const,
     WebkitUserSelect: "none" as const,
@@ -78,15 +63,6 @@ const {
   };
 
   return (
-    // <div 
-    //   className={shootOrderIsEditable ? "shoot draggable" : "shoot"}
-    //   onClick={handleCardClick}
-    //   ref={setNodeRef}
-    //   style={sortableStyle}
-    //   {...attributes}
-    //   {...listeners}
-    // >
-
     <div 
       className={`shoot ${shootOrderIsEditable ? "draggable" : ""} ${isDragging ? "isDragging" : ""}`}
       onClick={handleCardClick}
