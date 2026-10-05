@@ -46,7 +46,10 @@ const metadata: Metadata = {
   description: "Portfolio Website of Amitha Millen-Suwanta Hair & Makeup Artist",
   icons: {
     icon: "/favicon.svg"
-  }
+  },
+  other: {
+    google: "notranslate",
+  },
 };
 
 export default RootLayout;
