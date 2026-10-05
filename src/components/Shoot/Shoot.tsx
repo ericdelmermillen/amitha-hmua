@@ -78,8 +78,17 @@ const {
   };
 
   return (
+    // <div 
+    //   className={shootOrderIsEditable ? "shoot draggable" : "shoot"}
+    //   onClick={handleCardClick}
+    //   ref={setNodeRef}
+    //   style={sortableStyle}
+    //   {...attributes}
+    //   {...listeners}
+    // >
+
     <div 
-      className={shootOrderIsEditable ? "shoot draggable" : "shoot"}
+      className={`shoot ${shootOrderIsEditable ? "draggable" : ""} ${isDragging ? "isDragging" : ""}`}
       onClick={handleCardClick}
       ref={setNodeRef}
       style={sortableStyle}
