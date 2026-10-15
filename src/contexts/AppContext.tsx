@@ -30,7 +30,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
   const router = useRouter();
 
   const [ scrollYPos, setScrollYPos ] = useState(0);
-  const [ appIsLoading, setAppIsLoading ] = useState(true)
+  const [ appIsLoading, setAppIsLoading ] = useState(true);
   
   const [ showSideNav, setShowSideNav ] = useState(false);
   
@@ -233,14 +233,15 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
         requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
 
-          setScrollYPos((prev) => {
-            if (prev === currentScrollY) {
-              return prev;
-            };
-
-            prevScrollYPosRef.current = prev;
-            return currentScrollY;
-          });
+          if (currentScrollY !== prevScrollYPosRef.current) {
+            setScrollYPos(prev => {
+              if (prev === currentScrollY) {
+                return prev;
+              }
+              return currentScrollY;
+            });
+            prevScrollYPosRef.current = scrollYPos;
+          }
           
           handleSetShowSideNavFalse();
           setShowNavSelectOptions(false);
@@ -252,7 +253,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [scrollYPos]);
 
   // useEffect to update showFloatingButton on page navigation
   useEffect(() => {

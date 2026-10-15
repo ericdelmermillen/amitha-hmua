@@ -7,7 +7,8 @@ import {
   type MouseEvent,
   type DragEvent,
   type ComponentType, 
-  type SVGProps 
+  type SVGProps,
+  type RefObject
 } from "react";
 import { type RowDataPacket } from "mysql2";
 import { type TypeOptions } from "react-toastify";
@@ -479,7 +480,7 @@ interface BioRow extends QueryResultRow {
 }
 
 interface UseOutsideClickProps {
-  targetRef: React.RefObject<HTMLElement | null>;
+  targetRef: RefObject<HTMLElement | null>;
   onOutsideClick: (event: globalThis.MouseEvent) => void;
   componentIsActive?: boolean;
 }

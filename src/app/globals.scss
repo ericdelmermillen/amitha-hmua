@@ -133,14 +133,10 @@ body {
 	}
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	margin: 0;
+* {
+	box-sizing: border-box;
 	padding: 0;
+	margin: 0;
 }
 
 a {
@@ -213,11 +209,11 @@ img {
 			border-radius: var(--border-radius-toast);
 			background: var(--background-color) !important;
 			color: var(--text-color) !important;
+			line-height: var(--line-height-sm);
 			max-width: 16rem;
 			padding-block: 1rem !important;
 			padding-inline-end: 1.75rem;
 			padding-inline-start: 1.25rem;
-			line-height: var(--line-height-sm);
 		}
 
 		@media (min-width: vars.$small-phone) {

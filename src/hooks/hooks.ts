@@ -25,7 +25,7 @@ const useModalContext = (): ModalContextValue => {
   return context;
 };
 
-const useOutsideClick = ({targetRef, onOutsideClick, componentIsActive = true,}: UseOutsideClickProps) => {
+const useOutsideClick = ({ targetRef, onOutsideClick, componentIsActive = true }: UseOutsideClickProps) => {
   const handlerRef = useRef(onOutsideClick);
   handlerRef.current = onOutsideClick;
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppContext } from "@/hooks/hooks";
 import "./IsLoading.scss";
 
-const APP_ISLOADING_DELAY = parseInt(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY || "300", 10);
+const APP_ISLOADING_DELAY = parseInt(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY || "500", 10);
 
 const IsLoading = () => {
   const { appIsLoading } = useAppContext();
