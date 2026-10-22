@@ -2,11 +2,9 @@
 @use "../../partials/_variables.scss" as vars;
 
 .shoot {
-	& {
-		cursor: pointer;
-		padding-bottom: 0.5rem;
-		position: relative;
-	}
+	cursor: pointer;
+	padding-bottom: 0.5rem;
+	position: relative;
 
 	&__overlay {
 		height: 100%;

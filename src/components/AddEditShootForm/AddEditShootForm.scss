@@ -2,23 +2,21 @@
 @use "../../partials/_variables" as vars;
 
 .addEditShootForm {
-	& {
-		border: 2px solid var(--text-color);
-		display: flex;
-		flex-direction: column;
-		flex-grow: 1;
-		gap: 2rem;
-		padding-block: 2rem;
-		padding-inline: 1rem;
-		width: 90%;
+	border: 2px solid var(--text-color);
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	gap: 2rem;
+	padding-block: 2rem;
+	padding-inline: 1rem;
+	width: 90%;
 
-		@media (min-width: vars.$tablet) {
-			margin-top: 4rem;
-		}
+	@media (min-width: vars.$tablet) {
+		margin-top: 4rem;
+	}
 
-		@media (min-width: vars.$desktop) {
-			max-width: 1000px;
-		}
+	@media (min-width: vars.$desktop) {
+		max-width: 1000px;
 	}
 
 	&__heading {

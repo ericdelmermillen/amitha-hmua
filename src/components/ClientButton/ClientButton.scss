@@ -2,9 +2,7 @@
 @use "../../partials/_variables" as vars;
 
 .clientButton {
-	& {
-		@include mx.button;
-	}
+	@include mx.button;
 
 	&.rounded {
 		@include mx.buttonRounded;

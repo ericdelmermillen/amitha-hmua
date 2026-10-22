@@ -2,11 +2,9 @@
 @use "../../partials/_variables.scss" as vars;
 
 .shootDatePicker {
-	& {
-		position: relative;
-		width: 9rem;
-		z-index: 3;
-	}
+	position: relative;
+	width: 9rem;
+	z-index: 3;
 
 	&__selector {
 		@include mx.input;

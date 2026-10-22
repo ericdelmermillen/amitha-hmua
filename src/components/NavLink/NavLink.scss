@@ -2,7 +2,5 @@
 @use "../../partials/_mixins" as mx;
 
 .navLink {
-	& {
-		position: relative;
-	}
+	position: relative;
 }

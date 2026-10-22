@@ -2,30 +2,28 @@
 @use "../../partials/variables.scss" as vars;
 
 .customSelect {
+	@include mx.input;
 	& {
-		@include mx.input;
-		& {
-			border-radius: var(--border-radius);
-			display: flex;
-			margin-top: 1rem;
-			justify-content: center;
-			margin-inline-end: 0;
-			max-width: 100%;
-			min-width: 15.25rem;
-			padding: 0;
-			position: relative;
-			height: 3rem;
-			z-index: 1;
-		}
+		border-radius: var(--border-radius);
+		display: flex;
+		margin-top: 1rem;
+		justify-content: center;
+		margin-inline-end: 0;
+		max-width: 100%;
+		min-width: 15.25rem;
+		padding: 0;
+		position: relative;
+		height: 3rem;
+		z-index: 1;
+	}
 
-		@media (min-width: vars.$small-tablet) {
-			max-width: 21rem;
-			min-width: 21rem;
-		}
+	@media (min-width: vars.$small-tablet) {
+		max-width: 21rem;
+		min-width: 21rem;
+	}
 
-		&.tall {
-			z-index: 4;
-		}
+	&.tall {
+		z-index: 4;
 	}
 
 	&__inner {

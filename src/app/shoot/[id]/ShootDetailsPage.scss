@@ -2,9 +2,7 @@
 @use "../../../partials/_variables" as vars;
 
 .shootDetailsPage {
-	& {
-		@include mx.page;
-	}
+	@include mx.page;
 
 	&__inner {
 		@include mx.inner;

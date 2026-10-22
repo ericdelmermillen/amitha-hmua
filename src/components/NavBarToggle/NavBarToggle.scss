@@ -2,9 +2,7 @@
 @use "../../partials/_mixins" as mx;
 
 .navBarToggle {
-	& {
-		@include mx.navBarToggleRight;
-	}
+	@include mx.navBarToggleRight;
 
 	&__icon {
 		border: 1.45px solid var(--text-color);

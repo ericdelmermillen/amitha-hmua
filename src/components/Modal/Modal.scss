@@ -2,21 +2,19 @@
 @use "../../partials/_variables" as vars;
 
 .modal {
-	& {
-		height: 100%;
-		left: 0;
-		opacity: 0;
-		pointer-events: none;
-		position: fixed;
-		top: 0;
-		transition: opacity 0.2s ease;
-		width: 100%;
-		z-index: 7;
+	height: 100%;
+	left: 0;
+	opacity: 0;
+	pointer-events: none;
+	position: fixed;
+	top: 0;
+	transition: opacity 0.2s ease;
+	width: 100%;
+	z-index: 7;
 
-		&.show {
-			opacity: 1;
-			pointer-events: auto;
-		}
+	&.show {
+		opacity: 1;
+		pointer-events: auto;
 	}
 
 	&__overlay {

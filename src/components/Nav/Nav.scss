@@ -2,27 +2,25 @@
 @use "../../partials/_variables" as vars;
 
 .nav {
-	& {
-		align-items: center;
-		background: var(--nav-and-footer-bg);
-		box-shadow: var(--nav-box-shadow);
-		display: flex;
-		height: vars.$nav-height;
-		justify-content: center;
-		margin-top: 0;
-		position: fixed;
-		transition: top var(--nav-transition-interval) ease;
-		top: 0;
-		width: 100%;
-		z-index: 5;
+	align-items: center;
+	background: var(--nav-and-footer-bg);
+	box-shadow: var(--nav-box-shadow);
+	display: flex;
+	height: vars.$nav-height;
+	justify-content: center;
+	margin-top: 0;
+	position: fixed;
+	transition: top var(--nav-transition-interval) ease;
+	top: 0;
+	width: 100%;
+	z-index: 5;
 
-		@media (min-width: vars.$tablet) {
-			padding-block: 1rem;
-		}
+	@media (min-width: vars.$tablet) {
+		padding-block: 1rem;
+	}
 
-		&.hide {
-			top: calc(vars.$nav-height * -1);
-		}
+	&.hide {
+		top: calc(vars.$nav-height * -1);
 	}
 
 	&__content {

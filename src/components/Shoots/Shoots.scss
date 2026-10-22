@@ -2,13 +2,11 @@
 @use "../../partials/_variables.scss" as vars;
 
 .shoots {
-	& {
-		display: flex;
-		flex-direction: column;
-		margin-bottom: 2rem;
-		max-width: min(calc(100vw - 4rem), vars.$desktop);
-		min-width: min(calc(100vw - 4rem), vars.$desktop);
-	}
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 2rem;
+	max-width: min(calc(100vw - 4rem), vars.$desktop);
+	min-width: min(calc(100vw - 4rem), vars.$desktop);
 
 	&__shootDetailsHeading {
 		color: var(--text-color);

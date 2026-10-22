@@ -2,25 +2,23 @@
 @use "../../partials/variables.scss" as vars;
 
 .navSelect {
-	& {
-		display: flex;
-		justify-content: center;
-		height: 3rem;
-		margin-inline-end: 0;
-		max-width: 100%;
-		min-width: 15.25rem;
-		padding: 0;
-		position: relative;
-		z-index: 1;
+	display: flex;
+	justify-content: center;
+	height: 3rem;
+	margin-inline-end: 0;
+	max-width: 100%;
+	min-width: 15.25rem;
+	padding: 0;
+	position: relative;
+	z-index: 1;
 
-		@media (min-width: vars.$small-phone) {
-			max-width: 17.25rem;
-			min-width: 17.25rem;
-		}
+	@media (min-width: vars.$small-phone) {
+		max-width: 17.25rem;
+		min-width: 17.25rem;
+	}
 
-		&.tall {
-			z-index: 2;
-		}
+	&.tall {
+		z-index: 2;
 	}
 
 	&__inner {

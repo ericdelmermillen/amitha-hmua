@@ -2,20 +2,18 @@
 @use "../../partials/variables.scss" as vars;
 
 .colorModeToggle {
-	& {
-		align-items: center;
-		background-color: var(--toggle-sky);
-		border: none;
-		border-radius: 3rem;
-		box-shadow: 0 0 0 1px var(--text-color);
-		cursor: pointer;
-		display: flex;
-		height: 1.625rem;
-		justify-content: space-between;
-		padding: 5px;
-		position: relative;
-		width: 3.125rem;
-	}
+	align-items: center;
+	background-color: var(--toggle-sky);
+	border: none;
+	border-radius: 3rem;
+	box-shadow: 0 0 0 1px var(--text-color);
+	cursor: pointer;
+	display: flex;
+	height: 1.625rem;
+	justify-content: space-between;
+	padding: 5px;
+	position: relative;
+	width: 3.125rem;
 
 	&__sun-icon {
 		height: auto;

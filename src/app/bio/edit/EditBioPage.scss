@@ -2,11 +2,9 @@
 @use "../../../partials/_variables" as vars;
 
 .editBioPage {
+	@include mx.page;
 	& {
-		@include mx.page;
-		& {
-			padding-top: vars.$nav-height;
-		}
+		padding-top: vars.$nav-height;
 	}
 
 	&__inner {

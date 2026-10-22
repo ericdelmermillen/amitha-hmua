@@ -101,7 +101,7 @@ interface ModalContextValue {
   setModalEntityName: Dispatch<SetStateAction<string | null>>;
   handleOpenModal: (data: ModalData) => void;
   handleClearModal: () => void;
-}
+};
 
 interface NavPage {
   pageName: string;

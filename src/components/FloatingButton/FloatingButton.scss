@@ -2,22 +2,20 @@
 @use "../../partials/_variables" as vars;
 
 .floatingButton {
-	& {
-		align-items: center;
-		background: var(--background-color);
-		border-radius: 50%;
-		bottom: 2.5rem;
-		box-shadow: var(--box-shadow);
-		cursor: pointer;
-		display: flex;
-		height: 3rem;
-		justify-content: center;
-		padding: 0.25rem;
-		position: fixed;
-		right: 2.5rem;
-		width: 3rem;
-		z-index: 5;
-	}
+	align-items: center;
+	background: var(--background-color);
+	border-radius: 50%;
+	bottom: 2.5rem;
+	box-shadow: var(--box-shadow);
+	cursor: pointer;
+	display: flex;
+	height: 3rem;
+	justify-content: center;
+	padding: 0.25rem;
+	position: fixed;
+	right: 2.5rem;
+	width: 3rem;
+	z-index: 5;
 
 	@media (min-width: vars.$ultra-wide) {
 		right: calc((100vw - vars.$ultra-wide) / 2 + 2.5rem);
