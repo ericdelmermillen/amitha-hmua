@@ -7,8 +7,7 @@ const ThemeProvider = ({ children }: ContextProviderProps) => {
   return (
     <NextThemesProvider
       attribute="data-color-mode"
-      defaultTheme="light"
-      enableSystem={false}
+      defaultTheme="system"
     >
       {children}
     </NextThemesProvider>
