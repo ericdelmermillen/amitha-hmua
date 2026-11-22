@@ -23,6 +23,10 @@ interface ContextProviderProps {
   children: ReactNode;
 };
 
+interface AuthContextValue {
+
+}
+
 interface AppContextValue {
   // Loading & Session State
   appIsLoading: boolean;
@@ -494,6 +498,7 @@ interface LightboxGalleryProps {
 }
 
 export {
+  type AuthContextValue,
   type ContextProviderProps,
   type AppContextValue,
   type ModalContextValue,

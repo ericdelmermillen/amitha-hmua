@@ -9,6 +9,12 @@ import {
 import { decodeJwt, jwtVerify, SignJWT } from "jose";
 import { pool } from "@/db/dbClient";
 
+// AUDIT NOTE 1 (Module-Scope Env Guard & Length Check):
+// Just like middleware.ts, evaluating `process.env.JWT_SECRET` at top-level module load time
+// will throw during `next build` on AWS Amplify if runtime env vars aren't injected into the
+// build container. Also missing the `length < 32` (256-bit minimum entropy) check.
+// Fix: Move secret lookup + length validation into lazy getter functions (`getJwtSecret()`,
+// `getJwtRefreshSecret()`) called inside the sign/verify helpers.
 const JWT_SECRET_STRING = process.env.JWT_SECRET ?? "";
 const JWT_REFRESH_SECRET_STRING = process.env.JWT_REFRESH_SECRET ?? "";
 const ACCESS_TOKEN_EXPIRATION = process.env.JWT_ACCESS_TOKEN_EXPIRATION_INTERVAL ?? "15m";
@@ -21,6 +27,11 @@ if (!JWT_SECRET_STRING || !JWT_REFRESH_SECRET_STRING) {
 const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_STRING);
 const JWT_REFRESH_SECRET = new TextEncoder().encode(JWT_REFRESH_SECRET_STRING);
 
+// AUDIT NOTE 2 (Missing Unique Token ID / `jti`):
+// Without a unique `jti` claim (`crypto.randomUUID()`), two tokens generated for the same
+// `userId` within the exact same second produce identical `iat`/`exp` claims and therefore
+// an identical JWT signature—causing collisions in `revoked_token(token_signature)` during
+// rapid rotation or concurrent requests.
 const generateAccessToken = async (payload: TokenPayload): Promise<string> => {
   return await new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256" })
@@ -37,6 +48,8 @@ const generateRefreshToken = async (payload: TokenPayload): Promise<string> => {
     .sign(JWT_REFRESH_SECRET);
 };
 
+// AUDIT NOTE 3 (Algorithm Pinning):
+// Pass `{ algorithms: ["HS256"] }` as the 3rd argument to `jwtVerify` in both functions below.
 const verifyAccessToken = async (token: string): Promise<TokenPayload | null> => {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
@@ -55,6 +68,13 @@ const verifyRefreshToken = async (token: string): Promise<TokenPayload | null> =
   }
 };
 
+// AUDIT NOTE 4 (Cookie `maxAge` Mismatch & `sameSite: "strict"` UX Trap):
+// 1. `REFRESH_TOKEN_EXPIRATION` defaults to `"1d"` (86,400s) above, while `maxAge` here is
+//    hardcoded to `7 * 24 * 60 * 60` (7 days). Cookie `maxAge` should be derived from the
+//    same config constant so browser retention and JWT `exp` never drift out of sync.
+// 2. `sameSite: "strict"` strips auth cookies whenever a user clicks an external link into
+//    your site (e.g., from email, social media, or bookmarks), making them appear logged out
+//    on initial arrival. Industry standard for session cookies is `sameSite: "lax"`.
 const setAuthCookies = async (accessToken: string, refreshToken: string): Promise<void> => {
   const cookieStore = await cookies();
   const isProduction = process.env.NODE_ENV === "production";
@@ -86,6 +106,10 @@ const cleanupExpiredTokens = async (): Promise<void> => {
   }
 };
 
+// AUDIT NOTE 5 (Storing Raw JWT Signature vs. SHA-256 Hash):
+// Storing the raw JWT signature in `revoked_token` means anyone with read access to DB backups
+// or logs sees valid signature material. Hashing the token/jti with SHA-256 before storing
+// (or storing the `jti` UUID) is cleaner, fixed-length, and avoids storing raw token parts.
 const extractTokenRevocationDetails = (token: string): TokenDetails | null => {
   try {
     const parts = token.split(".");
@@ -151,6 +175,14 @@ const isTokenRevoked = async (token: string): Promise<boolean> => {
   }
 };
 
+// AUDIT NOTE 6 (Duplicate Logic + Missing Rotation Revocation + RSC Mutation Trap):
+// 1. This duplicates `checkUserSession` in `authActions.ts`, with the same bug: it generates
+//    `newRefreshToken` without calling `await revokeToken(refreshToken)` on the old one.
+// 2. If called from a Server Component (`page.tsx` / `layout.tsx`), `setAuthCookies` and
+//    `cookieStore.delete(...)` will throw a Next.js runtime error because RSCs cannot modify
+//    cookies.
+// 3. Also misses setting the `auth_flash` cookie that `middleware.ts` sets on redirect,
+//    creating inconsistent UX depending on which layer caught the expired session.
 const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;

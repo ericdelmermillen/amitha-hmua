@@ -11,6 +11,7 @@ import Modal from "@/components/Modal/Modal";
 import Nav from "@/components/Nav/Nav";
 import SideNav from "@/components/SideNav/SideNav";
 import "./globals.scss";
+import { AuthContextProvider } from "@/contexts/AuthContext";
 
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
@@ -20,22 +21,24 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
       data-scroll-behavior="smooth"
     >
       <body>
-        <AppContextProvider>
-          <ThemeProvider>
-            <ModalContextProvider>
-              <IsLoading />
-              <ToastProvider />
-              <Nav />
-              <SideNav />
-              <Modal />
-                <main className="app">
-                  {children}
-                </main>
-              <FloatingButton />
-              <Footer />
-            </ModalContextProvider>
-          </ThemeProvider>
-        </AppContextProvider>
+        <AuthContextProvider>
+          <AppContextProvider>
+            <ThemeProvider>
+              <ModalContextProvider>
+                <IsLoading />
+                <ToastProvider />
+                <Nav />
+                <SideNav />
+                <Modal />
+                  <main className="app">
+                    {children}
+                  </main>
+                <FloatingButton />
+                <Footer />
+              </ModalContextProvider>
+            </ThemeProvider>
+          </AppContextProvider>
+        </AuthContextProvider>
       </body>
     </html>
   );

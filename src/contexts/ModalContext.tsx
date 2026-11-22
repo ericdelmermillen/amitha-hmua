@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, createContext } from "react";
-import { ContextProviderProps, ModalContextValue, ModalData } from "@/typing/interfaces";
+import { ChildrenProps, ModalContextValue, ModalData } from "@/typing/interfaces";
 
 const ModalContext = createContext<ModalContextValue | undefined>(undefined);
 
-const ModalContextProvider = ({ children }: ContextProviderProps) => {
+const ModalContextProvider = ({ children }: ChildrenProps) => {
   const [ showModal, setShowModal ] = useState(false);
   const [ modalAction, setModalAction ] = useState<string | null>(null);
   const [ modalEntityID, setModalEntityID ] = useState<number | null>(null);

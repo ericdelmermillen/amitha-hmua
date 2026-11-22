@@ -1,0 +1,1 @@
+// Authoritative server-side check wrapped in React.cache(). Called inside Server Components (page.tsx), Server Actions (like addShoot, editBio), and Route Handlers to guarantee a valid user session before touching PostgreSQL.

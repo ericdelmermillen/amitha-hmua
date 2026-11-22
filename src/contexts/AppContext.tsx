@@ -11,7 +11,7 @@ import {
 import { 
   type AppContextValue, 
   type ChooserItem, 
-  type ContextProviderProps, 
+  type ChildrenProps, 
   type ShootEntity,
   type ShootSummary,
 } from "@/typing/interfaces";
@@ -20,12 +20,14 @@ import { checkUserSession, logoutUser } from "@/actions/authActions";
 import { getAllTags } from "@/actions/tagActions";
 import { isModifiedClick, normalizeCasing, scrollToTop, syncChoosers } from "@/utils/utils";
 
+// *** AuthContext?
+
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
 const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
-const AppContextProvider = ({ children }: ContextProviderProps) => {
+const AppContextProvider = ({ children }: ChildrenProps) => {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -338,7 +340,7 @@ const AppContextProvider = ({ children }: ContextProviderProps) => {
 
   return (
     <AppContext.Provider value={contextValues}>
-      { children }
+      {children}
     </AppContext.Provider>
   );
 };

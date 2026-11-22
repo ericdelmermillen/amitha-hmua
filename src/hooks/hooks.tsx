@@ -2,12 +2,22 @@
 
 import { 
   type AppContextValue, 
+  type AuthContextValue,
   type ModalContextValue, 
   type UseOutsideClickProps 
 } from "@/typing/interfaces";
 import { useEffect, useContext, useRef } from "react";
 import { AppContext } from "@/contexts/AppContext";
 import { ModalContext } from "@/contexts/ModalContext";
+import { AuthContext } from "@/contexts/AuthContext";
+
+const useAuthContext = (): AuthContextValue => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuthContext must be used within an AuthContextProvider");
+  }
+  return context;
+};
 
 const useAppContext = (): AppContextValue => {
   const context = useContext(AppContext);
@@ -25,7 +35,11 @@ const useModalContext = (): ModalContextValue => {
   return context;
 };
 
-const useOutsideClick = ({ targetRef, onOutsideClick, componentIsActive = true }: UseOutsideClickProps) => {
+const useOutsideClick = ({ 
+  targetRef, 
+  onOutsideClick, 
+  componentIsActive = true 
+}: UseOutsideClickProps) => {
   const handlerRef = useRef(onOutsideClick);
   handlerRef.current = onOutsideClick;
 
@@ -55,6 +69,7 @@ const useOutsideClick = ({ targetRef, onOutsideClick, componentIsActive = true }
 };
 
 export { 
+  useAuthContext,
   useAppContext,
   useModalContext,
   useOutsideClick

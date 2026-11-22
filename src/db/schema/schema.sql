@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS users CASCADE;
 
 CREATE TABLE users (
   id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  email TEXT NOT NULL UNIQUE,
+  email TEXT NOT NULL,
   password TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -126,6 +126,7 @@ CREATE TABLE revoked_token (
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- index not neccessary due to unique constraint on email in users table
 CREATE INDEX idx_revoked_token_expires_at ON revoked_token (expires_at);
 
 -- requires a chron job to run to periodically delete the expired tokens: 
