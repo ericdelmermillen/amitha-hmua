@@ -12,14 +12,12 @@ import { authSchema } from "@/validation/authValidation";
 import { 
   generateAccessToken, 
   generateRefreshToken, 
-  isTokenRevoked, 
-  revokeToken, 
-  setAuthCookies, 
   verifyAccessToken, 
   verifyRefreshToken 
 } from "@/utils/tokenUtils";
 import { pool } from "@/db/dbClient";
 import bcrypt from "bcrypt";
+import { isTokenRevoked, revokeToken, setAuthCookies } from "@/utils/sessionUtils";
 
 // createUser
 const createUser = async ({ email, password }: AuthCredentials): Promise<AuthResponse> => {

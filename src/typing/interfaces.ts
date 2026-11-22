@@ -30,7 +30,7 @@ interface ChildrenProps {
 interface AuthContextValue {
   isLoggedIn: boolean;
   setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
-  
+
 
 }
 
@@ -318,7 +318,8 @@ interface TokenPayload {
 }
 
 interface TokenDetails {
-  signature: string; 
+  signature?: string; 
+  jti: string; 
   expiresAt: Date;
 }
 

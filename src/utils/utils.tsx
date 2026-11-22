@@ -1,6 +1,6 @@
-import { ChooserItem, ShootEntity } from "@/typing/interfaces";
-import { ToastType } from "@/typing/types";
-import type { MouseEvent } from "react";
+import { type MouseEvent } from "react";
+import { type ToastType } from "@/typing/types";
+import { type ChooserItem, type ShootEntity } from "@/typing/interfaces";
 import { toast } from "react-toastify";
 
 const MIN_LOADING_INTERVAL = parseInt(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL ?? "250", 10);
