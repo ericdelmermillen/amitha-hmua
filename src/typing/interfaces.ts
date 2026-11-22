@@ -21,9 +21,16 @@ import { SlideImage } from "yet-another-react-lightbox";
 
 interface ContextProviderProps {
   children: ReactNode;
-};
+}
+
+interface ChildrenProps {
+  children: ReactNode;
+}
 
 interface AuthContextValue {
+  isLoggedIn: boolean;
+  setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
+  
 
 }
 
@@ -31,6 +38,7 @@ interface AppContextValue {
   // Loading & Session State
   appIsLoading: boolean;
   setAppIsLoading: Dispatch<SetStateAction<boolean>>;
+  // ***
   isLoggedIn: boolean;
   setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
 
@@ -498,6 +506,7 @@ interface LightboxGalleryProps {
 }
 
 export {
+  type ChildrenProps,
   type AuthContextValue,
   type ContextProviderProps,
   type AppContextValue,

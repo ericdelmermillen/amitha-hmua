@@ -1,17 +1,20 @@
 import { type Metadata } from "next";
 import { ReactNode } from "react";
 import { AppContextProvider } from "@/contexts/AppContext";
+import { AuthContextProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ModalContextProvider } from "@/contexts/ModalContext";
 import { ToastProvider } from "@/providers/ToastProvider";
+import ColorThemeWrapper from "@/components/ColorThemeWrapper/ColorThemeWrapper";
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import Footer from "@/components/Footer/Footer";
 import IsLoading from "@/components/IsLoading/IsLoading";
 import Modal from "@/components/Modal/Modal";
 import Nav from "@/components/Nav/Nav";
+import RouteWatcher from "@/components/RouteWatcher/RouteWatcher";
 import SideNav from "@/components/SideNav/SideNav";
 import "./globals.scss";
-import { AuthContextProvider } from "@/contexts/AuthContext";
+
 
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
@@ -23,20 +26,21 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
       <body>
         <AuthContextProvider>
           <AppContextProvider>
-            <ThemeProvider>
+            <ColorThemeWrapper>
               <ModalContextProvider>
-                <IsLoading />
                 <ToastProvider />
+                <RouteWatcher />
+                <IsLoading />
                 <Nav />
                 <SideNav />
                 <Modal />
-                  <main className="app">
+                  <div className="app">
                     {children}
-                  </main>
+                  </div>
                 <FloatingButton />
                 <Footer />
               </ModalContextProvider>
-            </ThemeProvider>
+            </ColorThemeWrapper>
           </AppContextProvider>
         </AuthContextProvider>
       </body>

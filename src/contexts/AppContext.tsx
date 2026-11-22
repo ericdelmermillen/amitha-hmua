@@ -23,7 +23,6 @@ import { isModifiedClick, normalizeCasing, scrollToTop, syncChoosers } from "@/u
 // *** AuthContext?
 
 const MIN_LOADING_INTERVAL = Number(process.env.NEXT_PUBLIC_MIN_LOADING_INTERVAL);
-const APP_ISLOADING_DELAY = Number(process.env.NEXT_PUBLIC_APP_ISLOADING_DELAY);
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
@@ -40,6 +39,7 @@ const AppContextProvider = ({ children }: ChildrenProps) => {
   const [ navSelectValue, setNavSelectValue ] = useState<string | null>(null);
   const [ showNavSelectOptions, setShowNavSelectOptions ] = useState(false);
   
+  // *** ---
   const [ isLoggedIn, setIsLoggedIn ] = useState(false);
   
   const [ tags, setTags ] = useState<ShootEntity[]>([]);
@@ -115,6 +115,7 @@ const AppContextProvider = ({ children }: ChildrenProps) => {
     handleClearAppState();
   };
 
+  // *** ---
   const handleLogoutUser = async (
     messageOrEvent?: MouseEvent<HTMLElement> | string,
     messageType: TypeOptions = "success"
@@ -193,6 +194,7 @@ const AppContextProvider = ({ children }: ChildrenProps) => {
     }
   }, [shouldRefreshTags]);
 
+  // *** ---
   // useEffect to catch auth failures triggered by middleware redirect
   useEffect(() => {
     if (typeof document === "undefined") {
@@ -205,24 +207,6 @@ const AppContextProvider = ({ children }: ChildrenProps) => {
       // Immediately clear the cookie so it only triggers once
       document.cookie = "auth_flash=; path=/; max-age=0";
       handleLogoutUser("Authentication failed. Logging you out...", "error");
-    }
-  }, [pathname]);
-
-  // useEffect to turn off appIsLoading on page load or after navigation
-  useEffect(() => {
-    const handleLoad = () => {
-      setTimeout(() => {
-        setAppIsLoading(false);
-      }, APP_ISLOADING_DELAY);
-    };
-
-    // what is the readyState on the document?
-    if (document.readyState === "complete") {
-      scrollToTop();
-      handleLoad();
-    } else {
-      window.addEventListener("load", handleLoad);
-      return () => window.removeEventListener("load", handleLoad);
     }
   }, [pathname]);
 
