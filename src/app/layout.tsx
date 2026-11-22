@@ -2,7 +2,6 @@ import { type Metadata } from "next";
 import { ReactNode } from "react";
 import { AppContextProvider } from "@/contexts/AppContext";
 import { AuthContextProvider } from "@/contexts/AuthContext";
-import { ThemeProvider } from "@/providers/ThemeProvider";
 import { ModalContextProvider } from "@/contexts/ModalContext";
 import { ToastProvider } from "@/providers/ToastProvider";
 import ColorThemeWrapper from "@/components/ColorThemeWrapper/ColorThemeWrapper";
