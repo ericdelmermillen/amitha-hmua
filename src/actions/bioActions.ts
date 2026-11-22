@@ -10,7 +10,8 @@ import {
 } from "@/typing/interfaces";
 import { pool } from "@/db/dbClient";
 import { deleteFiles } from "@/s3/s3";
-import { verifyAndRefreshSession } from "@/utils/tokenUtils";
+import { verifyAndRefreshSession } from "@/utils/sessionUtils";
+
 
 const BUCKET_PATH = process.env.BUCKET_PATH;
 const BIO_DIRNAME = process.env.BIO_DIRNAME;

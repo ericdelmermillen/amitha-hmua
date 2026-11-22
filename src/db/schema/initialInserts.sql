@@ -1,26 +1,25 @@
-INSERT INTO
-  bio (id, name, img_url, text) OVERRIDING SYSTEM VALUE
+INSERT INTO users (email, password) 
+VALUES
+  ('amithamillensuwanta@gmail.com','$2b$10$sb2krAMfy1zx0K/fSDuQ8upvezq2hDXvUE/gfXYHf3VXgz/f7DIFq')
+;
+
+INSERT INTO bio (id, name, img_url, text) OVERRIDING SYSTEM VALUE
 VALUES
   (
     1,
     'Amitha Millen-Suwanta',
     'e0d7e126-eaab-4e1a-957a-fe9563ed71ec.jpeg',
-    E 'Meet Amitha, a dynamic makeup artist and fashion stylist who thrives on celebrating the unique beauty of each person. With a deep understanding that beauty knows no bounds, she rejects the notion of a one-size-fits-all approach to makeup. Instead, she crafts bespoke experiences for her clients, considering their individuality, comfort levels, and personal style.\n\nLocated in the heart of Toronto, Ontario, Amitha''s professional journey has been a whirlwind of diverse experiences within the beauty industry. Though she revels in all aspects of her craft, her passion ignites most brightly within the realms of Fashion and Bridal makeup.\n\nFrom esteemed corporations to celebrated singers, actors, and brands across Canada, the USA, and the UK, Amitha and her team ensure that each client embarks on a unique and unforgettable beauty journey.'
-  );
+    E'Meet Amitha, a dynamic makeup artist and fashion stylist who thrives on celebrating the unique beauty of each person. With a deep understanding that beauty knows no bounds, she rejects the notion of a one-size-fits-all approach to makeup. Instead, she crafts bespoke experiences for her clients, considering their individuality, comfort levels, and personal style.\n\nLocated in the heart of Toronto, Ontario, Amitha''s professional journey has been a whirlwind of diverse experiences within the beauty industry. Though she revels in all aspects of her craft, her passion ignites most brightly within the realms of Fashion and Bridal makeup.\n\nFrom esteemed corporations to celebrated singers, actors, and brands across Canada, the USA, and the UK, Amitha and her team ensure that each client embarks on a unique and unforgettable beauty journey.'
+  )
+;
 
-SELECT
-  setval(
-    pg_get_serial_sequence('bio', 'id'),
-    (
-      SELECT
-        MAX(id)
-      FROM
-        bio
-    )
-  );
+SELECT 
+  setval(pg_get_serial_sequence('bio', 'id'),
+  (SELECT MAX(id) FROM bio)
+  )
+;
 
-INSERT INTO
-  model (id, name) OVERRIDING SYSTEM VALUE
+INSERT INTO model (id, name) OVERRIDING SYSTEM VALUE
 VALUES
   (1, 'Test Model'),
   (2, 'Atom K'),
@@ -90,18 +89,14 @@ VALUES
   (73, 'Tressy'),
   (75, 'Amitha Millen-Suwanta'),
   (76, 'Anika Julia'),
-  (82, 'Elis');
+  (82, 'Elis')
+;
 
-SELECT
-  setval(
-    pg_get_serial_sequence('model', 'id'),
-    (
-      SELECT
-        MAX(id)
-      FROM
-        model
-    )
-  );
+SELECT 
+  setval(pg_get_serial_sequence('model', 'id'),
+  (SELECT MAX(id) FROM model)
+  )
+;
 
 INSERT INTO
   photographer (id, name) OVERRIDING SYSTEM VALUE

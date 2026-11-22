@@ -10,7 +10,7 @@ import {
   type EntityRow, 
 } from "@/typing/interfaces";
 import { pool } from "@/db/dbClient";
-import { verifyAndRefreshSession } from "@/utils/tokenUtils";
+import { verifyAndRefreshSession } from "@/utils/sessionUtils";
 
 // getAllTags
 const getAllTags = async (): Promise<GetAllTagsResponse> => {

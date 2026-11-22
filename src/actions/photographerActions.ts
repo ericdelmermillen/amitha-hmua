@@ -10,7 +10,7 @@ import {
   type EntityRow, 
 } from "@/typing/interfaces";
 import { pool } from "@/db/dbClient";
-import { verifyAndRefreshSession } from "@/utils/tokenUtils";
+import { verifyAndRefreshSession } from "@/utils/sessionUtils";
 
 // getAllPhotographers
 const getAllPhotographers = async (): Promise<GetAllPhotographersResponse> => {

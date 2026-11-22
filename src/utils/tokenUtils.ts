@@ -75,7 +75,6 @@ const verifyRefreshToken = async (token: string): Promise<TokenPayload | null> =
 };
 
 // extractTokenRevocationDetails
-// uses jti instead of signature derived from parts[2] for cleaner lookup and to avoid storing cryptographic material in the db
 const extractTokenRevocationDetails = (token: string): TokenDetails | null => {
   try {
     const parts = token.split(".");

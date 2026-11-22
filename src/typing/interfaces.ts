@@ -318,7 +318,6 @@ interface TokenPayload {
 }
 
 interface TokenDetails {
-  signature?: string; 
   jti: string; 
   expiresAt: Date;
 }
