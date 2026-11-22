@@ -96,6 +96,8 @@ const extractTokenRevocationDetails = (token: string): TokenDetails | null => {
 };
   
 export {
+  getJwtSecret,
+  getJwtRefreshSecret,
   generateAccessToken,
   generateRefreshToken,
   verifyAccessToken,
