@@ -10,7 +10,7 @@ import {
 } from "@/typing/interfaces";
 import { pool } from "@/db/dbClient";
 import { deleteFiles } from "@/s3/s3";
-import { verifyAndRefreshSession } from "@/utils/sessionUtils";
+import { verifySession } from "@/utils/sessionUtils";
 
 
 const BUCKET_PATH = process.env.BUCKET_PATH;
@@ -64,7 +64,7 @@ const updateBio = async ({
   bio_text,
   updated_photo,
 }: UpdatedBioData): Promise<ActionResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   let client: PoolClient | undefined;
 

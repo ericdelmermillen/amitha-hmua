@@ -12,8 +12,7 @@ import { authSchema } from "@/validation/authValidation";
 import { 
   generateAccessToken, 
   generateRefreshToken, 
-  verifyAccessToken, 
-  verifyRefreshToken 
+  verifyAccessToken
 } from "@/utils/tokenUtils";
 import { pool } from "@/db/dbClient";
 import bcrypt from "bcrypt";
@@ -120,59 +119,35 @@ const loginUser = async ({ email, password }: AuthCredentials): Promise<AuthResp
 };
 
 // checkUserSession
-// AUDIT NOTE 3 (Server Action Misuse & Cookie Mutation Constraint): Server Actions ("use server") compile to HTTP POST endpoints—calling this on client mount triggers an uncached POST request on every page load. Furthermore, because it calls `setAuthCookies`, it CANNOT be used inside Server Components or Layouts (Next.js throws if cookies are mutated during RSC rendering).
-// Standard split: - Read-only `getSession()` / `verifySession()` in a Data Access Layer (`dal.ts`) for RSCs & Actions; - Cookie-mutating token rotation inside `middleware.ts` (`proxy.ts`) or a `/api/auth/refresh` Route Handler.
 const checkUserSession = async (): Promise<SessionResponse> => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (accessToken) {
-    // AUDIT NOTE 4 (Unnecessary DB Blacklist Lookup on Short-Lived Access Token):
-    // Querying `isTokenRevoked(accessToken)` on every session check hits PostgreSQL for every
-    // request, defeating the purpose of stateless JWTs. Keep `accessToken` short-lived (5-15 min)
-    // and stateless (verify JWT signature/exp only), reserving DB revocation checks for `refreshToken`.
-    const isRevoked = await isTokenRevoked(accessToken);
-
-    if (!isRevoked) {
-      const payload = await verifyAccessToken(accessToken);
-
-      if (payload) {
-        return {
-          isAuthenticated: true,
-          userId: payload.userId,
-        };
-      }
-    }
+  if (!accessToken) {
+    return {
+      isAuthenticated: false,
+    };
   }
 
-  const refreshToken = cookieStore.get("refreshToken")?.value;
+  const payload = await verifyAccessToken(accessToken);
 
-  if (refreshToken) {
-    const isRevoked = await isTokenRevoked(refreshToken);
+  if (!payload) {
+    return {
+      isAuthenticated: false,
+    };
+  }
 
-    if (!isRevoked) {
-      const refreshPayload = await verifyRefreshToken(refreshToken);
+  const isRevoked = await isTokenRevoked(accessToken);
 
-      if (refreshPayload) {
-        // AUDIT NOTE 5 (Missing Refresh Token Revocation on Rotation - CRITICAL):
-        // A new refreshToken is issued here, but `await revokeToken(refreshToken)` is NEVER called
-        // on the old token! The old refreshToken stays valid until its `exp` timestamp, allowing
-        // replay attacks if stolen and breaking single-use rotation / reuse detection.
-        const newAccessToken = await generateAccessToken({ userId: refreshPayload.userId });
-        const newRefreshToken = await generateRefreshToken({ userId: refreshPayload.userId });
-
-        await setAuthCookies(newAccessToken, newRefreshToken);
-
-        return {
-          isAuthenticated: true,
-          userId: refreshPayload.userId,
-        };
-      }
-    }
+  if (isRevoked) {
+    return {
+      isAuthenticated: false,
+    };
   }
 
   return {
-    isAuthenticated: false,
+    isAuthenticated: true,
+    userId: payload.userId,
   };
 };
 

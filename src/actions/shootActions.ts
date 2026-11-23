@@ -8,13 +8,13 @@ import {
   type ShootDetailResponse, 
   type ShootEntity,
   type ShootSummary,
-  PhotoRow,
-  ShootRow,
-  ShootSummaryRow,
+  type PhotoRow,
+  type ShootRow,
+  type ShootSummaryRow,
 } from "@/typing/interfaces";
 import { pool } from "@/db/dbClient";
 import { deleteFiles } from "@/s3/s3";
-import { verifyAndRefreshSession } from "@/utils/sessionUtils";
+import { verifySession } from "@/utils/sessionUtils";
 
 const BUCKET_PATH = process.env.BUCKET_PATH ?? "";
 const DIRNAME = process.env.SHOOTS_DIRNAME ?? "";
@@ -218,7 +218,7 @@ const addShoot = async ({
   model_ids,
   photo_urls,
 }: ShootData): Promise<ActionResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   if (!photo_urls || photo_urls.length === 0) {
     return {
@@ -309,7 +309,7 @@ const editShootByID = async (
   shootId: number,
   shootData: ShootData
 ): Promise<ActionResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   const parsedID = parseInt(String(shootId), 10);
 
@@ -427,7 +427,7 @@ const editShootByID = async (
 
 // deleteShootByID
 const deleteShootByID = async (id: number): Promise<ActionResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   const parsedID = parseInt(String(id), 10);
 
@@ -498,7 +498,7 @@ const deleteShootByID = async (id: number): Promise<ActionResponse> => {
 // updateShootOrder
 // UI not ready for this: action not tested
 const updateShootOrder = async (orderedShootIDs: number[]): Promise<ActionResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   if (!orderedShootIDs || orderedShootIDs.length === 0) {
     return {

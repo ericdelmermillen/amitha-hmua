@@ -50,11 +50,38 @@ const middleware = async (request: NextRequest) => {
         });
 
         if (refreshResponse.ok) {
-          const response = NextResponse.next();
           const setCookies = refreshResponse.headers.getSetCookie();
+          const requestHeaders = new Headers(request.headers);
 
-          for (const cookie of setCookies) {
-            response.headers.append("set-cookie", cookie);
+          for (const cookieStr of setCookies) {
+            const [nameValue, ...attributes] = cookieStr.split(";");
+            const eqIndex = nameValue.indexOf("=");
+
+            if (eqIndex !== -1) {
+              const name = nameValue.slice(0, eqIndex).trim();
+              const value = nameValue.slice(eqIndex + 1).trim();
+              const isDeleted =
+                value.length === 0 ||
+                attributes.some(attr => attr.trim().toLowerCase() === "max-age=0");
+
+              if (isDeleted) {
+                request.cookies.delete(name);
+              } else {
+                request.cookies.set(name, value);
+              }
+            }
+          }
+
+          requestHeaders.set("cookie", request.cookies.toString());
+
+          const response = NextResponse.next({
+            request: {
+              headers: requestHeaders,
+            },
+          });
+
+          for (const cookieStr of setCookies) {
+            response.headers.append("set-cookie", cookieStr);
           }
 
           return response;
@@ -81,7 +108,6 @@ const middleware = async (request: NextRequest) => {
 
   return response;
 };
-
 // When upgrading from Next.js 15 to 16+, rename this file to `src/proxy.ts` and rename
 // `middleware` -> `proxy` (Next.js 16+ runs proxy.ts on Node.js runtime by default).
 // config object required to be exported inline

@@ -5,10 +5,7 @@ import { decodeJwt } from "jose";
 import { pool } from "@/db/dbClient";
 import { 
   extractTokenRevocationDetails, 
-  generateAccessToken, 
-  generateRefreshToken, 
   verifyAccessToken, 
-  verifyRefreshToken 
 } from "./tokenUtils";
 
 
@@ -25,11 +22,6 @@ const getTokenMaxAge = (token: string, fallbackSeconds: number): number => {
     return fallbackSeconds;
   }
 };
-// --- move to sessionUtils
-  // revokeToken
-  // isTokenRevoked
-  // // Session verification / rotation logic (replacing verifyAndRefreshSession with a clean split between read-only getSession/verifySession and cookie-mutating rotation)
-
 
 
 // setAuthCookies
@@ -91,7 +83,6 @@ const revokeToken = async (token: string): Promise<void> => {
   }
 };
 
-
 // isTokenRevoked
 const isTokenRevoked = async (token: string): Promise<boolean> => {
   const tokenDetails = extractTokenRevocationDetails(token);
@@ -114,8 +105,8 @@ const isTokenRevoked = async (token: string): Promise<boolean> => {
   }
 };
 
-// verifyAndRefreshSession
-const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
+// verifySession
+const verifySession = async (): Promise<SessionResponse> => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
   const refreshToken = cookieStore.get("refreshToken")?.value;
@@ -133,33 +124,7 @@ const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
         };
       }
     }
-  }
 
-  if (refreshToken) {
-    const refreshPayload = await verifyRefreshToken(refreshToken);
-
-    if (refreshPayload) {
-      const isRevoked = await isTokenRevoked(refreshToken);
-
-      if (isRevoked) {
-        console.warn(`Security alert: Revoked refresh token replay attempt for userId=${refreshPayload.userId}`);
-      } else {
-        await revokeToken(refreshToken);
-
-        const newAccessToken = await generateAccessToken({ userId: refreshPayload.userId });
-        const newRefreshToken = await generateRefreshToken({ userId: refreshPayload.userId });
-
-        await setAuthCookies(newAccessToken, newRefreshToken);
-
-        return {
-          isAuthenticated: true,
-          userId: refreshPayload.userId,
-        };
-      }
-    }
-  }
-
-  if (accessToken) {
     await revokeToken(accessToken);
     cookieStore.delete("accessToken");
   }
@@ -179,12 +144,14 @@ const verifyAndRefreshSession = async (): Promise<SessionResponse> => {
   redirect("/work");
 };
 
+
+
 export {
   cleanupExpiredTokens,
   getTokenMaxAge,
   isTokenRevoked,
   revokeToken,
   setAuthCookies,
-  verifyAndRefreshSession
+  verifySession
 };
 

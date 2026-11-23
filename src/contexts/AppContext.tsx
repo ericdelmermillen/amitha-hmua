@@ -252,7 +252,7 @@ const AppContextProvider = ({ children }: ChildrenProps) => {
 
   // useEffect to check user session and set isLoggedIn state
   useEffect(() => {
-    const verifySession = async () => {
+    const checkSessionOnMount = async () => {
       try {
         const { isAuthenticated } = await checkUserSession();
         setIsLoggedIn(isAuthenticated);
@@ -262,7 +262,7 @@ const AppContextProvider = ({ children }: ChildrenProps) => {
       }
     };
 
-    verifySession();
+    checkSessionOnMount();
   }, []);
 
   const contextValues: AppContextValue = {

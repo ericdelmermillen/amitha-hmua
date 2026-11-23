@@ -10,11 +10,11 @@ import {
   type EntityRow, 
 } from "@/typing/interfaces";
 import { pool } from "@/db/dbClient";
-import { verifyAndRefreshSession } from "@/utils/sessionUtils";
+import { verifySession } from "@/utils/sessionUtils";
 
 // getAllPhotographers
 const getAllPhotographers = async (): Promise<GetAllPhotographersResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
   
   try {
     const { rows } = await pool.query<EntityRow>(
@@ -45,7 +45,7 @@ const getAllPhotographers = async (): Promise<GetAllPhotographersResponse> => {
 
 // addPhotographer
 const addPhotographer = async (name: string): Promise<AddPhotographerResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   const trimmedName = name.trim();
 
@@ -96,7 +96,7 @@ const addPhotographer = async (name: string): Promise<AddPhotographerResponse> =
 
 // editPhotographerByID
 const editPhotographerByID = async (id: number, name: string): Promise<EditPhotographerResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   const parsedID = parseInt(String(id), 10);
   const trimmedName = name.trim();
@@ -161,7 +161,7 @@ const editPhotographerByID = async (id: number, name: string): Promise<EditPhoto
 
 // deletePhotographerByID
 const deletePhotographerByID = async (id: number): Promise<DeletePhotographerResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   const parsedID = parseInt(String(id), 10);
 

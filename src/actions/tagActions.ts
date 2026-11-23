@@ -10,7 +10,7 @@ import {
   type EntityRow, 
 } from "@/typing/interfaces";
 import { pool } from "@/db/dbClient";
-import { verifyAndRefreshSession } from "@/utils/sessionUtils";
+import { verifySession } from "@/utils/sessionUtils";
 
 // getAllTags
 const getAllTags = async (): Promise<GetAllTagsResponse> => {
@@ -43,7 +43,7 @@ const getAllTags = async (): Promise<GetAllTagsResponse> => {
 
 // addTag
 const addTag = async (name: string): Promise<AddTagResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   const trimmedName = name.trim();
 
@@ -94,7 +94,7 @@ const addTag = async (name: string): Promise<AddTagResponse> => {
 
 // editTagByID
 const editTagByID = async (id: number, name: string): Promise<EditTagResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   const parsedID = parseInt(String(id), 10);
   const trimmedName = name.trim();
@@ -161,7 +161,7 @@ const editTagByID = async (id: number, name: string): Promise<EditTagResponse> =
 
 // deleteTagByID
 const deleteTagByID = async (id: number): Promise<DeleteTagResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   const parsedID = parseInt(String(id), 10);
 

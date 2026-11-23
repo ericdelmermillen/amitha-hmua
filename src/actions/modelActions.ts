@@ -10,11 +10,11 @@ import {
   type EntityRow, 
 } from "@/typing/interfaces";
 import { pool } from "@/db/dbClient";
-import { verifyAndRefreshSession } from "@/utils/sessionUtils";
+import { verifySession } from "@/utils/sessionUtils";
 
 // getAllModels
 const getAllModels = async (): Promise<GetAllModelsResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   try {
     const { rows } = await pool.query<EntityRow>(
@@ -45,7 +45,7 @@ const getAllModels = async (): Promise<GetAllModelsResponse> => {
 
 // addModel
 const addModel = async (name: string): Promise<AddModelResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   const trimmedName = name.trim();
 
@@ -96,7 +96,7 @@ const addModel = async (name: string): Promise<AddModelResponse> => {
 
 // editModelByID
 const editModelByID = async (id: number, name: string): Promise<EditModelResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   const parsedID = parseInt(String(id), 10);
   const trimmedName = name.trim();
@@ -161,7 +161,7 @@ const editModelByID = async (id: number, name: string): Promise<EditModelRespons
 
 // deleteModelByID
 const deleteModelByID = async (id: number): Promise<DeleteModelResponse> => {
-  await verifyAndRefreshSession();
+  await verifySession();
 
   const parsedID = parseInt(String(id), 10);
 

@@ -11,7 +11,7 @@ import {
   setAuthCookies,
 } from "@/utils/sessionUtils";
 
-const POST = async (): Promise<NextResponse> => {
+const handleTokenRefresh = async (): Promise<NextResponse> => {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
@@ -42,4 +42,4 @@ const POST = async (): Promise<NextResponse> => {
   return NextResponse.json({ isAuthenticated: true, userId: refreshPayload.userId });
 };
 
-export { POST };
+export { handleTokenRefresh as POST };
