@@ -10,7 +10,6 @@ import {
   type SVGProps,
   type RefObject
 } from "react";
-import { type RowDataPacket } from "mysql2";
 import { type TypeOptions } from "react-toastify";
 import { 
   type ToastType, 
@@ -127,7 +126,7 @@ interface ShootEntity {
   name: string;
 }
 
-interface EntityRow extends RowDataPacket {
+interface EntityRow {
   id: number;
   name: string;
 }
@@ -322,7 +321,7 @@ interface TokenDetails {
   expiresAt: Date;
 }
 
-interface UserRow extends RowDataPacket {
+interface UserRow {
   id: number;
   email: string;
   password: string;
@@ -399,7 +398,7 @@ interface EditTagResponse {
   updatedTag?: ShootEntity;
 }
 
-interface ShootLinkRow extends RowDataPacket {
+interface ShootLinkRow {
   shoot_id: number;
 }
 

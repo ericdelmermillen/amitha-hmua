@@ -15,7 +15,7 @@ import {
   verifyAccessToken
 } from "@/utils/tokenUtils";
 import { pool } from "@/db/dbClient";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { isTokenRevoked, revokeToken, setAuthCookies } from "@/utils/sessionUtils";
 
 // createUser
