@@ -15,7 +15,7 @@ const verifyTokenEdge = async (token: string, secret: Uint8Array): Promise<boole
   }
 };
 
-const middleware = async (request: NextRequest) => {
+const proxy = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
 
   const isProtected = protectedRoutes.some(
@@ -115,4 +115,4 @@ export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
 
-export default middleware;
+export default proxy;
