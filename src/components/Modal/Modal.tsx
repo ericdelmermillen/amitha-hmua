@@ -1,7 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useRef, useEffect, SyntheticEvent, useCallback } from "react";
+import { 
+  type SyntheticEvent, 
+  useState, 
+  useRef, 
+  useEffect, 
+  useCallback 
+} from "react";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { deleteShootByID } from "@/actions/shootActions";
 import { addTag, deleteTagByID, editTagByID } from "@/actions/tagActions";

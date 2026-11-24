@@ -324,6 +324,7 @@ const Shoots = () => {
       <div className={`shoots__inner ${isOnShootDetails ? "onShootDetails" : ""}`}>
 
         <DndContext
+          id="shoot-photos-dnd"
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragStart={handleDragStart}

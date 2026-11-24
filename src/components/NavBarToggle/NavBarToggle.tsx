@@ -4,10 +4,7 @@ import { useAppContext } from "@/hooks/hooks";
 import "./NavBarToggle.scss";
 
 const NavBarToggle = () => {
-  const { 
-    showSideNav, 
-    setShowSideNav, 
-  } = useAppContext();
+  const { showSideNav, setShowSideNav } = useAppContext();
 
   const handleToggle = () => setShowSideNav(prev => !prev);
 

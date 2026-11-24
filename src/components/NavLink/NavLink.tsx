@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { NavLinkProps } from "@/typing/interfaces";
+import { type NavLinkProps } from "@/typing/interfaces";
 import "./NavLink.scss";
 
 const NavLink = ({ href, children }: NavLinkProps) => {

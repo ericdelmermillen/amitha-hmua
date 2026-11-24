@@ -1,9 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { ChooserItem, InputPhoto, ShootEntity } from "@/typing/interfaces";
-import { EntryNameType } from "@/typing/types";
 import { type ChangeEvent, type SubmitEvent, useState, useEffect } from "react";
+import { type ChooserItem, type InputPhoto, type ShootEntity } from "@/typing/interfaces";
+import { type EntryNameType } from "@/typing/types";
 import { useAppContext } from "@/hooks/hooks";
 import { getAllModels } from "@/actions/modelActions";
 import { getAllPhotographers } from "@/actions/photographerActions";
@@ -29,8 +29,8 @@ import AddIcon from "@/assets/icons/AddIcon";
 import Compressor from "compressorjs";
 import CustomSelect from "@/components/CustomSelect/CustomSelect";
 import MinusIcon from "@/assets/icons/MinusIcon";
-import ShootDatePicker from "@/components/ShootDatePicker/ShootDatePicker";
 import PhotoInput from "@/components/PhotoInput/PhotoInput";
+import ShootDatePicker from "@/components/ShootDatePicker/ShootDatePicker";
 import "./AddEditShootForm.scss"
 
 const SHOOTS_DIRNAME = process.env.NEXT_PUBLIC_AWS_SHOOTS_DIRNAME || "shootimages";
@@ -573,6 +573,7 @@ const AddEditShootForm = () => {
         </h3>
 
         <DndContext
+          id="add-edit-shoot-photos-dnd"
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}

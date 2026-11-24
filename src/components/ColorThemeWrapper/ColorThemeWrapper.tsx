@@ -1,7 +1,7 @@
 "use client";
 
-import { type ChildrenProps } from "@/typing/interfaces";
 import { ThemeProvider } from "next-themes";
+import { type ChildrenProps } from "@/typing/interfaces";
 
 const ColorThemeWrapper = ({ children }: ChildrenProps) => {
   return (

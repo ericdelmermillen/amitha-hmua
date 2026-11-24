@@ -43,7 +43,7 @@ const LightboxGallery = ({
                 alt={slide.alt ?? "Gallery preview image"}
                 fill
                 sizes={sizes}
-                priority={priorityFirst && idx === 0}
+                loading={priorityFirst && idx === 0 ? "eager" : "lazy"}
               />
             </div>
           );

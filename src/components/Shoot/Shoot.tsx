@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ShootProps } from "@/typing/interfaces";
+import { type ShootProps } from "@/typing/interfaces";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";

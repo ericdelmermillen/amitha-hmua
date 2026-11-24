@@ -7,7 +7,7 @@ import {
   useState,
   useEffect
 } from "react";
-import { PhotoInputProps } from "@/typing/interfaces";
+import { type PhotoInputProps } from "@/typing/interfaces";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import PhotoPlaceholder from "@/assets/icons/PhotoPlaceholder";
@@ -115,10 +115,11 @@ const PhotoInput = ({
       {...listeners}
       onClick={showImage ? undefined : handleFileInputChange}
     >
-      <div className={`photoInput__box ${showImage ? "disabled" : ""}`} >
+      <div className={`photoInput__imageBox ${showImage ? "disabled" : ""}`} >
 
         {shootPhoto.photoPreview 
 
+          // img not Image tag here since it is an in memory image and can't be optimized by Next
           ? <img
               className={`photoInput__image ${showImage ? "inFront" : ""}`}
               src={shootPhoto.photoPreview}

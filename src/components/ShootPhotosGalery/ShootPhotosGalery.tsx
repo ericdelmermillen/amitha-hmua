@@ -60,7 +60,7 @@ const ShootPhotosGallery = ({
                   src={photo_url}
                   alt={`Photo ${idx + 1} from photo shoot ${shootID}`}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority={idx === 0}
+                  loading={idx === 0 ? "eager" : "lazy"}
                   fill
                 />
               </div>

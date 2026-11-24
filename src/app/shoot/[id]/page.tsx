@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { ShootDetailsPageProps } from "@/typing/interfaces";
 import { Suspense } from "react";
+import { type ShootDetailsPageProps } from "@/typing/interfaces";
 import { getShootByID } from "@/actions/shootActions"
 import Shoots, { ShootsFallback } from "@/components/Shoots/Shoots";
-import "./ShootDetailsPage.scss";
 import ShootPhotosGallery from "@/components/ShootPhotosGalery/ShootPhotosGalery";
+import "./ShootDetailsPage.scss";
 
 const ShootDetailsPage = async ({ params }: ShootDetailsPageProps) => {
   const { id } = await params;

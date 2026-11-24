@@ -1,7 +1,7 @@
 "use client";
 
 import { type  MouseEvent } from "react";
-import { ClientLinkProps } from "@/typing/interfaces";
+import { type ClientLinkProps } from "@/typing/interfaces";
 import { useAppContext } from "@/hooks/hooks";
 import { isModifiedClick } from "@/utils/utils";
 import Link from "next/link";

@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { type MouseEvent, type TransitionEvent, useEffect, useRef } from "react";
-import { NavSelectProps, ShootEntity } from "@/typing/interfaces";
+import { type NavSelectProps, type ShootEntity } from "@/typing/interfaces";
 import { useAppContext, useOutsideClick } from "@/hooks/hooks";
 import { scrollToTop } from "@/utils/utils";
 import DownIcon from "@/assets/icons/DownIcon";
@@ -16,7 +16,9 @@ const NavSelectFallback = () => {
       <div className="navSelect__inner">
         <div className="navSelect__select">
           <div className="navSelect__selectValue short">
-            <span className="navSelect__default-option show">WORK</span>
+            <span className="navSelect__default-option show">
+              WORK
+            </span>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 @use "../../partials/_variables" as vars;
 
 .photoInput {
-	&__box {
+	&__imageBox {
 		align-items: center;
 		border: 1px solid var(--background-color);
 		cursor: pointer;

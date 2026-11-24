@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { ColorModeToggleProps } from "@/typing/interfaces";
+import { useEffect, useState } from "react";
+import { type ColorModeToggleProps } from "@/typing/interfaces";
 import "./ColorModeToggle.scss";
 
 const ColorModeToggle = ({ inputId }: ColorModeToggleProps) => {
@@ -30,6 +30,7 @@ const ColorModeToggle = ({ inputId }: ColorModeToggleProps) => {
       aria-label="Toggle color mode"
       aria-pressed={isDarkMode}
     >
+      {/* prefer img here over Image tag as Next can't optimize static svgs */}
       <img
         className="colorModeToggle__sun-icon"
         src="/icons/sun.svg"

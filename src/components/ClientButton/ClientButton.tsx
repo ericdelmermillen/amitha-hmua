@@ -1,10 +1,15 @@
 "use client";
 
-import { ClientButtonProps } from "@/typing/interfaces";
+import { type ClientButtonProps } from "@/typing/interfaces";
 import { useAppContext, useModalContext } from "@/hooks/hooks";
 import "./ClientButton.scss";
 
-const ClientButton = ({ text, variant = "standard", buttonType, modifierClass }: ClientButtonProps) => {
+const ClientButton = ({ 
+  text, 
+  variant = "standard", 
+  buttonType, 
+  modifierClass 
+}: ClientButtonProps) => {
   const { isLoggedIn, handleLogoutUser } = useAppContext();
   const { handleOpenModal, showModal } = useModalContext();
   
