@@ -338,6 +338,7 @@ const Shoots = () => {
             strategy={rectSortingStrategy}
           >          
             {shoots.map(({ shootID, displayOrder, thumbnailURL, models, photographers }) => (
+
               <Shoot
                 key={shootID} 
                 shootID={shootID}
@@ -349,7 +350,9 @@ const Shoots = () => {
                 isOnShootDetails={isOnShootDetails}
                 shootOrderIsEditable={shootOrderIsEditable}
               />
+
             ))}
+            
           </SortableContext>
 
           <DragOverlay adjustScale={false}>

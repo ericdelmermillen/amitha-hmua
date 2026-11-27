@@ -13,6 +13,8 @@ import "./Shoot.scss";
 
 const DND_OPACITY = Number(process.env.NEXT_PUBLIC_DND_OPACITY || "0.5");
 
+// *** add imageIsEager boolean for first 6 shoots
+
 const Shoot = ({ 
   shootID, 
   tagParam,
@@ -72,7 +74,7 @@ const Shoot = ({
       {...listeners}
     >
       
-      <div className="shoot__overlay"></div>
+      <div className="shoot__overlay" />
       
       {isLoggedIn && !isOnShootDetails && !shootOrderIsEditable
 
