@@ -102,6 +102,27 @@ const syncChoosers = (prevChoosers: ChooserItem[], freshEntities: ShootEntity[])
   return updated.length > 0 ? updated : [{ number: 1, id: null, name: null }];
 };
 
+// utils.ts
+const parseDurationToSeconds = (duration: string, defaultSeconds: number): number => {
+  const multipliers: Record<string, number> = {
+    s: 1,
+    m: 60,
+    h: 60 * 60,
+    d: 24 * 60 * 60,
+  };
+
+  const match = duration.trim().match(/^(\d+)([smhd])$/i);
+
+  if (!match) {
+    return defaultSeconds;
+  }
+
+  const value = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
+
+  return value * multipliers[unit];
+};
+
 export {
   scrollToTop,
   addClassToDiv,
@@ -116,5 +137,6 @@ export {
   staggerToastsByN,
   splitOnNewLine,
   normalizeCasing,
-  syncChoosers
+  syncChoosers,
+  parseDurationToSeconds,
 };
